@@ -45,7 +45,8 @@ plt.savefig('ols_pop_vs_sample.png')
 # residuals and fitted values
 e_i = model_sample.resid
 e_i_mean = np.mean(e_i)
-e_i_sd = np.std(e_i)
+e_i_sd = np.sqrt(np.var(e_i, ddof=2)) # this is rse
+
 e_i_x = np.linspace(e_i.min(), e_i.max(), 300)
 e_i_pdf = scipy.stats.norm.pdf(e_i_x, loc=e_i_mean, scale=e_i_sd)
 y_hat_i = model_sample.fittedvalues
