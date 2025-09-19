@@ -11,81 +11,110 @@ from statsmodels.stats.outliers_influence import OLSInfluence
 # y_hat = X@beta_hat -> model for E(Y|X), i.e., for the deterministic part of y
 # the goal is to get a regression line that matches the population regression line
 
-pop_size = 5000
-X = np.random.normal(20, 10, (pop_size, ))
-X = sm.add_constant(X)
-sigma_epsilon = 7
-epsilon = np.random.normal(0, sigma_epsilon, (pop_size, ))
-beta = np.array([1.0234, 2.3324]) 
-y = X@beta + epsilon
+class OLS:
 
-n = 60
-idx_sample = np.random.randint(low=0, high=len(X), size=n)
-X_sample, y_sample = X[idx_sample], y[idx_sample]
+    def __init__(self, pop_size, sample_size, sigma_epsilon, beta):
+        self.pop_size = pop_size
+        self.sample_size = sample_size
+        self.sigma_epsilon = sigma_epsilon
+        self.epsilon = np.random.normal(0, self.sigma_epsilon, (self.pop_size, ))
+        self.beta = np.array(beta)
 
-model_pop = sm.OLS(y, X)
-model_pop = model_pop.fit()
-y_hat_pop = model_pop.predict(X)
+    def make_X(self):
+        self.X = np.random.normal(20, 10, (self.pop_size, ))
+        self.X = sm.add_constant(self.X)
 
-model_sample = sm.OLS(y_sample, X_sample)
-model_sample = model_sample.fit()
-y_hat_sample = model_sample.predict(X_sample)
-beta_hat = model_sample.params 
+    def make_y(self):
+        self.y = self.X@self.beta + self.epsilon
 
-# population vs. sample OLS
-fig, ax = plt.subplots()
-ax.scatter(X[:, 1], y, facecolors='gray', edgecolors='gray', s=10, linewidths=0.5, alpha=0.3)
-ax.scatter(X_sample[:, 1], y_sample, facecolor='None', edgecolors='red', linewidths=0.5, s=30)
-ax.plot(X[:, 1], y_hat_pop, color='gray')
-ax.plot(X_sample[:, 1], y_hat_sample, color='red')
-ax.text(x=-10, y=120, s=rf'$\beta_0 = {beta[0]:.3f}, \hat{{\beta}}_0 = {beta_hat[0]:.3f}$')
-ax.text(x=-10, y=108, s=rf'$\beta_1 = {beta[1]:.3f}, \hat{{\beta}}_1 = {beta_hat[1]:.3f}$')
-plt.savefig('ols_pop_vs_sample.png')
+    def make_X_y_sample(self):
+        idx_sample = np.random.randint(low=0, high=len(self.X), size=self.sample_size)
+        self.X_sample, self.y_sample = self.X[idx_sample], self.y[idx_sample]
 
-# residuals and fitted values
-e_i = model_sample.resid
-e_i_mean = np.mean(e_i)
-e_i_sd = np.sqrt(np.var(e_i, ddof=2)) # this is rse
+    def make_models(self):
+        self.model_pop = sm.OLS(self.y, self.X)
+        self.model_pop = self.model_pop.fit()
+        self.y_hat_pop = self.model_pop.predict(self.X)
 
-e_i_x = np.linspace(e_i.min(), e_i.max(), 300)
-e_i_pdf = scipy.stats.norm.pdf(e_i_x, loc=e_i_mean, scale=e_i_sd)
-y_hat_i = model_sample.fittedvalues
+        self.model_sample = sm.OLS(self.y_sample, self.X_sample)
+        self.model_sample = self.model_sample.fit()
+        self.y_hat_sample = self.model_sample.predict(self.X_sample)
+        self.beta_hat = self.model_sample.params 
 
-print(f'RSS relative to y_meam: {e_i_sd:.2f} --- {y_sample.mean():.2f}')
-print(f'Real Var(epsilon) = {sigma_epsilon:.2f} --- RSE = {e_i_sd:.2f}')
+    def plot_population_vs_sample(self):
 
-# regression diagnistics
-omnibus_stat, omnibus_p = omni_normtest(e_i) 
-jb_stat, jb_p, skew, kurtosis = jarque_bera(e_i)
-lb = acorr_ljungbox(e_i, lags=[1], return_df=True)
-lb_stat, lb_pvalue = lb['lb_stat'].values[0], lb['lb_pvalue'].values[0]
-influence = OLSInfluence(model_sample)
-leverage = influence.hat_matrix_diag
-studentized_resid = influence.resid_studentized_external
+        fig, ax = plt.subplots()
+        ax.scatter(self.X[:, 1], self.y, facecolors='gray', edgecolors='gray', s=10, linewidths=0.5, alpha=0.3)
+        ax.scatter(self.X_sample[:, 1], self.y_sample, facecolor='None', edgecolors='red', linewidths=0.5, s=30)
+        ax.plot(self.X[:, 1], self.y_hat_pop, color='gray')
+        ax.plot(self.X_sample[:, 1], self.y_hat_sample, color='red')
+        ax.text(x=-10, y=120, s=rf'$\beta_0 = {self.beta[0]:.3f}, \hat{{\beta}}_0 = {self.beta_hat[0]:.3f}$')
+        ax.text(x=-10, y=108, s=rf'$\beta_1 = {self.beta[1]:.3f}, \hat{{\beta}}_1 = {self.beta_hat[1]:.3f}$')
+        plt.savefig('ols_pop_vs_sample.png')
 
-# plot diagnostics
-fig, ax = plt.subplots(1, 3, figsize=(15, 4))
-ax[0].set_title(r'Distr. $e_i$')
-ax[0].hist(e_i, density=True)
-ax[0].plot(e_i_x, e_i_pdf)
-ax[0].text(
-    0.025, 0.95, 
-    f'Omnibus: {omnibus_stat:.2f}({omnibus_p:.2f})\nJarque-Bera: {jb_stat:.2f}({jb_p:.2f})\nSkew.: {skew:.2f}\nKurt.:{kurtosis:.2f}', 
-    transform=ax[0].transAxes, verticalalignment='top'
-)
-ax[0].set_xlabel(r'$e_i$')
-ax[0].set_ylabel('Density')
-ax[1].set_title(r'Fitted vals. vs. $e_i$')
-ax[1].scatter(y_hat_i, e_i)
-ax[1].axhline(y=0, color='black', linestyle='--')
-ax[1].set_xlabel('Fitted vals.')
-ax[1].set_ylabel(r'$e_i$')
-ax[1].text(0.025, 0.95, f'Ljung-Box:{lb_stat:.2f}({lb_pvalue:.2f})', transform=ax[1].transAxes, verticalalignment='top')
-ax[2].set_title(r'Leverage vs. studentized $e_i$')
-ax[2].scatter(leverage, studentized_resid)
-ax[2].set_xlabel('Leverage')
-ax[2].set_ylabel(r'Studentized $e_i$')
-plt.tight_layout()
-plt.savefig('ols_distr_ei.png')
+    def compute_residuals_stats(self):
+        self.e_i = self.model_sample.resid
+        self.e_i_mean = np.mean(self.e_i)
+        self.e_i_sd = np.sqrt(np.var(self.e_i, ddof=2)) # this is rse
+        self.e_i_x = np.linspace(self.e_i.min(), self.e_i.max(), 300)
+        self.e_i_pdf = scipy.stats.norm.pdf(self.e_i_x, loc=self.e_i_mean, scale=self.e_i_sd)
+        self.y_hat_i = self.model_sample.fittedvalues
+
+    def print_rss_relative_to_y_mean(self):
+        print(f'RSS relative to y_meam: {self.e_i_sd:.2f} --- {self.y_sample.mean():.2f}')
+        print(f'Real Var(epsilon) = {self.sigma_epsilon:.2f} --- RSE = {self.e_i_sd:.2f}')
+
+    def compute_diagnostics(self):
+        self.omnibus_stat, self.omnibus_p = omni_normtest(self.e_i) 
+        self.jb_stat, self.jb_p, self.skew, self.kurtosis = jarque_bera(self.e_i)
+        lb = acorr_ljungbox(self.e_i, lags=[1], return_df=True)
+        self.lb_stat, self.lb_pvalue = lb['lb_stat'].values[0], lb['lb_pvalue'].values[0]
+        influence = OLSInfluence(self.model_sample)
+        self.leverage = influence.hat_matrix_diag
+        self.studentized_resid = influence.resid_studentized_external
+
+    def plot_diagnostics(self):
+        fig, ax = plt.subplots(1, 3, figsize=(15, 4))
+        ax[0].set_title(r'Distr. $e_i$')
+        ax[0].hist(self.e_i, density=True)
+        ax[0].plot(self.e_i_x, self.e_i_pdf)
+        ax[0].text(
+            0.025, 0.95, 
+            f'Omnibus: {self.omnibus_stat:.2f}({self.omnibus_p:.2f})\nJarque-Bera: {self.jb_stat:.2f}({self.jb_p:.2f})\nSkew.: {self.skew:.2f}\nKurt.:{self.kurtosis:.2f}', 
+            transform=ax[0].transAxes, verticalalignment='top'
+        )
+        ax[0].set_xlabel(r'$e_i$')
+        ax[0].set_ylabel('Density')
+        ax[1].set_title(r'Fitted vals. vs. $e_i$')
+        ax[1].scatter(self.y_hat_i, self.e_i)
+        ax[1].axhline(y=0, color='black', linestyle='--')
+        ax[1].set_xlabel('Fitted vals.')
+        ax[1].set_ylabel(r'$e_i$')
+        ax[1].text(0.025, 0.95, f'Ljung-Box:{self.lb_stat:.2f}({self.lb_pvalue:.2f})', transform=ax[1].transAxes, verticalalignment='top')
+        ax[2].set_title(r'Leverage vs. studentized $e_i$')
+        ax[2].scatter(self.leverage, self.studentized_resid)
+        ax[2].set_xlabel('Leverage')
+        ax[2].set_ylabel(r'Studentized $e_i$')
+        plt.tight_layout()
+        plt.savefig('ols_distr_ei.png')
+
+
+    def run(self):
+        self.make_X()
+        self.make_y()
+        self.make_X_y_sample()
+        self.make_models()
+        self.plot_population_vs_sample()
+        self.compute_residuals_stats()
+        self.print_rss_relative_to_y_mean()
+        self.compute_diagnostics()
+        self.plot_diagnostics()
+
+
+if __name__ == '__main__':
+    ols = OLS(1000, 200, 10, [1.44, -2.43])
+    ols.run()
+
+
 
 
