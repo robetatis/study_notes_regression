@@ -21,7 +21,7 @@ class OLS:
         self.beta = np.array(beta)
 
     def make_X(self):
-        self.X = np.random.normal(20, 10, (self.pop_size, ))
+        self.X = np.random.normal(5, 10, (self.pop_size, ))
         self.X = sm.add_constant(self.X)
 
     def make_y(self):
@@ -48,8 +48,12 @@ class OLS:
         ax.scatter(self.X_sample[:, 1], self.y_sample, facecolor='None', edgecolors='red', linewidths=0.5, s=30)
         ax.plot(self.X[:, 1], self.y_hat_pop, color='gray')
         ax.plot(self.X_sample[:, 1], self.y_hat_sample, color='red')
-        ax.text(x=-10, y=120, s=rf'$\beta_0 = {self.beta[0]:.3f}, \hat{{\beta}}_0 = {self.beta_hat[0]:.3f}$')
-        ax.text(x=-10, y=108, s=rf'$\beta_1 = {self.beta[1]:.3f}, \hat{{\beta}}_1 = {self.beta_hat[1]:.3f}$')
+        ax.text(x=0.02, y=0.93, transform=ax.transAxes, s=rf'$\beta_0 = {self.beta[0]:.3f}, \hat{{\beta}}_0 = {self.beta_hat[0]:.3f}$')
+        ax.text(x=0.02, y=0.86, transform=ax.transAxes, s=rf'$\beta_1 = {self.beta[1]:.3f}, \hat{{\beta}}_1 = {self.beta_hat[1]:.3f}$')
+        ax.axvline(x=0, color='black', linestyle=':', alpha=0.3)
+        ax.axhline(y=0, color='black', linestyle=':', alpha=0.3)
+        ax.set_ylabel('y')
+        ax.set_xlabel('X')
         plt.savefig('ols_pop_vs_sample.png')
 
     def compute_residuals_stats(self):
@@ -112,7 +116,7 @@ class OLS:
 
 
 if __name__ == '__main__':
-    ols = OLS(1000, 200, 10, [1.44, -2.43])
+    ols = OLS(1000, 200, 10, [1.44, 2.43])
     ols.run()
 
 
