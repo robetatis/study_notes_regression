@@ -128,6 +128,3 @@ if __name__ == '__main__':
 
 # similar ols and mlr coefficients for tv and radio -> tv and radio are independent.
 # newspaper drops to non-significance -> wasn't independent, was confounded with either tv or radio
-
-# ignoring relevant variables in a regression doesn't make their effect on y disappear, we just bury their influence in the 
-# coefficients we do use
