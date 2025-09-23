@@ -20,7 +20,7 @@ In general, larger samples with more spread $X$ have smaller variability; the me
 
 Note: these formulas are only valid if $Cov(X, \epsilon) = 0$. The intuition here is that if $\epsilon$ is related to the regressors $X$, these contain information about the part of $y$ that is supposed to be only noise, i.e., there's still variance in $\epsilon$ that is linked to $X$. It's also possible that an ommitted variable is moving with $X$ and thus affecting $y$ indirectly. This then causes $X$ and $\epsilon$ to be related. 
 
-Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = E(X)E(\epsilon) - E(X)E(\epsilon)$, the only way $X$ and $\epsilon$ have zero covariance is if $E(\epsilon)=0$, which we achieve by correctly specifying the model (accounting for non-linearities and avoiding omitted variable bias).
+Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = E(X)E(\epsilon) - E(X)E(\epsilon)$, the only way $X$ and $\epsilon$ have zero covariance is if $E(\epsilon)=0$, which we achieve by correctly specifying the model (accounting for non-linearities and avoiding omitted variable bias). It's also worth noting that, with multiple regressors, checking which $X$ is responsible for $Cov(X, \epsilon) \neq 0$ helps determining which regressor drives the residuals.
 
 ### Sums of squares and $R^2$
 
@@ -32,16 +32,16 @@ Informally, looking at the size of RSS relative to the mean of $y$ is a way to a
 
 ### OLS diagnostics
 
-normality of residuals -> look at histogram of epsilon.  
-- omnibus, jarque-bera
+Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical and business significance, we must check whether the linear model fit is usable. Several steps here:
 
-residual autocorrelation -> look at fitted values vs. epsilon. random pattern suggests (does not prove) linearity since no trend in residuals. trend in residuals vs. fitted values means systematic over/underpredicting depending on y -> model misspecified (e.g., missing $x^2$). one could also see other trends in fitted vs. residuals: points along bands -> missing categorical variable, points funnel-shaped -> heteroscedasticity
-- ljung box
+1. Normality of residuals: Look at histogram of $\hat{\epsilon}$ (sample residuals, since the population residuals require the entire population, which we obviously don't have). Formal tests: **Omnibus**, **Jarque-Bera**. Both have $H_0$: Distribution of $\epsilon_i$ is normal. However, given the Central Limit Theorem, normality of residuals is less critical with larger sample sizes ($n > 30$)
 
-epsilon correlated with x -> variable-specific misfit (which variable drives the residuals). if not zero, std(beta) formulas don't apply
+2. Autocorrelation of residuals: Look at fitted values vs. $\hat{\epsilon}$. A random pattern suggests (however does not prove!) true linearity between $X$ and $y$. Any trend means systematic over/underpredicting depending on $y$; for instance, small values of $y$ overpredicted and large values of $y$ underpredicted -> we're likely missing a quadratic term -> model is **misspecified**. There can of course be other trends in fitted vals. vs. residuals: points along bands -> missing categorical variable, points funnel-shaped -> heteroscedasticity, etc. Formal test: **Ljung-Box**. Tests $H_0$: Zero residual autocorrelation.
 
-fitted values vs studentized residuals
-outliers: leverage v studentized residuals
+3. Fitted values vs studentized residuals: 
+
+
+4. Outliers: leverage v studentized residuals
 
 ## MLR
 
