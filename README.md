@@ -24,9 +24,7 @@ Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = E(X)E(\epsilo
 
 ### Sums of squares and $R^2$
 
-After finding $\hat{\beta}$ we can compute $\hat{y}$, which is an estimate of $E(y\mid X)$. We can then also compute sample residuals $e_i = y_i - 1$ 
-
-$\hat{y}_i$. 
+After finding $\hat{\beta}$ we can compute $\hat{y}$, which is an estimate of $E(y\mid X)$. We can then also compute sample residuals $e_i = y_i - \hat{y}_i$ 
 
 With $e_i$ we can compute sample estimates for the distribution of $\epsilon$. We can estimate the population residual standard error $\sigma$ by first calculating the **residual sum of squares** $\mathrm{RSS} = \sum_{i=1}^n (y_i - \hat{y}_i)^2$ and then computing the sample **residual standard error** $\mathrm{RSE} = \sqrt{\frac{1}{n-2}\,\mathrm{RSS}}$. Here, $n-2$ is used as denominator because in OLS we estimate two parameters ($\hat{\beta}_0$ and $\hat{\beta}_1$).
 
