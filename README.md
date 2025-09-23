@@ -16,9 +16,13 @@ and its variability comes from the variance-covariance matrix of the sampling di
 
 $Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
-In general, larger samples with more spread $X$ have smaller variability; the mechanism is simply that larger samples encompass a larger part of the population and hence have better chances of representing it better. In turn, more spread in $X$ implies more chances to capture the way $y$ varies over $X$. Conversely, a narrow interval of $X$ doesn't allow that and therefore leads to more variable (i.e., more uncertain) estimates of $\hat{\beta}$.
+In general, larger samples with more spread $X$ have smaller variability; the mechanism is simply that larger samples encompass a larger part of the population and hence have better chances of representing it well. In turn, more spread in $X$ implies more chances to capture the way $y$ varies over $X$. Conversely, a narrow interval of $X$ doesn't allow that and therefore leads to more variable (i.e., more uncertain) estimates of $\hat{\beta}$.
 
-Note: these formulas are only valid if $Cov(X, \epsilon) = 0$. The intuition here is that if $\epsilon$ is related to the regressors $X$, these contain information about the part of $y$ that is supposed to be only noise, i.e., there's still variance in $\epsilon$ that is linked to $X$. It's also possible that an ommitted variable is moving with $X$ and affecting $y$. This then causes X and $\epsilon$ to be related.
+Note: these formulas are only valid if $Cov(X, \epsilon) = 0$. The intuition here is that if $\epsilon$ is related to the regressors $X$, these contain information about the part of $y$ that is supposed to be only noise, i.e., there's still variance in $\epsilon$ that is linked to $X$. It's also possible that an ommitted variable is moving with $X$ and thus affecting $y$ indirectly. This then causes $X$ and $\epsilon$ to be related. 
+
+Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = E(X)E(\epsilon) - E(X)E(\epsilon)$, the only way $X$ and $\epsilon$ have zero covariance is if $E(\epsilon)=0$, which we achieve by correctly specifying the model (accounting for non-linearities and avoiding omitted variable bias).
+
+### Sums of squares and $R^2$
 
 After finding $\hat{\beta}$ we can compute $\hat{y}$, which is an estimate of $E(y|X)$. We can then also compute sample residuals $e_i = y_i - \hat{y}_i$. With $e_i$ we can compute sample estimates for the distribution of $\epsilon$. We can estimate the population residual standard error $\sigma$ by first calculating the **residual sum of squares** $RSS = \sum_{i=1}^n(\hat{y}_i - y_i)^2$ and then computing the sample **residual standard error** $RSE = \sqrt{\frac{1}{n-2}RSS}$. Here, $n-2$ is used as denominator because in OLS we estimate two parameters ($\hat{\beta_0}$ and $\hat{\beta_1}$).
 
