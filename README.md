@@ -24,7 +24,9 @@ Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = E(X)E(\epsilo
 
 ### Sums of squares and $R^2$
 
-After finding $\hat{\beta}$ we can compute $\hat{y}$, which is an estimate of $E(y\mid X)$. We can then also compute sample residuals $e_i = y_i - \hat{y}_i$. With $e_i$ we can compute sample estimates for the distribution of $\epsilon$, which we obviously don't have so we're forced to use $e_i$'s distribution as a proxy. A first measure of interest is $\sigma$, i.e., the variance of $\epsilon$'s distribution. We estimate this quantity with the **residual standard error** $RSE = \sqrt{RSS/(n-2)}$, where the **residual sum of squares** $RSS = \sum_{i=1}^n (y_i - \hat{y}_i)^2$ and $n-2$ are the degrees of freedom when computing $RSE$ (we lose two degrees of freedom becasue we need to estimate two parameters - $\hat{\beta}_0$ and $\hat{\beta}_1$ to calculate $RSE$).
+After finding $\hat{\beta}$ we can compute $\hat{y}$, which is an estimate of $E(y\mid X)$. We can then also compute sample residuals $e_i = y_i - \hat{y}_i$. With $e_i$ we can compute sample estimates for the distribution of $\epsilon$, which we obviously don't have so we're forced to use $e_i$'s distribution as a proxy. A first measure of interest is $\sigma$, i.e., the variance of $\epsilon$'s distribution.
+
+We estimate this quantity with the **residual standard error** $RSE = \sqrt{RSS/(n-2)}$, where the **residual sum of squares** $RSS = \sum_{i=1}^n (y_i - \hat{y}_i)^2$ and $n-2$ are the degrees of freedom when computing $RSE$ (we lose two degrees of freedom becasue we need to estimate two parameters - $\hat{\beta}_0$ and $\hat{\beta}_1$ to calculate $RSE$).
 
 These sums of squares can be used to compute the % of explained variance in the regression, the $R^2$ statistic. $R^2 = 1 - RSS/TSS$, where the **total sum of squares** $TSS = \sum_{i=1}^n (y_i - \bar{y})$. This statistic measures the **linear** association between $X$ and $y$. In bivariate regression, the $R^2$ statistic is equal to the square of the _correlation coefficient_ $r^2$, which is equal to $Cov(X,y)/(\sqrt{Var(X)Var(y)})$. This is **not** true for multivariate settings.
 
