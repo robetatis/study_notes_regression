@@ -50,19 +50,15 @@ Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical an
 
 ### Model and intuition
 
-The Model is : $y = \beta_0 + \beta_1x + \epsilon$, with $\epsilon \sim N(\mu, \sigma)$
+Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}$.
 
-Deterministic part is $\beta_0 + \beta_1x$, which is a model for $E[Y|X]$
+The difference is that $X$ is a matrix with multiple columns and each column is a regressor. Having multiple regressors opens up a host of possibilities, good and bad. Good because nature is multidimensional and including multiple regressors accounts for this; bad becasue regressors could be non-independent, we could be missing the right regressors, and we are forced to select a model, not to mention the problems with wide $X$, i.e., many features, few observations, and 'the curse of dimensionality'.
 
-$\epsilon$ is the random deviation of each $y_i$ from $E[Y|X]$, and is what makes $y$ a random variable.
 
-The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us an estimate of $E[Y|X]$ and a way to compute confidence intervals. Beta is computed as:
+### The curse of dimensionality
 
-$\hat{\beta} = (X^TX)^{-1}X^Ty$
 
-and its variability comes from the variance-covariance matrix of the sampling distribution of $\hat{\beta}$:
-
-$Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
+### Sparsity and collinearity
 
 
 ### Ommitted variable bias
