@@ -1,6 +1,8 @@
 # Regression
 
-## OLS
+## Ordinary least-squares - OLS
+
+### Model and intuition
 
 Model: $y = \beta_0 + \beta_1x + \epsilon$, with $\epsilon \sim N(\mu, \sigma)$
 
@@ -8,7 +10,7 @@ Deterministic part is $\beta_0 + \beta_1x$, which is a model for $E[Y|X]$
 
 $\epsilon$ is the random deviation of each $y_i$ from $E[Y|X]$, and is what makes $y$ a random variable.
 
-The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us an estimate of $E[Y|X]$ and a way to compute confidence intervals. Beta is computed as:
+The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us an estimate of $E[Y|X]$ and a way to compute confidence intervals. $\hat{\beta}$ is computed as:
 
 $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
@@ -44,7 +46,24 @@ Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical an
 
 4. Leverage v studentized residuals: Outliers are bad, but outliers with high leverage are worse. Points with high leverage have a strong influence on $\hat{\beta}$ and can therefore distort relations since the regression would be heavily biased by only a few datapoints. Outliers with low leverage are less problematic, although they increase $RMSE$ and therefore lead to lower $R^2$.
 
-## MLR
+## Multiple linear regression - MLR
+
+### Model and intuition
+
+The Model: $y = \beta_0 + \beta_1x + \epsilon$, with $\epsilon \sim N(\mu, \sigma)$
+
+Deterministic part is $\beta_0 + \beta_1x$, which is a model for $E[Y|X]$
+
+$\epsilon$ is the random deviation of each $y_i$ from $E[Y|X]$, and is what makes $y$ a random variable.
+
+The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us an estimate of $E[Y|X]$ and a way to compute confidence intervals. Beta is computed as:
+
+$\hat{\beta} = (X^TX)^{-1}X^Ty$
+
+and its variability comes from the variance-covariance matrix of the sampling distribution of $\hat{\beta}$:
+
+$Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
+
 
 ### Ommitted variable bias
 
