@@ -24,7 +24,7 @@ Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = E(X)E(\epsilo
 
 ### Sums of squares and $R^2$
 
-After finding $\hat{\beta}$ we can compute $\hat{y}$, which is an estimate of $E(y\mid X)$. We can then also compute sample residuals $e_i = y_i - \hat{y}_i$. With $e_i$ we can compute sample estimates for the distribution of $\epsilon$, which we obviously don't have so we're forced to use $e_i$'s distribution as a proxy. A first measure of interest is $\sigma$, i.e., the variance of $\epsilon$'s distribution. We estimate this quantity with the $RSE = \sqrt{\frac{1}{n-2}RSS}$
+After finding $\hat{\beta}$ we can compute $\hat{y}$, which is an estimate of $E(y\mid X)$. We can then also compute sample residuals $e_i = y_i - \hat{y}_i$. With $e_i$ we can compute sample estimates for the distribution of $\epsilon$, which we obviously don't have so we're forced to use $e_i$'s distribution as a proxy. A first measure of interest is $\sigma$, i.e., the variance of $\epsilon$'s distribution. We estimate this quantity with the $RSE = \sqrt{RSS/(n-2)}$
 
 
  by first calculating the **residual sum of squares** $\mathrm{RSS} = \sum_{i=1}^n (y_i - \hat{y}_i)^2$ and then computing the sample **residual standard error** . Here, $n-2$ is used as denominator because in OLS we estimate two parameters ($\hat{\beta}_0$ and $\hat{\beta}_1$).
