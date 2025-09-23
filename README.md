@@ -4,9 +4,9 @@
 
 ### Model and intuition
 
-Model: $y = \beta_0 + \beta_1x + \epsilon$, with $\epsilon \sim N(\mu, \sigma)$
+Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}$ and $X$ a single column vector
 
-Deterministic part is $\beta_0 + \beta_1x$, which is a model for $E[Y|X]$
+Deterministic part is $X\beta$, which is a model for $E[Y|X]$
 
 $\epsilon$ is the random deviation of each $y_i$ from $E[Y|X]$, and is what makes $y$ a random variable.
 
@@ -50,7 +50,7 @@ Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical an
 
 ### Model and intuition
 
-The Model: $y = \beta_0 + \beta_1x + \epsilon$, with $\epsilon \sim N(\mu, \sigma)$
+The Model is : $y = \beta_0 + \beta_1x + \epsilon$, with $\epsilon \sim N(\mu, \sigma)$
 
 Deterministic part is $\beta_0 + \beta_1x$, which is a model for $E[Y|X]$
 
