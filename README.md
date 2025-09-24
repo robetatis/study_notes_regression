@@ -54,11 +54,11 @@ In order to find $\hat{\beta}$ in $\hat{\beta} = (X^TX)^{-1}X^Ty$, **$X^TX$ must
 
 Intuitively, each entry $\hat{\beta}_j$ in **$\hat{\beta}$** is the slope of the relationship between $X_j$ and $E(y|X)$ holding all other predictors fixed. That is, $\hat{\beta}_j$ measures the **true** effect of $X_j$, or, in other words, it isolates the effect of $X_j$ by measuring it **in the presence of all other factors**. Indeed, the entries in the vector $\hat{\beta}$ are 
 
-$\hat{\beta}_j = Cov(r_j, y)/Var(r_j)$, 
+$\hat{\beta}_j = \frac{r_j^Ty}{r_j^Tr_j}$
 
-This is the **partial covariance formula**, and $r_j$ are the residuals of regressing $X_j$ against all other regressors $X_{-j}$. 
+This is the **partial covariance formula**, and $r_j$ are the residuals of regressing $X_j$ against all other regressors $X_{-j}$. $r_j^Ty$ measures how much variation in $r_j$ lines up with variation in $y$, and dividing by $r_j^Tr_j$ sets that quantity in relation to the total variation in $r_j$.
 
-The intuition behind partial covariance is: with multiple regressors, we can't just look at $Cov(X_j, y)$, which is how much $X_j$ varies together with $y$. The reason is that the other regressors could also influence $X_j$. That means we need to look at the covariance of $y$ with **the part of $X_j$ that is not explained by the other regressors** - this is what 'the effect of $X_j$ holding all other regressors fixed' actually means. The part of $X_j$ not explained by the other regressors is captured by the residuals of regressing $X_j$ on all other regressors. $r_j$ can be understood as an 'isolated' variability of $X_j$, or as $X_j$ after removing the influence of all other regressors. The covariance of that 'cleaned' $X_j$ with $y$ then gives the true, isolated effect of $X_j$ on $y$ in the presence of all other regressors.
+The intuition behind partial covariance is: with multiple regressors, we can't directly use $X_j^Ty/(X_j^TX_j)$ to capture how much $X_j$ varies together with $y$. The reason is that the other regressors ($X_-j$) could also influence $X_j$. That means we need to look at the covariance of $y$ with **the part of $X_j$ that is not explained by the other regressors** - this is what 'the effect of $X_j$ holding all other regressors fixed' actually means. In terms of vectors and spaces, $r_j$ is orthogonal to $X_{-j}$. The part of $X_j$ not explained by the other regressors is captured by the residuals of regressing $X_j$ on all other regressors. $r_j$ can be understood as an 'isolated' variability of $X_j$, or as $X_j$ after removing the influence of all other regressors. The covariance of that 'cleaned' $X_j$ with $y$ then gives the true, isolated effect of $X_j$ on $y$ in the presence of all other regressors.
 
 ### Ommitted variable bias
 
