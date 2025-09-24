@@ -56,13 +56,9 @@ Intuitively, each entry $\hat{\beta}_j$ in **$\hat{\beta}$** is the slope of the
 
 ### Ommitted variable bias
 
+Omitting relevant regressors runs the risk of false attribution. For instance, say a bivariate $y$-$X$ OLS gives a statstically significant $\hat{\beta}=0.3$, and then a MLR with the same $y$, the previous $X$ and two additional factors, gives non-significant $\hat{\beta}_1$ = 0.001 and siginificant $\hat{\beta}_2=0.51$ and $\hat{\beta}_3=0.32$. That would imply 1) that the bivariate OLS was 'burying' the effect of the factors that are actually relevant ($\hat{\beta}_2$ and $\hat{\beta}_3$) in $\hat{\beta}_1$, and 2) That the missing factors (2 and 3) are somehow related to the one we included in the OLS; the reason being that they exerted their influence on $y$ indirectly by affecting factor 1. These *interrelations amongst regressors are one of the main complexities of MLR*, and are formally referred to as **ommited variable bias**, i.e., what happens when we do not include relevant factors in our regression which affect $y$ and the factors we do include? In that case, those relevant factors act indirectly and lead to bias in the estimated $\hat{\beta}$
 
-Using a single predictor runs the risk of false attribution. For instance, say a bivariate $y$-$X$ OLS gives a statstically significant $\hat{\beta}=0.3$, and then a MLR with the same $y$, the previous $X$ and two additional factors, gives non-significant $\hat{\beta}_1$ = 0.001 and siginificant $\hat{\beta}_2=0.51$ and $\hat{\beta}_3=0.32$. That would imply that the bivariate OLS was 'burying' the effect of the factors that are actually relevant ($\hat{\beta}_2$ and $\hat{\beta}_3$) in $\hat{\beta}_1$. 
-
-
-Further, if separate bivariate OLS regressions between $y$ and factor 2 and $y$ and factor 3 showed a similar $\hat{\beta}$ as $\hat{\beta}_2$ and $\hat{\beta}_3$ from the MLR, that woud mean those two factors act independently.
-
-Formally:
+This can be summarized as follows:
 
 What happens if the true model is $y = \beta_0 + \beta_1x_1 + \beta_2x_2 + \epsilon$, but we regress $y = \alpha_0 + \alpha_1x_1 + u$? To find out, we can look at how the estimated parameter $\hat{\alpha}_1$ is related to $ \beta_1$, i.e., how the true $\beta_1$ is contained in the estimated $\hat{\alpha_1}$. In OLS, 
 
