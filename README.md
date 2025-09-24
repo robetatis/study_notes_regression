@@ -6,7 +6,7 @@
 
 Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$
 
-$\beta= \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}$ and $X$ a single column vector
+$\beta= \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}$ and $X$ a column vector
 
 Deterministic part is $X\beta$, which is a model for $E[Y|X]$
 
@@ -52,9 +52,13 @@ Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical an
 
 ### Model and intuition
 
-Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}$.
+Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, but now $\beta$ is a vector of shape ($p$+1, 1), with $p$ = number of regressors (+1 for the intercept), and $X$ is no longer a column vector but a matrix of shape ($n$, $p+1$), i.e, $n$ observations and $p$ factors (again, +1 for the intercept, for which we include a column of ones at the left of $X$).
 
-The difference is that $X$ is a matrix with multiple columns and each column is a regressor. Having multiple regressors opens up a host of possibilities, good and bad. Good because nature is multidimensional and including multiple regressors accounts for this; bad becasue regressors could be non-independent, we could be missing the right regressors, and we are forced to select a model, not to mention the problems with wide $X$, i.e., many features, few observations, and 'the curse of dimensionality'.
+Having multiple regressors opens up a host of possibilities, good and bad. Good because the world is multidimensional and including multiple regressors accounts for this; bad becasue regressors could be non-independent, we could be missing the right regressors, and we are forced to select a model, not to mention the problems with wide $X$, i.e., many features, few observations, and 'the curse of dimensionality'. More on all of these below.
+
+In order to find $\hat{\beta}$ in $\hat{\beta} = (X^TX)^{-1}X^Ty$, $X^TX$ must be invertible, which requires the columns of $X$ to be _linearly indepenent_ (i.e., $X$ must have full column rank). The formula for $Var(\hat{\beta})$ is the same as in OLS (OLS is just a special case of MLR). More on this below.
+
+Intuitively, each entry $\hat{\beta}_j$ in $\hat{\beta}$ is the slope of the relationship between $X_j$ and $E(y|X_j)$ holding all other predictors fixed. That is, $\hat{\beta}_j$ measures the **true** effect of $X_j$, or, in other words, it isolates the effect of $X_j$ by measuring it **in the presence of all other factors**.
 
 
 ### The curse of dimensionality
