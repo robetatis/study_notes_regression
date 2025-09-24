@@ -6,7 +6,9 @@
 
 Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$
 
-$\beta= \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}$ and $X$ a column vector
+$\beta= \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}$ 
+
+and $X$ a column vector
 
 Deterministic part is $X\beta$, which is a model for $E[Y|X]$
 
