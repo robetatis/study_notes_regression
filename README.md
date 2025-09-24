@@ -4,9 +4,7 @@
 
 ### Model and intuition
 
-Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$
-
-$\beta= \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}$ 
+Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= (\beta_0, \beta_1)$ 
 
 and $X$ a column vector
 
