@@ -46,22 +46,23 @@ Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical an
 
 ### Model and intuition
 
-Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, but now $\beta$ is a vector of shape ($p$+1, 1), with $p$ = number of regressors (+1 for the intercept), and $X$ is no longer a column vector but a matrix of shape ($n$, $p+1$), i.e, $n$ observations and $p$ factors (again, +1 for the intercept, for which we include a column of ones at the left of $X$).
+Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, but now $\beta$ is a vector of shape ($p$+1, 1), with $p$ = number of regressors (+1 for the intercept), and $X$ is no longer a column vector but a matrix of shape ($n$, $p+1$), i.e, $n$ observations and $p$ factors (again, +1 for the intercept, for which we include a column of ones as the first column of $X$).
 
-Having multiple regressors opens up a host of possibilities, good and bad. Good because the world is multidimensional and including multiple regressors accounts for this; bad becasue regressors could be non-independent, we could be missing the right regressors, and we are forced to select a model, not to mention the problems with wide $X$, i.e., many features, few observations, and 'the curse of dimensionality'. More on all of these below.
+Having multiple regressors opens up a host of possibilities, good and bad. Good because the world is multidimensional and including multiple regressors accounts for this; bad becasue regressors could be non-independent, we could be missing the right regressors, and we are forced to select a model, not to mention the problems with wide $X$s, i.e., many features, few observations, and 'the curse of dimensionality'. More on all of these below.
 
-In order to find $\hat{\beta}$ in $\hat{\beta} = (X^TX)^{-1}X^Ty$, $X^TX$ must be invertible, which requires the columns of $X$ to be _linearly indepenent_ (i.e., $X$ must have full column rank). The formula for $Var(\hat{\beta})$ is the same as in OLS (OLS is just a special case of MLR). More on this below.
+In order to find $\hat{\beta}$ in $\hat{\beta} = (X^TX)^{-1}X^Ty$, **$X^TX$ must be invertible**, which requires the columns of $X$ to be _linearly indepenent_ (i.e., $X$ must have full column rank). The formula for $Var(\hat{\beta})$ is the same as in OLS (OLS is just a special case of MLR). More on this below.
 
-Intuitively, each entry $\hat{\beta}_j$ in $\hat{\beta}$ is the slope of the relationship between $X_j$ and $E(y|X_j)$ holding all other predictors fixed. That is, $\hat{\beta}_j$ measures the **true** effect of $X_j$, or, in other words, it isolates the effect of $X_j$ by measuring it **in the presence of all other factors**.
-
-
-### The curse of dimensionality
-
-
-### Sparsity and collinearity
-
+Intuitively, each entry $\hat{\beta}_j$ in **$\hat{\beta}$** is the slope of the relationship between $X_j$ and $E(y|\mathbf{X})$ holding all other predictors fixed. That is, $\hat{\beta}_j$ measures the **true** effect of $X_j$, or, in other words, it isolates the effect of $X_j$ by measuring it **in the presence of all other factors**.
 
 ### Ommitted variable bias
+
+
+Using a single predictor runs the risk of false attribution. For instance, say a bivariate $y$-$X$ OLS gives a statstically significant $\hat{\beta}=0.3$, and then a MLR with the same $y$, the previous $X$ and two additional factors, gives non-significant $\hat{\beta}_1$ = 0.001 and siginificant $\hat{\beta}_2=0.51$ and $\hat{\beta}_3=0.32$. That would imply that the bivariate OLS was 'burying' the effect of the factors that are actually relevant ($\hat{\beta}_2$ and $\hat{\beta}_3$) in $\hat{\beta}_1$. 
+
+
+Further, if separate bivariate OLS regressions between $y$ and factor 2 and $y$ and factor 3 showed a similar $\hat{\beta}$ as $\hat{\beta}_2$ and $\hat{\beta}_3$ from the MLR, that woud mean those two factors act independently.
+
+Formally:
 
 What happens if the true model is $y = \beta_0 + \beta_1x_1 + \beta_2x_2 + \epsilon$, but we regress $y = \alpha_0 + \alpha_1x_1 + u$? To find out, we can look at how the estimated parameter $\hat{\alpha}_1$ is related to $ \beta_1$, i.e., how the true $\beta_1$ is contained in the estimated $\hat{\alpha_1}$. In OLS, 
 
@@ -87,14 +88,12 @@ That means the ommitted variable $x_2$ biases the estimated $\hat{\alpha}$ by th
 
 Intuitively this means ommitting a variable that is related to $y$ ($\beta_2 \neq 0$) and to $x_1$ ($Cov(x_1, x_2) \neq 0$) results in a biased regression coefficient, which may be smaller or larger than the true effect of $x_1$, i.e., $\beta_1$.
 
-exampl
-           ols     mlr
-tv        0.0475  0.046  
-radio     0.203   0.189  
-newspaper 0.055   -0.001
 
-similar ols and mlr coefficients for tv and radio -> tv and radio are independent.
-newspaper drops to non-significance -> wasn't independent, was confounded with either tv or radio
+### The curse of dimensionality
+
+
+### Sparsity and collinearity
+
 
 
 
