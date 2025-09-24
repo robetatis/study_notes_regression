@@ -46,19 +46,19 @@ Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical an
 
 ### Model and intuition
 
-Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, but now $\beta$ is a vector of shape ($p$+1, 1), with $p$ = number of regressors (+1 for the intercept), and $X$ is no longer a column vector but a matrix of shape ($n$, $p+1$), i.e, $n$ observations and $p$ factors (again, +1 for the intercept, for which we include a column of ones as the first column of $X$).
+Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, but now $\beta$ is a vector of shape ($p$+1, 1), with $p$ = number of regressors (+1 for the intercept), and $X$ is no longer a column vector but a matrix of shape ($n$, $p+1$), i.e, $n$ observations and $p$ factors (again, +1 for the intercept, for which we add a column of ones as the first column of $X$).
 
 Having multiple regressors opens up a host of possibilities, good and bad. Good because the world is multidimensional and including multiple regressors accounts for this; bad becasue regressors could be non-independent, we could be missing the right regressors, and we are forced to select a model, not to mention the problems with wide $X$s, i.e., many features, few observations, and 'the curse of dimensionality'. More on all of these below.
 
 In order to find $\hat{\beta}$ in $\hat{\beta} = (X^TX)^{-1}X^Ty$, **$X^TX$ must be invertible**, which requires the columns of $X$ to be _linearly indepenent_ (i.e., $X$ must have full column rank). The formula for $Var(\hat{\beta})$ is the same as in OLS (OLS is just a special case of MLR). More on this below.
 
-Intuitively, each entry $\hat{\beta}_j$ in **$\hat{\beta}$** is the slope of the relationship between $X_j$ and $E(y|\mathbf{X})$ holding all other predictors fixed. That is, $\hat{\beta}_j$ measures the **true** effect of $X_j$, or, in other words, it isolates the effect of $X_j$ by measuring it **in the presence of all other factors**.
+Intuitively, each entry $\hat{\beta}_j$ in **$\hat{\beta}$** is the slope of the relationship between $X_j$ and $E(y|X)$ holding all other predictors fixed. That is, $\hat{\beta}_j$ measures the **true** effect of $X_j$, or, in other words, it isolates the effect of $X_j$ by measuring it **in the presence of all other factors**. Indeed, the entries in the vector $\hat{\beta}$ are 
 
-The entries in the vector $\hat{\beta}$ are $\hat{\beta}_j = Cov(r_j, y)/Var(r_j)$, where $r_j$ are the residuals of regressing $X_j$ against all other regressors $X_{-j}$. This is the **partial covariance formula**
+$\hat{\beta}_j = Cov(r_j, y)/Var(r_j)$, 
 
-The intuition here is: with multiple regressors, we can't just look at $Cov(X_j, y)$, which is how much $X_j$ varies together with $y$. The reason is that the other regressors could also influence $X_j$. That means we need to look at the covariance of $y$ with **the part of $X_j$ that is not explained by the other regressors** - this is what 'the effect of $X_j$ holding all other regressors fixed' actually means. The part of $X_j$ not explained by the other regressors is captured by the residuals of regressing $X_j$ on all other regressors. That $r_j$ can be understood as an 'isolated' variability of $X_j$, or as $X_j$ cleaned of any influence from other regressors. The covariance of that 'cleaned' $X_j$ with $y$ then gives the true, isolated effect of $X_j$ on $y$ in the presence of all other regressors.
+where $r_j$ are the residuals of regressing $X_j$ against all other regressors $X_{-j}$. This is the **partial covariance formula**.
 
-
+The intuition here is: with multiple regressors, we can't just look at $Cov(X_j, y)$, which is how much $X_j$ varies together with $y$. The reason is that the other regressors could also influence $X_j$. That means we need to look at the covariance of $y$ with **the part of $X_j$ that is not explained by the other regressors** - this is what 'the effect of $X_j$ holding all other regressors fixed' actually means. The part of $X_j$ not explained by the other regressors is captured by the residuals of regressing $X_j$ on all other regressors. $r_j$ can be understood as an 'isolated' variability of $X_j$, or as $X_j$ after removing the influence of all other regressors. The covariance of that 'cleaned' $X_j$ with $y$ then gives the true, isolated effect of $X_j$ on $y$ in the presence of all other regressors.
 
 ### Ommitted variable bias
 
