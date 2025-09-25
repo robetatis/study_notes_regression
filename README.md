@@ -64,15 +64,28 @@ The part of $X_j$ not explained by the other regressors is captured by the resid
 
 ### Ommitted variable bias
 
-When we omit relevant regressors we are 'burying' the effect of the factors that are actually relevant in the $\hat{\beta}_j$ of the factors we do include. This happens when the ommitted regressors meet two conditions: 1) the ommited regressors correlate with $y$ **and** 2) the ommited regressors correlated with the included regressors. Formally: 
+When we omit relevant regressors we are 'burying' the effect of the factors that are actually relevant in the $\hat{\beta}_j$ of the factors we do include. This happens when the ommitted regressors meet two conditions: 1) the ommited regressors correlate with $y$ **and** 2) the ommited regressors correlate with the included regressors. Formally: 
 
-Suppose the true model is $y = X\beta + \epsilon$. Say $X$ is of shape (n, m), but we only include $k$ regressors, with $k < m$, i.e., we leave $m-k$ regressors out of the model. We can say $X$ is made up of two parts, so we can write it as $X = [X_1 \ X_2]$, with $X_1$ = the included regressors and $X_2$ = the ommited regressors. Each of these is just a matrix, one with the included columns ($X_1$) and another with the ommited ($X$) columns of $X$.
+Suppose the true model is $y = X\beta + \epsilon$. Say $X$ is of shape (n, m), but we only include $k$ regressors ($k < m$), i.e., we leave $m-k$ regressors out of the model. We can say $X$ is made up of two parts (included and ommited columns), so we can write it as $X = [X_1 \ X_2]$, with $X_1$ = the included regressors and $X_2$ = the ommited regressors. Each of these is just a matrix, one with the included columns ($X_1$) and another with the ommited ($X$) columns of $X$.
 
 With this split, we can write the true model as $y = X_1\beta_1 + X_2\beta_2 + \epsilon$, where we've also split $\beta$ into an included part $\beta_1$ and an ommited part $\beta_2$. This implies $X\beta = X_1\beta_1 + X_2\beta_2$.
 
-Then our incomplete model is $y = X_1\alpha + \delta$, and $\hat{y} = \hat{\alpha}X_1$, so $\hat[\alpha]$ is the regression coefficient we estimate when we only include the subset of regressors $X_1$ 
+Then our incomplete model is $y = X_1\alpha + \delta$, and $\hat{y} = \hat{\alpha}X_1$, so $\hat{\alpha}$ is the regression coefficient we estimate when we only include the subset of regressors $X_1$. Now, by definition
+
+$\hat{\alpha} = (X_1^TX_1)^{-1}X_1^Ty$. If we substitute in the true model for $y$, we can see how the missing $X_2$ influences $\hat{\alpha}$:
+
+$\hat{\alpha} = (X_1^TX_1)^{-1}X_1^T(X_1\beta_1 + X_2\beta_2 + \epsilon)$. If we expand this
+
+$\hat{\alpha} = \beta_1[(X_1^TX_1)^{-1}X_1^TX_1] + (X_1^TX_1)^{-1}X_1^TX_2\beta_2 + (X_1^TX_1)^{-1}X_1^T\epsilon$ (the 1st term in square brackets is $I$, the identity matrix). This simplifies to:
+
+$\hat{\alpha} = \beta_1 + (X_1^TX_1)^{-1}X_1^TX_2\beta_2 + (X_1^TX_1)^{-1}X_1^T\epsilon$
+
+If we take the expected value given $X_1$, $X_2$  on both sides:
+
+$E(\hat{\alpha} | X_1, X_2) = \beta_1 + E[(X_1^TX_1)^{-1}X_1^TX_2\beta_2 | X_1, X_2] + E[(X_1^TX_1)^{-1}X_1^T\epsilon | X_1, X_2]$
 
 
+intuition: missing a relevant variable in regression can inflate the estimated $\hat{\beta}$ if the missing variable is positively associated with the included beta 
 
 ### The curse of dimensionality
 
