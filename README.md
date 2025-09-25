@@ -60,40 +60,18 @@ This is the **partial covariance formula**, and $r_j$ are the residuals of regre
 
 The intuition behind partial covariance is: with multiple regressors, we can't directly use $X_j^Ty/(X_j^TX_j)$ to capture how much $X_j$ varies together with $y$. The reason is that the other regressors ($X_-j$) could also influence $X_j$. That means **what we need to look at is the covariance of $y$ with the part of $X_j$ that is not explained by the other regressors** - this is what 'the effect of $X_j$ holding all other regressors fixed' actually means. 
 
-The part of $X_j$ not explained by the other regressors is captured by the residuals of regressing $X_j$ on all other regressors. $r_j$ can be understood as the 'isolated' variability of $X_j$, or as 'what remains of' $X_j$ after removing the influence of all other regressors. The covariance of that 'cleaned' $X_j$ with $y$ then gives the true, isolated effect of $X_j$ on $y$ in the presence of all other regressors. In terms of vectors and spaces, $r_j$ is always orthogonal to $X_{-j}$. Remember that a regression simply finds the projection of $y$ onto the column space of $X$, and the vector of residuals is the orthogonal distance between $y$ and that projection.
+The part of $X_j$ not explained by the other regressors is captured by the residuals of regressing $X_j$ on all other regressors. $r_j$ can be understood as the 'isolated' variability of $X_j$, or as 'what remains' of $X_j$ after removing the influence of all other regressors. The covariance of that 'cleaned' $X_j$ with $y$ then gives the true, isolated effect of $X_j$ on $y$ in the presence of all other regressors. In terms of vectors and spaces, $r_j$ is always orthogonal to $X_{-j}$. Remember that a regression simply finds the projection of $y$ onto the column space of $X$, and the vector of residuals is the orthogonal distance between $y$ and that projection.
 
 ### Ommitted variable bias
 
-Omitting relevant regressors runs the risk of false attribution. For instance, say a bivariate $y$-$X$ OLS gives a statstically significant $\hat{\beta}=0.3$, and then a MLR with the same $y$, the previous $X$ and two additional factors, gives non-significant $\hat{\beta}_1$ = 0.001 and siginificant $\hat{\beta}_2=0.51$ and $\hat{\beta}_3=0.32$. That would imply 1) that the bivariate OLS was 'burying' the effect of the factors that are actually relevant ($\hat{\beta}_2$ and $\hat{\beta}_3$) in $\hat{\beta}_1$, and 2) That the missing factors (2 and 3) are somehow related to the one we included in the OLS; the reason being that they exerted their influence on $y$ indirectly by affecting factor 1. These *interrelations amongst regressors are one of the main complexities of MLR*, and are formally referred to as **ommited variable bias**, i.e., what happens when we do not include relevant factors in our regression which affect $y$ and the factors we do include? In that case, those relevant factors act indirectly and lead to bias in the estimated $\hat{\beta}$.
+When we omit relevant regressors we are 'burying' the effect of the factors that are actually relevant in the $\hat{\beta}_j$ of the factors we do include. This happens when the ommitted regressors meet two conditions: 1) the ommited regressors correlate with $y$ **and** 2) the ommited regressors correlated with the included regressors. Formally: 
 
-This can be summarized as follows:
+Suppose the true model is $y = X\beta + \epsilon$. Say $X$ is of shape (n, m), but we only include $k$ regressors, with $k < m$, i.e., we leave $m-k$ regressors out of the model. We can say $X$ is made up of two parts, so we can write it as $X = [X_1 \ X_2]$, with $X_1$ = the included regressors and $X_2$ = the ommited regressors. Each of these is just a matrix, one with the included columns ($X_1$) and another with the ommited ($X$) columns of $X$.
 
-**************This needs to be changed to the version for multiple regressors. currently is for a single regressor*****************
+With this split, we can write the true model as $y = X_1\beta_1 + X_2\beta_2 + \epsilon$, where we've also split $\beta$ into an included part $\beta_1$ and an ommited part $\beta_2$. This implies $X\beta = X_1\beta_1 + X_2\beta_2$.
 
+Then our incomplete model is $y = X_1\alpha + \delta$, and $\hat{y} = \hat{\alpha}X_1$, so $\hat[\alpha]$ is the regression coefficient we estimate when we only include the subset of regressors $X_1$ 
 
-What happens if the true model is $y = \beta_0 + \beta_1x_1 + \beta_2x_2 + \epsilon$, but we regress $y = \alpha_0 + \alpha_1x_1 + u$? To find out, we can look at how the estimated parameter $\hat{\alpha}_1$ is related to $ \beta_1$, i.e., how the true $\beta_1$ is contained in the estimated $\hat{\alpha_1}$. In OLS, 
-
-$\hat{\alpha_1} = Cov(x_1, y)/Var(x_1)$ 
-
-Since the true $y$ is $y = \beta_0 + \beta_1x_1 + \beta_2x_2 + \epsilon$, then
-
-$\hat{\alpha_1} = Cov(x_1, \beta_0 + \beta_1x_1 + \beta_2x_2 + \epsilon)/Var(x_1)$. 
-
-Since covariance is linear, we get 
-
-$\hat{\alpha_1} = (\beta_1Cov(x_1, x_1) + \beta_2Cov(x_1,x_2) + Cov(x_1, \epsilon))/Var(x_1)$. 
-
-Since $Cov(x_1, x_1) = Var(x_1)$ and $Cov(x_1, \epsilon) = 0$ (OLS assumption!), we get 
-
-$\hat{\alpha_1} = \beta_1Var(x_1) + \beta_2\frac{Cov(x_1,x_2)}{Var(x_1)}$
-
-Simplifying,
-
-$\hat{\alpha_1} = \beta_1 + \beta_2\frac{Cov(x_1, x_2)}{Var(x_1)}$. 
-
-That means the ommitted variable $x_2$ biases the estimated $\hat{\alpha}$ by the amount $\beta_2Cov(x_1, x_2)/Var(x_1)$. This same logic extends to more regressors.
-
-Intuitively this means ommitting a variable that is related to $y$ ($\beta_2 \neq 0$) and to $x_1$ ($Cov(x_1, x_2) \neq 0$) results in a biased regression coefficient, which may be smaller or larger than the true effect of $x_1$, i.e., $\beta_1$.
 
 
 ### The curse of dimensionality
