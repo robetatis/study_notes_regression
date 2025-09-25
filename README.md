@@ -84,7 +84,11 @@ If we take the expected value given $X_1$, $X_2$  on both sides:
 
 $E(\hat{\alpha} | X_1, X_2) = \beta_1 + E[(X_1^TX_1)^{-1}X_1^TX_2\beta_2 | X_1, X_2] + E[(X_1^TX_1)^{-1}X_1^T\epsilon | X_1, X_2]$. Since $E(\epsilon | X_1, X_2)=0$,
 
-$E(\hat{\alpha} | X_1, X_2) = \beta_1 + \beta_2(X_1^TX_1)^{-1}X_1^TX_2$
+$E(\hat{\alpha} | X_1, X_2) = \beta_1 + (X_1^TX_1)^{-1}X_1^TX_2\beta_2$
+
+This result indicates that the expected value of $\hat{\alpha}$ is $\beta_1$ plus a **bias** (remember that bias = how much the expected value of our estimate deviates from the true value) that depends on 1) $\beta_2$ -> the true effect of the ommited variable on $y$ and 2) $(X_1^TX_1)^{-1}X_1^TX_2$ -> this term has two parts: $X_1^TX_2$ measures how strongly the included ($X_1$) and ommited ($X_2$) regressors covary, and $(X_1^TX_1)^{-1}$ acts as a 'distributor' of the previous quantity. Namely, this factor 'allocates' bias to the entries of $\hat{\alpha}$ based on how redundant the columns of $X_1$ are. Columns of $X_1$ that can be predicted from the others (collinear regressors) get more bias (due to the way entries in $(X_1^TX_1)^{-1}$ capture $Var(x_j)$ vs. $Cov(x_j, x_{-j})$).
+
+In summary, if we omit variables that are possitively associated with $y$ and with $X_1$ (the included regressors) we will have inflated coefficients for the regressors we do include, since they represent the true value $\beta_j$ plus the bias $(X_1^TX_1)^{-1}X_1^TX_2\beta_2$. If we ommited variables are negatively associated with $y$ and with the included regressors, our coefficient estimates will be smaller because the true effect will be dampened by the bias
 
 
 intuition: missing a relevant variable in regression can inflate the estimated $\hat{\beta}$ if the missing variable is positively associated with the included beta 
