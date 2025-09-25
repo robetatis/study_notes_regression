@@ -82,7 +82,9 @@ $\hat{\alpha} = \beta_1 + (X_1^TX_1)^{-1}X_1^TX_2\beta_2 + (X_1^TX_1)^{-1}X_1^T\
 
 If we take the expected value given $X_1$, $X_2$  on both sides:
 
-$E(\hat{\alpha} | X_1, X_2) = \beta_1 + E[(X_1^TX_1)^{-1}X_1^TX_2\beta_2 | X_1, X_2] + E[(X_1^TX_1)^{-1}X_1^T\epsilon | X_1, X_2]$
+$E(\hat{\alpha} | X_1, X_2) = \beta_1 + E[(X_1^TX_1)^{-1}X_1^TX_2\beta_2 | X_1, X_2] + E[(X_1^TX_1)^{-1}X_1^T\epsilon | X_1, X_2]$. Since $E(\epsilon | X_1, X_2)=0$,
+
+$E(\hat{\alpha} | X_1, X_2) = \beta_1 + \beta_2(X_1^TX_1)^{-1}X_1^TX_2 | X_1, X_2
 
 
 intuition: missing a relevant variable in regression can inflate the estimated $\hat{\beta}$ if the missing variable is positively associated with the included beta 
