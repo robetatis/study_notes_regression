@@ -13,6 +13,21 @@ from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import omni_normtest, jarque_bera
 from statsmodels.stats.outliers_influence import OLSInfluence
 
+n_pop = 1000
+beta_0 = 4
+sigma_epsilon = 100
+epsilon = np.random.normal(0, sigma_epsilon)
+x = np.random.normal(loc=10, scale=10, size=n_pop)
+one = np.ones((n_pop, ))
+y = beta_0 + epsilon
+
+print(x)
+print(y)
+exit()
+
+
+
+
 class MLR:
 
     def __init__(self, pop_size, sample_size, sigma_epsilon, beta):
