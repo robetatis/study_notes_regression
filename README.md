@@ -15,8 +15,8 @@ and the variance of its sampling distribution $Var(\hat{\beta})$ is related to 1
 $Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
 Two notes on this equation: 
-1. $\sigma^2$ is not observable, so we have to use the sample estimate $\hat{sigma}^2 = \text{RSS}/(n -p)$, with $p$ = no. regressors (1 in OLS) and $\text{RSS} = e^Te$, where $e$ = sample residuals.
-2. The entries in $X^TX$ are just the dot-products $x_j^Tx_j$ for the diagonal elements and $x_j^Tx_{-j}$ for the off-diagonal elements. The former are related to the variance of regressor $x_j$ and the latter to the pairwise covariance between $x_j$ and all other regressors $x_{-j}$.
+1. $\sigma^2$ is not observable, so we have to use the sample estimate $\text{RSE} = \hat{\sigma}^2 = \text{RSS}/(n -p)$, with $p$ = no. regressors (1 in OLS) and $\text{RSS} = e^Te$, where $e$ = sample residuals (see below).
+2. The entries in $X^TX$ are just the dot-products $x_j^Tx_j$ for the diagonal elements and $x_j^Tx_{-j}$ for the off-diagonal elements. The former are related to the variance of regressor $x_j$ and the latter to the pairwise covariance between $x_j$ and each of the other regressors $x_{-j}$.
 
 In general, larger samples with more spread $X$ have smaller variability; the mechanism is simply that larger samples encompass a larger part of the population and hence have better chances of representing it well. In turn, more spread in $X$ implies more chances to capture the way $y$ varies over $X$. Conversely, a narrow interval of $X$ doesn't allow that and therefore leads to more variable (i.e., more uncertain) estimates of $\hat{\beta}$.
 
