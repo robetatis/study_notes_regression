@@ -13,13 +13,6 @@ from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import omni_normtest, jarque_bera
 from statsmodels.stats.outliers_influence import OLSInfluence
 
-from sklearn.datasets import load_diabetes
-
-d = load_diabetes()
-print(d)
-exit()
-
-
 class MLR:
 
     def __init__(self, pop_size, sample_size, sigma_epsilon, beta):
