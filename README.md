@@ -10,7 +10,7 @@ The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That
 
 $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
-and its variance $Var(\hat{\beta})$ is related to the variance of the residuals $\sigma^2 = Var(\epsion)$ and $X^TX$ (so-called Gram matrix), which captures the degree to which the regressors line up in $n$-dimensional space ($n$ = no. observations). The formula is:
+and its variance $Var(\hat{\beta})$ is related to the variance of the residuals $\sigma^2 = Var(\epsilon)$ and $X^TX$ (so-called Gram matrix), which captures the degree to which the regressors line up in $n$-dimensional space ($n$ = no. observations). The formula is:
 
 $Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
