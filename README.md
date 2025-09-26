@@ -12,7 +12,7 @@ $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
 and its variability comes from the variance-covariance matrix of the sampling distribution of $\hat{\beta}$:
 
-$Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
+$Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$, with $\sigma^2 = Var(\epsion)$, i.e., the variance of the (true) residuals.
 
 In general, larger samples with more spread $X$ have smaller variability; the mechanism is simply that larger samples encompass a larger part of the population and hence have better chances of representing it well. In turn, more spread in $X$ implies more chances to capture the way $y$ varies over $X$. Conversely, a narrow interval of $X$ doesn't allow that and therefore leads to more variable (i.e., more uncertain) estimates of $\hat{\beta}$.
 
