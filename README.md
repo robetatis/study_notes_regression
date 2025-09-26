@@ -15,7 +15,7 @@ and the variance of its sampling distribution $Var(\hat{\beta})$ is related to 1
 $Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
 Two notes on this equation: 
-1. $\sigma^2$ is not observable, so we have to use the sample estimate $\text{RSE} = \hat{\sigma}^2 = \text{RSS}/(n -p)$, with $p$ = no. regressors (1 in OLS) and $\text{RSS} = e^Te$, where $e$ = sample residuals (see below).
+1. $\sigma^2$ is not observable, so we have to use the sample estimate $\text{RSE} = \hat{\sigma}^2 = \text{RSS}/(n -p)$, with $p$ = no. regressors (1 in OLS) and $\text{RSS} = e^Te$, where $e$ = sample residuals (see below). RSE = Residual Standard Error and RSS = Residual Sum of Squares. 
 2. The entries in $X^TX$ are just the dot-products $x_j^Tx_j$ for the diagonal elements and $x_j^Tx_{-j}$ for the off-diagonal elements. The former are related to the variance of regressor $x_j$ and the latter to the pairwise covariance between $x_j$ and each of the other regressors $x_{-j}$.
 
 In general, larger samples with more spread $X$ have smaller variability; the mechanism is simply that larger samples encompass a larger part of the population and hence have better chances of representing it well. In turn, more spread in $X$ implies more chances to capture the way $y$ varies over $X$. Conversely, a narrow interval of $X$ doesn't allow that and therefore leads to more variable (i.e., more uncertain) estimates of $\hat{\beta}$.
@@ -28,7 +28,7 @@ Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = XE(\epsilon) 
 
 After finding $\hat{\beta}$ we can compute $\hat{y}$, which is an estimate of $E(y\mid X)$. We can then also compute sample residuals $e_i = y_i - \hat{y}_i$. With $e_i$ we can compute sample estimates for the distribution of $\epsilon$, which we obviously don't have so we're forced to use $e_i$'s distribution as a proxy. A first measure of interest is $\sigma$, i.e., the variance of $\epsilon$'s distribution.
 
-We estimate this quantity with the **residual standard error** $RSE = \sqrt{RSS/(n-2)}$, where the **residual sum of squares** $RSS = \sum_{i=1}^n (y_i - \hat{y}_i)^2$ and $n-2$ are the degrees of freedom when computing $RSE$ (we lose two degrees of freedom becasue we need to estimate two parameters - $\hat{\beta}_0$ and $\hat{\beta}_1$ to calculate $RSE$).
+We estimate this quantity with the **residual standard error** $RSE = \sqrt{RSS/(n-2)}$, where the **residual sum of squares** $RSS = \sum_{i=1}^n (y_i - \hat{y}_i)^2$ and $n-2$ are the degrees of freedom when computing $RSE$ in OLS. We lose 2 degrees of freedom becasue we need to estimate two parameters - $\hat{\beta}_0$ and $\hat{\beta}_1$ to calculate $RSE$; in MLR (see below) we lose $p + 1$ degrees of freedom ($p = no. regressors + 1 for the intercept).
 
 These sums of squares can be used to compute the % of explained variance in the regression, the $R^2$ statistic. $R^2 = 1 - RSS/TSS$, where the **total sum of squares** $TSS = \sum_{i=1}^n (y_i - \bar{y})$. This statistic measures the **linear** association between $X$ and $y$. In bivariate regression, the $R^2$ statistic is equal to the square of the _correlation coefficient_ $r^2$, which is equal to $Cov(X,y)/(\sqrt{Var(X)Var(y)})$. This is **not** true for multivariate settings.
 
@@ -95,6 +95,10 @@ This result indicates that the expected value of $\hat{\alpha}$ is $\beta_1$ plu
 $(X_1^TX_1)^{-1}X_1^TX_2$ -> this term has two parts: $X_1^TX_2$ measures how strongly the included ($X_1$) and omitted ($X_2$) regressors covary, and $(X_1^TX_1)^{-1}$ acts as a 'distributor' of the previous quantity. Namely, this factor 'allocates' bias to the entries of $\hat{\alpha}$ based on how redundant the columns of $X_1$ are. Columns of $X_1$ that can be predicted from the others (collinear regressors) get more bias (due to the way entries in $(X_1^TX_1)^{-1}$ capture $Var(x_1,j)$ vs. $Cov(x_1,j, x_{1,-j})$ -> the variance and covariance of the included regressors).
 
 In summary, if we omit variables that are possitively associated with $y$ and with $X_1$ (the included regressors) we will have inflated coefficients for the regressors we do include, since they represent the true value $\beta_1$ plus the bias $(X_1^TX_1)^{-1}X_1^TX_2\beta_2$. If the omitted variables are negatively associated with $y$ and with the included regressors, coefficient estimates will be smaller because the true effect will be dampened by the bias. In cases where the omitted variables have a positive (negative) relation with $y$ and a negative (positive) relation with $X_1$, the net effect depends on whether $\beta_2$ or $X_1^TX_2$ is larger.
+
+### Hypothesis test
+
+In MLR, we test $H_0: \beta_j = 0$ vs. $H_A:$ at least one $\beta_j \neq 0$
 
 ### The curse of dimensionality
 
