@@ -98,7 +98,11 @@ In summary, if we omit variables that are possitively associated with $y$ and wi
 
 ### Hypothesis test
 
-In MLR, we test $H_0: \beta_j = 0$ vs. $H_A:$ at least one $\beta_j \neq 0$
+In MLR, we test $H_0: \beta_j = 0$ vs. $H_A:$ at least one $\beta_j \neq 0$, and the test statistic is 
+
+$F = \frac{(TSS - RSS)/p}{RSS/(n-p-1)}$.
+
+What $F$ does is set the model effects ($TSS - RSS$) in relation to the residuals. If there IS a relationship between X and Y, RSS will be smaller and TSS - RSS  will be larger, making F > 1
 
 ### The curse of dimensionality
 

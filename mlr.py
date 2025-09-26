@@ -13,6 +13,13 @@ from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import omni_normtest, jarque_bera
 from statsmodels.stats.outliers_influence import OLSInfluence
 
+from sklearn.datasets import load_diabetes
+
+d = load_diabetes()
+print(d)
+exit()
+
+
 class MLR:
 
     def __init__(self, pop_size, sample_size, sigma_epsilon, beta):
@@ -120,11 +127,3 @@ if __name__ == '__main__':
     mlr.run()
 
 
-
-#            ols     mlr
-# tv        0.0475  0.046  
-# radio     0.203   0.189  
-# newspaper 0.055   -0.001
-
-# similar ols and mlr coefficients for tv and radio -> tv and radio are independent.
-# newspaper drops to non-significance -> wasn't independent, was confounded with either tv or radio
