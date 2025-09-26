@@ -10,9 +10,13 @@ The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That
 
 $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
-and its variability comes from the variance-covariance matrix of the sampling distribution of $\hat{\beta}$:
+and its variance $Var(\hat{\beta})$ is related to the variance of the residuals $\sigma^2 = Var(\epsion)$ and $X^TX$ (so-called Gram matrix), which captures the degree to which the regressors line up in $n$-dimensional space ($n$ = no. observations). The formula is:
 
-$Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$, with $\sigma^2 = Var(\epsion)$, i.e., the variance of the (true) residuals.
+$Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
+
+Two notes on this equation: 
+1. $\sigma^2$ is not observable, so we have to use the sample estimate $\hat{sigma}^2 = \text{RSS}/(n -p)$, with $p$ = no. regressors (1 in OLS) and $\text{RSS} = e^Te$, where $e$ = sample residuals.
+2. The entries in $X^TX$ are just the dot-products $x_j^Tx_j$ for the diagonal elements and $x_j^Tx_{-j}$ for the off-diagonal elements. The former are related to the variance of regressor $x_j$ and the latter to the pairwise covariance between $x_j$ and all other regressors $x_{-j}$.
 
 In general, larger samples with more spread $X$ have smaller variability; the mechanism is simply that larger samples encompass a larger part of the population and hence have better chances of representing it well. In turn, more spread in $X$ implies more chances to capture the way $y$ varies over $X$. Conversely, a narrow interval of $X$ doesn't allow that and therefore leads to more variable (i.e., more uncertain) estimates of $\hat{\beta}$.
 
