@@ -6,11 +6,11 @@
 
 Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a column vector. The deterministic part is $X\beta$, which is a model for $E[Y|X]$. $\epsilon$ is the random deviation of each $y_i$ from $E[Y|X]$, and is what makes $y$ a random variable.
 
-The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us an estimate of $E[Y|X]$ and a way to compute confidence intervals. $\hat{\beta}$ is computed as:
+The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us an estimate of $E[Y|X]$ and a way to compute confidence intervals. $\hat{\beta}$ is computed as (expected value):
 
 $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
-and its variance $Var(\hat{\beta})$ is related to the variance of the residuals $\sigma^2 = Var(\epsilon)$ and $X^TX$ (so-called Gram matrix), which captures the degree to which the regressors line up in $n$-dimensional space ($n$ = no. observations). The formula is:
+and the variance of its sampling distribution $Var(\hat{\beta})$ is related to 1) the variance of the residuals $\sigma^2 = Var(\epsilon)$ and 2) $X^TX$ (so-called Gram matrix), which captures the degree to which the regressors line up in $n$-dimensional space ($n$ = no. observations). The formula is:
 
 $Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
