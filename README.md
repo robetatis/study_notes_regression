@@ -110,7 +110,7 @@ Remove one regressor and compare the residual sum of squares of that model $\tex
 
 $F = \frac{(\text{RSS}_0 - \text{RSS})/q}{\text{RSS}/(n-p-1)}$ 
 
-
+the t-value**2 of each individual regressor in an MLR is equal to the F value of a regression that omits that variable. Again, the logic here is: if we remove regressor $x_j$ and fit the model, and then compare the resduals to the full models, there should be a increase in $\text{RSS}$ if $x_j$ was important. 
 
 ### Collinearity
 
