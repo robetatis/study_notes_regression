@@ -62,7 +62,7 @@ $\hat{\beta}_j = \frac{r_j^Ty}{r_j^Tr_j}$
 
 This is the **partial covariance formula**, and $r_j$ are the residuals of regressing $X_j$ against all other regressors $X_{-j}$. $r_j^Ty$ measures how much variation in $r_j$ lines up with variation in $y$, and dividing by $r_j^Tr_j$ sets that quantity in relation to the total variation in $r_j$.
 
-The intuition behind partial covariance is: with multiple regressors, we can't directly use $X_j^Ty/(X_j^TX_j)$ to capture how much $X_j$ varies together with $y$. The reason is that the other regressors ($X_-j$) could also influence $X_j$. That means **what we need to look at is the covariance of $y$ with the part of $X_j$ that is not explained by the other regressors** - this is what 'the effect of $X_j$ holding all other regressors fixed' actually means. 
+The intuition behind partial covariance is: with multiple regressors, we can't directly use $X_j^Ty/(X_j^TX_j)$ to capture how much $X_j$ varies together with $y$. The reason is that the other regressors ($X_{-j}$) could also influence $X_j$. That means **what we need to look at is the covariance of $y$ with the part of $X_j$ that is not explained by the other regressors** - this is what 'the effect of $X_j$ holding all other regressors fixed' actually means. 
 
 The part of $X_j$ not explained by the other regressors is captured by the residuals of regressing $X_j$ on all other regressors. $r_j$ can be understood as the 'isolated' variability of $X_j$, or as 'what remains' of $X_j$ after removing the influence of all other regressors. The covariance of that 'cleaned' $X_j$ with $y$ then gives the true, isolated effect of $X_j$ on $y$ in the presence of all other regressors. In terms of vectors and spaces, $r_j$ is always orthogonal to $X_{-j}$. Remember that a regression simply finds the projection of $y$ onto the column space of $X$, and the vector of residuals is the orthogonal distance between $y$ and that projection.
 
@@ -70,15 +70,15 @@ The part of $X_j$ not explained by the other regressors is captured by the resid
 
 When we omit relevant regressors we are 'burying' the effect of the factors that are actually relevant in the $\hat{\beta}_j$ of the factors we do include. This happens when the omitted regressors meet two conditions: 1) the omitted regressors correlate with $y$ **and** 2) the omitted regressors correlate with the included regressors. Formally: 
 
-Suppose the true model is $y = X\beta + \epsilon$. Say $X$ is of shape (n, m), but we only include $k$ regressors ($k < m$), i.e., we leave $m-k$ regressors out of the model. We can say $X$ is made up of two parts (included and omitted columns), so we can write it as $X = [X_1 \ X_2]$, with $X_1$ = the included regressors and $X_2$ = the omitted regressors. Each of these is just a matrix, one with the included columns ($X_1$) and another with the omitted ($X_2$) columns of $X$.
+Suppose the true model is $y = X\beta + \epsilon$. Say $X$ is of shape (n, m), but we only include $k$ regressors ($k < m$), i.e., we leave $m-k$ regressors out of the model. We can say $X$ is made up of two parts (included and omitted columns), so we can write it as $X = [X_1 \ X_2]$, with $X_1$ = the included regressors and $X_2$ = the omitted regressors. Each of these is just a matrix, one with the included ($X_1$) and another with the omitted ($X_2$) columns of $X$.
 
 With this split, we can write the true model as $y = X_1\beta_1 + X_2\beta_2 + \epsilon$, where we've also split $\beta$ into an included part $\beta_1$ and an omitted part $\beta_2$. This implies $X\beta = X_1\beta_1 + X_2\beta_2$.
 
-Then our incomplete model is $y = X_1\alpha + \delta$, and $\hat{y} = \hat{\alpha}X_1$, so $\hat{\alpha}$ is the regression coefficient we estimate when we only include the subset of regressors $X_1$. Now, by definition
+Then our incomplete model is $y = X_1\alpha + \delta$, and $\hat{y} = \hat{\alpha}X_1$, so $\hat{\alpha}$ is the regression coefficient we estimate when we only include the subset of regressors $X_1$ ($\delta$ is the residual of this incomplete model). Now, by definition
 
 $\hat{\alpha} = (X_1^TX_1)^{-1}X_1^Ty$. If we substitute in the true model for $y$, we can see how the missing $X_2$ influences $\hat{\alpha}$:
 
-$\hat{\alpha} = (X_1^TX_1)^{-1}X_1^T(X_1\beta_1 + X_2\beta_2 + \epsilon)$. If we expand this
+$\hat{\alpha} = (X_1^TX_1)^{-1}X_1^T(X_1\beta_1 + X_2\beta_2 + \epsilon)$. If we expand this:
 
 $\hat{\alpha} = \beta_1[(X_1^TX_1)^{-1}X_1^TX_1] + (X_1^TX_1)^{-1}X_1^TX_2\beta_2 + (X_1^TX_1)^{-1}X_1^T\epsilon$ (the 1st term in square brackets is $I$, the identity matrix). This simplifies to:
 
@@ -102,21 +102,23 @@ In MLR, we test $H_0: \beta_j = 0$ vs. $H_A:$ at least one $\beta_j \neq 0$, and
 
 $F = \frac{(\text{TSS} - \text{RSS})/p}{\text{RSS}/(n-p-1)}$.
 
-What $F$ does is set the model effects ($TSS - RSS$) in relation to the residuals. If there _is_ a relationship between $X$ and $y$, $\text{RSS}$ will be smaller and $\text{TSS} - \text{RSS}$  will be larger, making $F > 1$. $F follows an F-distribution. No details here.
+What $F$ does is set the model effects ($TSS - RSS$) in relation to the residuals. If there _is_ a relationship between $X$ and $y$, $\text{RSS}$ will be smaller and $\text{TSS} - \text{RSS}$  will be larger, making $F > 1$. $F$ follows an F-distribution. No details are given here.
 
-If H0 is true, the data-generating process is $y = \beta_0\text{1} + \epsilon$
+#### Testing individual or subsets of regressors
 
-RSS, TSS, are sample statistics because they come from a sample. duhh
+Remove one regressor and compare the residual sum of squares of that model $\text{RSS}_0$ with the $\text{RSS}$ of the full model (the one with all regressors). If the omitted regressors are important, $\text{RSS}_0$ will be much larger than $\text{RSS}$, since omitting relevant regressors will lead to larger residuals. Formally, we test this also with an F-test:
 
-
-### The curse of dimensionality
-
-
-### Sparsity and collinearity
-
+$F = \frac{(\text{RSS}_0 - \text{RSS})/q}{\text{RSS}/(n-p-1)}$ 
 
 
 
 ### Collinearity
 
 inflated variance of beta
+
+
+### The curse of dimensionality
+
+
+
+
