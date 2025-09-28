@@ -102,15 +102,19 @@ In MLR, we test $H_0: \beta_j = 0$ vs. $H_A:$ at least one $\beta_j \neq 0$, and
 
 $F = \frac{(\text{TSS} - \text{RSS})/p}{\text{RSS}/(n-p-1)}$.
 
-What $F$ does is set the model effects ($TSS - RSS$) in relation to the residuals. If there _is_ a relationship between $X$ and $y$, $\text{RSS}$ will be smaller and $\text{TSS} - \text{RSS}$  will be larger, making $F > 1$. $F$ follows an F-distribution. No details are given here.
+What $F$ does is set the model effects ($TSS - RSS$) in relation to the residuals. If there _is_ a relationship between $X$ and $y$, $\text{RSS}$ will be smaller than $\text{TSS} - \text{RSS}$, making $F > 1$. $F$ follows an F-distribution, which determines how much larger than 1 $F$ must be to be statistically significant.
 
 #### Testing individual or subsets of regressors
 
-Remove one regressor and compare the residual sum of squares of that model $\text{RSS}_0$ with the $\text{RSS}$ of the full model (the one with all regressors). If the omitted regressors are important, $\text{RSS}_0$ will be much larger than $\text{RSS}$, since omitting relevant regressors will lead to larger residuals. Formally, we test this also with an F-test:
+When deciding whether a subset $q$ of regressors is relevant, we can remove those $q$ regressors from the model, fit it, and compare the residual sum of squares of that reduced model $\text{RSS}_0$ with the $\text{RSS}$ of the full model (the one with all regressors). If the omitted regressors are important, $\text{RSS}_0$ will be much larger than $\text{RSS}$, since omitting relevant regressors will lead to larger residuals. Formally, what we're doing is testing the hypothesis $H_0: \beta_{p-q+1} = \beta_{p-1+2} ... \beta{p} = 0$, where $\beta_{p-q+1} = \beta_{p-1+2} ... \beta{p}$ are the omitted regressors. The comparison is done via an F-test:
 
-$F = \frac{(\text{RSS}_0 - \text{RSS})/q}{\text{RSS}/(n-p-1)}$ 
+$F = \frac{(\text{RSS}_0 - \text{RSS})/q}{\text{RSS}/(n-p-1)}$,
 
-the t-value**2 of each individual regressor in an MLR is equal to the F value of a regression that omits that variable. Again, the logic here is: if we remove regressor $x_j$ and fit the model, and then compare the resduals to the full models, there should be a increase in $\text{RSS}$ if $x_j$ was important. 
+where the numerator captures the rise in $RSS$ we observe by removing the $q$ regressors - this measures the contribution of the $q$ omitted regressors. Since this measures the contribution of $q$ regressors, we divide by $q$' in order to get the 'residual rise per omitted regressor'.
+
+This same  logic can be used to asses inividual regressors. Actually, if we square the $t$-value of each individual regressor in an MLR, we get the $F$ value of a regression that omits that variable. Again, the logic here is: if we remove regressor $x_j$ and fit the model, and then compare the resduals to the full models, there should be a increase in $\text{RSS}$ if $x_j$ was important. 
+
+
 
 ### Collinearity
 
