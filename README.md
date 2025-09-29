@@ -120,7 +120,7 @@ where the numerator captures the rise in $RSS$ we observe by removing the $q$ re
 
 This same  logic can be used to asses inividual regressors. Actually, if we square the $t$-value of each individual regressor in an MLR, we get the $F$ value of a regression that omits that variable. Again, the logic here is: if we remove regressor $x_j$ and fit the model, and then compare the resduals to the full model, there should be a increase in $\text{RSS}$ if $x_j$ was important. 
 
-To test whether the omitted $q$ regressors are non-zero, we can't we just fit a model with those $q$ regressors and check if they're non-significant. The reason is ommited variable bias - if the omitted $p-q$ regressors are correlated with the included ones, that bias will likely make the latter non-zero. The only way to avoid this is to take those $q$ regressors out of the model and fit the other $p-q$ regressors. That way, we can check if removing those $q$ regressors affects $RSS$, which is what we check with the above F-test. Note: if the removed $q$ regressors are correlated with the included ones, the F-test will have less power (because the effect of the omitted $q$ variables will still bias the $p-q$ included regressors, and this will lead to slightly smaller $\text{RSS}_0$).
+To test whether the omitted $q$ regressors are non-zero, we can't just fit a model with those $q$ regressors and check if they're non-significant. The reason is ommited variable bias - if the omitted $p-q$ regressors are correlated with the included ones, that bias will likely make the latter non-zero. The only way to avoid this is to take those $q$ regressors out of the model and fit the other $p-q$ regressors. That way, we can check if removing those $q$ regressors affects $\text{RSS}$, which is what we check with the above F-test. Note: if the removed $q$ regressors are correlated with the included ones, the F-test will have less power (because the effect of the omitted $q$ variables will still bias the $p-q$ included regressors, and this will lead to slightly smaller $\text{RSS}_0$).
 
 ### Variable selection
 
@@ -130,7 +130,19 @@ One interesting fact regarding including/removing variables is how $\text{RSS}$ 
 
 ### Confidence vs prediction intervals
 
+The estimated mean of $y$ at some specific value $x_0$ ($x_0 = \langle x_{1,0}, x_{2,0}, ... x_{p,0} \rangle$) is $\hat{y}_0 = x_0\hat{\beta}$, and it's normally distributed with mean $x_0\beta$ and variance $\sigma^2x_0(X^TX)^{-1}x_0^T$. Since we don't have $\sigma^2$ we use $s^2 = \text{RSS}/(n-p)$. With these quantities we can build a **confidence interval** for $\hat{y}_0$:
 
+$\hat{y} \pm t_{1-\alpha/2, n-p}\frac{\text{RSS}}{(n-p)}\sqrt{x_0(X^TX)^{-1}x_0^T}$
+
+This confidence interval captures how our estimate $\hat{y}_0$ varies upon replication. It reflects the fact that our estimate of $E(y|X=x_0)$ is based on a sample, and it's only equal to the actual, population value in the limit. 
+
+**Prediction intervals** capture the uncertainty of predicting, not the mean of $y$ given $X$, but a **specific value** $y_0$ at a specific $x_0$, i.e., an individual realization of the random variable $y$. Because this is a harder prediction task, prediction intervals are wider than confidence intervals. The reason is that, even if we could magically sample the entire population, fit a model with that 'data', and then make a prediction for $y_0$, we'd indeed get the true $E(y|X=x_0)$ (confidence interval collapses to a point) but we'd still have a _distribution_ of values around that true mean, simply because **$y$ is a random variable**. 
+
+Formally, $y_0$ is the actual value at $x_0$ and our prediction is $\hat{y}_0 = x_0\hat{\beta} + \epsilon_0$. Notice we _must_ include $\epsilon_0$ because we're predicting a single value of the distribution, which is mean + random deviation ($\epsilon_0$). The estimation error here is $y_0-\hat{y}_0 = x_0\beta - x_0\hat{\beta} + \epsilon_0$. What we then need is $Var(y_0-\hat{y}_0) = Var(x_0\beta - x_0\hat{\beta} + \epsilon_0)$. This variance is $\sigma^2(1 + x_0(X^TX)^ {-1}x_0^T)$, which is basically a sum of the uncertainty in $\hat{beta}$ and the variability of $y$ around its true mean $E(y|X=x_0)$.
+
+
+
+## Key issues in MLR
 
 ### Collinearity
 
