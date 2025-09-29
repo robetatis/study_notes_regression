@@ -138,8 +138,11 @@ This confidence interval captures how our estimate $\hat{y}_0$ varies upon repli
 
 **Prediction intervals** capture the uncertainty of predicting, not the mean of $y$ given $X$, but a **specific value** $y_0$ at a specific $x_0$, i.e., an individual realization of the random variable $y$. Because this is a harder prediction task, prediction intervals are wider than confidence intervals. The reason is that, even if we could magically sample the entire population, fit a model with that 'data', and then make a prediction for $y_0$, we'd indeed get the true $E(y|X=x_0)$ (confidence interval collapses to a point) but we'd still have a _distribution_ of values around that true mean, simply because **$y$ is a random variable**. 
 
-Formally, $y_0$ is the actual value at $x_0$ and our prediction is $\hat{y}_0 = x_0\hat{\beta} + \epsilon_0$. Notice we _must_ include $\epsilon_0$ because we're predicting a single value of the distribution, which is mean + random deviation ($\epsilon_0$). The estimation error here is $y_0-\hat{y}_0 = x_0\beta - x_0\hat{\beta} + \epsilon_0$. What we then need is $Var(y_0-\hat{y}_0) = Var(x_0\beta - x_0\hat{\beta} + \epsilon_0)$. This variance is $\sigma^2(1 + x_0(X^TX)^ {-1}x_0^T)$, which is basically a sum of the uncertainty in $\hat{beta}$ and the variability of $y$ around its true mean $E(y|X=x_0)$.
+Formally, $y_0$ is the actual value at $x_0$ and our prediction is $\hat{y}_0 = x_0\hat{\beta} + \epsilon_0$. Notice we _must_ include $\epsilon_0$ because we're predicting a single value of the distribution, which is mean + random deviation ($\epsilon_0$). The estimation error here is $y_0-\hat{y}_0 = x_0\beta - x_0\hat{\beta} + \epsilon_0$. What we then need is $Var(y_0-\hat{y}_0) = Var(x_0\beta - x_0\hat{\beta} + \epsilon_0)$. This variance is $\sigma^2(1 + x_0(X^TX)^ {-1}x_0^T)$, which is basically a sum of the uncertainty in $\hat{beta}$ and the variability of $y$ around its true mean $E(y|X=x_0)$. With this variance, the prediction interval for $\hat{y}_0$ is:
 
+$\hat{y}_0 \pm t_{1-\alpha/2, n-p} $
+
+$\hat{y} \pm t_{1-\alpha/2, n-p}\frac{\text{RSS}}{(n-p)}\sqrt{x_0(X^TX)^{-1}x_0^T}$
 
 
 ## Key issues in MLR
