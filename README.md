@@ -106,7 +106,9 @@ What $F$ does is set the model effects ($TSS - RSS$) in relation to the residual
 
 #### Testing individual or subsets of regressors
 
-When deciding whether a subset $q$ of regressors is relevant, we can remove those $q$ regressors from the model, fit it, and compare the residual sum of squares of that reduced model $\text{RSS}_0$ with the $\text{RSS}$ of the full model (the one with all regressors). If the omitted regressors are important, $\text{RSS}_0$ will be much larger than $\text{RSS}$, since omitting relevant regressors will lead to larger residuals. Formally, what we're doing is testing the hypothesis $H_0: \beta_{p-q+1} = \beta_{p-1+2} ... \beta{p} = 0$, where $\beta_{p-q+1} = \beta_{p-1+2} ... \beta{p}$ are the omitted regressors. The comparison is done via an F-test:
+When deciding whether a subset $q$ of regressors is relevant, we can remove those $q$ regressors from the model, fit it, and compare the residual sum of squares of that reduced model $\text{RSS}_0$ 
+
+with the $\text{RSS}$ of the full model (the one with all regressors). If the omitted regressors are important, $\text{RSS}_0$ will be much larger than $\text{RSS}$, since omitting relevant regressors will lead to larger residuals. Formally, what we're doing is testing the hypothesis $H_0: \beta_{p-q+1} = \beta_{p-1+2} ... \beta{p} = 0$, where $\beta_{p-q+1} = \beta_{p-1+2} ... \beta{p}$ are the omitted regressors. The comparison is done via an F-test:
 
 $F = \frac{(\text{RSS}_0 - \text{RSS})/q}{\text{RSS}/(n-p-1)}$,
 
@@ -126,8 +128,6 @@ One interesting fact regarding including/removing variables is how $\text{RSS}$ 
 
 inflated variance of beta
 
-
-### The curse of dimensionality
 
 
 
