@@ -108,9 +108,7 @@ What $F$ does is set the model effects ($TSS - RSS$) in relation to the residual
 
 When deciding whether a subset $q$ of regressors is relevant, we can remove those $q$ regressors from the model, fit it, and compare the residual sum of squares of that reduced model $\text{RSS}_0$ with the $\text{RSS}$ of the full model (the one with all regressors).
 
-If the omitted regressors are important, 
-
-$\text{RSS}_0$ 
+If the omitted regressors are important, $\text{RSS}_0$ 
 
 will be much larger than $\text{RSS}$, since omitting relevant regressors will lead to larger residuals. Formally, what we're doing is testing the hypothesis $H_0: \beta_{p-q+1} = \beta_{p-1+2} ... \beta{p} = 0$, where $\beta_{p-q+1} = \beta_{p-1+2} ... \beta{p}$ are the omitted regressors. The comparison is done via an F-test:
 
@@ -127,6 +125,10 @@ To test whether the omitted $q$ regressors are non-zero, we can't we just fit a 
 In MLR, the first step is to do the F-test with all regressors to see if there's an effect at all of _any_ of the predictors. If we do reject $H_0$, we obviously want to know _which_ predictors are relevant. This is called **model selection**. See next chapter.
 
 One interesting fact regarding including/removing variables is how $\text{RSS}$ and $\text{RSE}$ react to adding regressors. It's perfectly possible to have, say, a model with 3 regressors with an $\text{RSS}$ of 10 and an $\text{RSE}$ of 3.5, and then, after including a fourth regressor, have $\text{RSS}$ drop to 8 (becase $\text{RSS}$ can only drop with more regressors, since we're adding dimensions) while $\text{RSE}$ grows to 4. The reason is simple: given that $\text{RSE} = \sqrt{\frac{RSS}{n-p-1}}$, $\text{RSE}$ can grow if the drop in $\text{RSS}$ is smaller than the increase in $p$.
+
+### Confidence vs prediction intervals
+
+
 
 ### Collinearity
 
