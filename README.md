@@ -110,9 +110,7 @@ When deciding whether a subset $q$ of regressors is relevant, we can remove thos
 
 If the omitted regressors are important, $\text{RSS}_0$ will be much larger than $\text{RSS}$, since omitting relevant regressors will lead to larger residuals. Formally, what we're doing is testing the hypothesis $H_0$: 
 
-$\beta_{p-q+1} = \beta_{p-1+2} ... \beta_p = 0$, 
-
-where $\beta_{p-q+1} = \beta_{p-1+2} ... \beta_p$ are the omitted regressors. The comparison is done via an F-test:
+$\beta_{p-q+1} = \beta_{p-1+2} ... \beta_p = 0$, where $\beta_{p-q+1} = \beta_{p-1+2} ... \beta_p$ are the omitted regressors. The comparison is done via an F-test:
 
 $F = \frac{(\text{RSS}_0 - \text{RSS})/q}{\text{RSS}/(n-p-1)}$,
 
