@@ -4,9 +4,9 @@
 
 ### Model and intuition
 
-Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a column vector with a column of ones on the left. The deterministic part is $X\beta$, which is a model for $E[Y|X]$. $\epsilon$ is the random deviation of each $y_i$ from $E[Y|X]$, and is what makes $y$ a random variable.
+Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a column vector (we prepend a column of ones on the left for the intercept). The deterministic part is $X\beta$, which is a model for $E(Y|X)$. $\epsilon$ is the random deviation of each $y_i$ from $E(Y|X)$, and is what makes $y$ a random variable.`
 
-The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us an estimate of $E[Y|X]$ and a way to compute confidence intervals. $\hat{\beta}$ is computed as (expected value):
+The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us a function to estimate of $E(Y|X)$ and a way to compute confidence intervals. $\hat{\beta}$ is computed as (expected value):
 
 $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
@@ -145,6 +145,20 @@ $\hat{y} \pm t_{1-\alpha/2, n-p}\frac{\text{RSS}}{(n-p)}\sqrt{1 + x_0(X^TX)^{-1}
 Notice this is very similar to the confidence interval except for the $1+$ in the square root, which accounts for the population-level variability in $y$.
 
 ## Key issues in MLR
+
+### Interaction terms
+
+MLR has two big assumptions: effects are 1) _linear_ - the effect of $X_j$ on $y$ is the same at all values of $X_j$ and 2) _additive_ - the effect of $X_j$ on $y$ does not depend on the other predictors $X_{-j}$. Including interaction between regressors relaxes the second assumption. 
+
+Formally, if our original model is $y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \epsilon$, we can replace $\beta_1$ by $\tilde{\beta}_1$, which we then define as a function of $X_2$. The new model is $y = \beta_0 + \tilde{\beta}_1X_1 + \beta_2X_2 + \epsilon$, where $\tilde{\beta}_1 = \beta_1 + \beta_3X_2$. Intuitively, what this does is introduce a slope for $X_1$ that varies linearly as a function of $X_2$. If we reorganize the equation like this:
+
+$y = \beta_0 + \tilde{\beta}_1X_1 + \beta_2X_2 + \epsilon$
+
+$y = \beta_0 + (\beta_1 + \beta_3X_2)X_1 + \beta_2X_2 + \epsilon$
+
+$y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_1X_2 +  + \epsilon$
+
+we get the more familiar form for MLR with interaction. If it's significant, the interaction term $\beta_3$ in this example model is interpreted as the average increase in the effect of $X_1$ on $y$ by unit increase in $X_2$.
 
 ### Collinearity
 
