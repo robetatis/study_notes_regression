@@ -116,7 +116,6 @@ class MLR:
         self.plot_diagnostics(filename='mlr_distr_ei.png')
 
     def model_with_interaction(self):
-
         n = 500
         beta = [1.3, 2.4, 4.2, 4.1]
         X1 = np.random.normal(10, 20, n)
@@ -136,8 +135,17 @@ class MLR:
         self.plot_diagnostics('mlr_distr_ei_with_interaction.png')
 
 
+    def model_with_categorical_predictors(self):
+        n = 500
+        X1 = np.random.normal(20, 50, n)
+        X2 = np.random.normal(40, 60, n)
+        X3 = np.random.choice([0, 1], n)
+
+        print(X3)
+
+
 if __name__ == '__main__':
     mlr = MLR(1000, 200, 20, [1.44, 2.43, 3.32])
-    mlr.model_with_interaction()
+    mlr.model_with_categorical_predictors()
 
 
