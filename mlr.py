@@ -52,7 +52,7 @@ class MLR:
         ax.plot(self.y, self.y, color='gray')
         ax.plot(self.y_sample, self.y_sample, color='red')
         for i in range(len(self.beta)):
-            ax.text(x=0.02, y=0.93 - 0.075*i, transform=ax.transAxes, s=rf'$\beta_0 = {self.beta[i]:.3f}, \hat{{\beta}}_0 = {self.beta_hat[i]:.3f}$')        
+            ax.text(x=0.02, y=0.93 - 0.075*i, transform=ax.transAxes, s=rf'$\beta_{i} = {self.beta[i]:.3f}, \hat{{\beta}}_{i} = {self.beta_hat[i]:.3f}$')        
         ax.set_ylabel('y pred')
         ax.set_xlabel('y obs')
         plt.savefig('mlr_pop_vs_sample.png')
@@ -78,7 +78,7 @@ class MLR:
         self.leverage = influence.hat_matrix_diag
         self.studentized_resid = influence.resid_studentized_external
 
-    def plot_diagnostics(self):
+    def plot_diagnostics(self, filename):
         fig, ax = plt.subplots(1, 3, figsize=(15, 4))
         ax[0].set_title(r'Distr. $e_i$')
         ax[0].hist(self.e_i, density=True)
@@ -101,7 +101,7 @@ class MLR:
         ax[2].set_xlabel('Leverage')
         ax[2].set_ylabel(r'Studentized $e_i$')
         plt.tight_layout()
-        plt.savefig('mlr_distr_ei.png')
+        plt.savefig(filename)
 
 
     def run(self):
@@ -113,11 +113,31 @@ class MLR:
         self.compute_residuals_stats()
         self.print_rss_relative_to_y_mean()
         self.compute_diagnostics()
-        self.plot_diagnostics()
+        self.plot_diagnostics(filename='mlr_distr_ei.png')
+
+    def model_with_interaction(self):
+
+        n = 500
+        beta = [1.3, 2.4, 4.2, 4.1]
+        X1 = np.random.normal(10, 20, n)
+        X2 = np.random.normal(10, 20, n)
+        X1X2 = X1*X2
+        y = beta[0] + beta[1]*X1 + beta[2]*X2 + beta[3]*X1X2 + np.random.normal(0, 10, n)
+        X_with_interaction = np.column_stack([X1, X2, X1X2])
+        X_with_interaction = sm.add_constant(X_with_interaction)
+        X_no_interaction = np.column_stack([X1, X2])
+        X_no_interaction = sm.add_constant(X_no_interaction)        
+
+        self.model_sample = sm.OLS(y, X_with_interaction)
+        self.model_sample = self.model_sample.fit()
+        self.y_hat = self.model_sample.predict(X_with_interaction)
+        self.compute_residuals_stats()
+        self.compute_diagnostics()
+        self.plot_diagnostics('mlr_distr_ei_with_interaction.png')
 
 
 if __name__ == '__main__':
     mlr = MLR(1000, 200, 20, [1.44, 2.43, 3.32])
-    mlr.run()
+    mlr.model_with_interaction()
 
 

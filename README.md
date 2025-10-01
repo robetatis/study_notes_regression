@@ -160,6 +160,13 @@ $y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_1X_2 +  + \epsilon$
 
 we get the more familiar form for MLR with interaction. If it's significant, the interaction term $\beta_3$ in this example model is interpreted as the average increase in the effect of $X_1$ on $y$ by unit increase in $X_2$.
 
+Interestingly, it can happen that the interaction term is significant but not the two associated main effects. In that case, the 'hierarchical principle' indicates those non-significant main effects should still be kept in the model. The rationale is: if the interaction exists, whether main effects are zero or not is irrelevant, because those factors must be present for an interaction to take place at all. Also, those main effects are likely correlated with the interaction term, so leaving them out makes no sense.
+
+### Interaction with qualitative terms
+
+
+
+
 ### Collinearity
 
 inflated variance of beta
