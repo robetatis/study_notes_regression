@@ -170,12 +170,10 @@ $y = \beta_0 + \beta1x_1 + \beta_2x2 + \beta_3x_1x_2$
 
 Since $x_2$ only takes on values 0 or 1, the model can be written as:
 
-$
-y = \begin{cases}
+$y = \begin{cases}
 (\beta_0 + \beta_2) + (\beta_1 + \beta_3)x_1 + \epsilon & \text{if } x_2 = 1, \\
 \beta_0 + \beta_1x_1 + \epsilon & \text{if } x_2 = 0,
-\end{cases}
-$
+\end{cases}$
 
 That way, the regression equation for $x_2 = 1$ has intercept $\beta_0 + \beta_2$ and slope $\beta_1 + \beta_3$, while the corresponding intercept and slope for $x_2 = 0$ are $\beta_0$ and $\beta_1$. This means that the line for $x_2=1$ lies higher (assuming $\beta_2$ is positive) and has a steeper slope (assuming $\beta_3$ is positive) than the line for $x_2=0$. 
 
