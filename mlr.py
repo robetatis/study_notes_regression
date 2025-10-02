@@ -16,7 +16,7 @@ from statsmodels.stats.outliers_influence import OLSInfluence
 
 class MLR:
 
-    def __init__(self, pop_size, sample_size, sigma_epsilon, beta):
+    def basic_model(self, pop_size, sample_size, sigma_epsilon, beta):
         self.pop_size = pop_size
         self.sample_size = sample_size
         self.sigma_epsilon = sigma_epsilon
@@ -24,18 +24,13 @@ class MLR:
         self.beta = np.array(beta)        
         self.p = len(self.beta) - 1
 
-    def make_X(self):
         self.X = np.random.normal(20, 10, (self.pop_size, self.p))
         self.X = sm.add_constant(self.X)
-
-    def make_y(self):
         self.y = self.X@self.beta + self.epsilon
 
-    def make_X_y_sample(self):
         idx_sample = np.random.randint(low=0, high=len(self.X), size=self.sample_size)
         self.X_sample, self.y_sample = self.X[idx_sample], self.y[idx_sample]
 
-    def make_models(self):
         self.model_pop = sm.OLS(self.y, self.X)
         self.model_pop = self.model_pop.fit()
         self.y_hat_pop = self.model_pop.predict(self.X)
@@ -44,6 +39,12 @@ class MLR:
         self.model_sample = self.model_sample.fit()
         self.y_hat_sample = self.model_sample.predict(self.X_sample)
         self.beta_hat = self.model_sample.params 
+
+        self.plot_population_vs_sample()
+        self.compute_residuals_stats()
+        self.print_rss_relative_to_y_mean()
+        self.compute_diagnostics()
+        self.plot_diagnostics(filename='mlr_distr_ei.png')
 
     def plot_population_vs_sample(self):
         fig, ax = plt.subplots()
@@ -56,6 +57,52 @@ class MLR:
         ax.set_ylabel('y pred')
         ax.set_xlabel('y obs')
         plt.savefig('mlr_pop_vs_sample.png')
+
+    def model_with_interaction(self, filename):
+        n = 500
+        beta = [1.3, 2.4, 4.2, 4.1]
+        X1 = np.random.normal(10, 20, n)
+        X2 = np.random.normal(10, 20, n)
+        X1X2 = X1*X2
+        y = beta[0] + beta[1]*X1 + beta[2]*X2 + beta[3]*X1X2 + np.random.normal(0, 10, n)
+        X_with_interaction = np.column_stack([X1, X2, X1X2])
+        X_with_interaction = sm.add_constant(X_with_interaction)
+        X_no_interaction = np.column_stack([X1, X2])
+        X_no_interaction = sm.add_constant(X_no_interaction)        
+
+        self.model_sample = sm.OLS(y, X_with_interaction)
+        self.model_sample = self.model_sample.fit()
+        self.y_hat = self.model_sample.predict(X_with_interaction)
+
+        print(self.model_sample.summary())
+        self.compute_residuals_stats()
+        self.compute_diagnostics()
+        self.plot_diagnostics(filename)
+
+    def model_with_categorical_predictors(self, filename_scatterplot, filename_diagnostics):
+        n = 500
+        sigma_epsilon = 80
+        epsilon = np.random.normal(0, sigma_epsilon, n)
+        beta = np.array([1.4, 3.4, 230.4])
+        X1 = np.random.normal(20, 50, n)
+        X2 = np.random.choice([0, 1], n)
+        X = sm.add_constant(np.column_stack([X1, X2]))
+        y = X@beta + epsilon
+
+        self.model_sample = sm.OLS(y, X)
+        self.model_sample = self.model_sample.fit()
+        self.y_hat = self.model_sample.predict(X)
+
+        print(self.model_sample.summary())
+        self.compute_residuals_stats()
+        self.compute_diagnostics()
+        self.plot_diagnostics(filename_diagnostics)
+
+        fig, ax = plt.subplots()
+        ax.scatter(X[:, 1], y, edgecolors=np.where(X[:, 2]==1, 'black', 'red'), s=20, facecolor='None')
+        for i in np.unique(X[:, 2]):
+            ax.plot(X[:, 1][X[:, 2] == i], self.y_hat[X[:, 2] == i], color='black' if i==1 else 'red')
+        plt.savefig(filename_scatterplot)
 
     def compute_residuals_stats(self):
         self.e_i = self.model_sample.resid
@@ -103,49 +150,10 @@ class MLR:
         plt.tight_layout()
         plt.savefig(filename)
 
-
-    def run(self):
-        self.make_X()
-        self.make_y()
-        self.make_X_y_sample()
-        self.make_models()
-        self.plot_population_vs_sample()
-        self.compute_residuals_stats()
-        self.print_rss_relative_to_y_mean()
-        self.compute_diagnostics()
-        self.plot_diagnostics(filename='mlr_distr_ei.png')
-
-    def model_with_interaction(self):
-        n = 500
-        beta = [1.3, 2.4, 4.2, 4.1]
-        X1 = np.random.normal(10, 20, n)
-        X2 = np.random.normal(10, 20, n)
-        X1X2 = X1*X2
-        y = beta[0] + beta[1]*X1 + beta[2]*X2 + beta[3]*X1X2 + np.random.normal(0, 10, n)
-        X_with_interaction = np.column_stack([X1, X2, X1X2])
-        X_with_interaction = sm.add_constant(X_with_interaction)
-        X_no_interaction = np.column_stack([X1, X2])
-        X_no_interaction = sm.add_constant(X_no_interaction)        
-
-        self.model_sample = sm.OLS(y, X_with_interaction)
-        self.model_sample = self.model_sample.fit()
-        self.y_hat = self.model_sample.predict(X_with_interaction)
-        self.compute_residuals_stats()
-        self.compute_diagnostics()
-        self.plot_diagnostics('mlr_distr_ei_with_interaction.png')
-
-
-    def model_with_categorical_predictors(self):
-        n = 500
-        X1 = np.random.normal(20, 50, n)
-        X2 = np.random.normal(40, 60, n)
-        X3 = np.random.choice([0, 1], n)
-
-        print(X3)
-
-
 if __name__ == '__main__':
-    mlr = MLR(1000, 200, 20, [1.44, 2.43, 3.32])
-    mlr.model_with_categorical_predictors()
+    mlr = MLR()
+    #mlr.basic_model(1000, 300, 10, [10.3, 5.4, -6.78])
+    #mlr.model_with_interaction('mlr_distr_ei_missing_interaction.png')
+    mlr.model_with_categorical_predictors('mlr_scatterplot_with_categorical.png', 'mlr_diagnostics_with_categorical.png')
 
 
