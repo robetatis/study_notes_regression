@@ -179,6 +179,18 @@ $
 
 That way, the regression equation for $x_2 = 1$ has intercept $\beta_0 + \beta_2$ and slope $\beta_1 + \beta_3$, while the corresponding intercept and slope for $x_2 = 0$ are $\beta_0$ and $\beta_1$. This means that the line for $x_2=1$ lies higher (assuming $\beta_2$ is positive) and has a steeper slope (assuming $\beta_3$ is positive) than the line for $x_2=0$. 
 
+### Non-linearity
+
+### Autocorrelated errors
+
+
+### Heterosckedasticity
+
+### Outliers
+
+
+### Leverage
+
 
 ### Collinearity
 

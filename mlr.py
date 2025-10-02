@@ -16,7 +16,7 @@ from statsmodels.stats.outliers_influence import OLSInfluence
 
 class MLR:
 
-    def basic_model(self, pop_size, sample_size, sigma_epsilon, beta):
+    def model_basic(self, pop_size, sample_size, sigma_epsilon, beta):
         self.pop_size = pop_size
         self.sample_size = sample_size
         self.sigma_epsilon = sigma_epsilon
@@ -46,19 +46,7 @@ class MLR:
         self.compute_diagnostics()
         self.plot_diagnostics(filename='mlr_distr_ei.png')
 
-    def plot_population_vs_sample(self):
-        fig, ax = plt.subplots()
-        ax.scatter(self.y_hat_pop, self.y, facecolors='gray', edgecolors='gray', s=10, linewidths=0.5, alpha=0.3)
-        ax.scatter(self.y_hat_sample, self.y_sample, facecolor='None', edgecolors='red', linewidths=0.5, s=30)
-        ax.plot(self.y, self.y, color='gray')
-        ax.plot(self.y_sample, self.y_sample, color='red')
-        for i in range(len(self.beta)):
-            ax.text(x=0.02, y=0.93 - 0.075*i, transform=ax.transAxes, s=rf'$\beta_{i} = {self.beta[i]:.3f}, \hat{{\beta}}_{i} = {self.beta_hat[i]:.3f}$')        
-        ax.set_ylabel('y pred')
-        ax.set_xlabel('y obs')
-        plt.savefig('mlr_pop_vs_sample.png')
-
-    def model_with_interaction(self, filename):
+    def model_interaction(self, filename):
         n = 500
         beta = [1.3, 2.4, 4.2, 4.1]
         X1 = np.random.normal(10, 20, n)
@@ -79,7 +67,7 @@ class MLR:
         self.compute_diagnostics()
         self.plot_diagnostics(filename)
 
-    def model_with_categorical_predictors(self, filename_scatterplot, filename_diagnostics):
+    def model_categorical_predictors(self, filename_scatterplot, filename_diagnostics):
         n = 500
         sigma_epsilon = 80
         epsilon = np.random.normal(0, sigma_epsilon, n)
@@ -103,6 +91,44 @@ class MLR:
         for i in np.unique(X[:, 2]):
             ax.plot(X[:, 1][X[:, 2] == i], self.y_hat[X[:, 2] == i], color='black' if i==1 else 'red')
         plt.savefig(filename_scatterplot)
+
+    def model_interaction_categorical_predictors(self, filename_scatterplot, filename_diagnostics):
+        n = 500
+        sigma_epsilon = 100
+        beta = np.array([3.4, 2.1, 300.1, 5.4])
+        epsilon = np.random.normal(0, sigma_epsilon, n)
+        X1 = np.random.normal(50, 50, n)
+        X2 = np.random.choice([0, 1], n)
+        X3 = X1*X2
+        X = sm.add_constant(np.column_stack([X1, X2, X3]))
+        y = X@beta + epsilon
+
+        self.model_sample = sm.OLS(y, X)
+        self.model_sample = self.model_sample.fit()
+        self.y_hat = self.model_sample.predict(X)
+        print(self.model_sample.summary())
+
+        self.compute_residuals_stats()
+        self.compute_diagnostics()
+        self.plot_diagnostics(filename_diagnostics)
+
+        fig, ax = plt.subplots()
+        ax.scatter(X[:, 1], y, edgecolors=np.where(X[:, 2]==1, 'black', 'red'), s=20, facecolor='None')
+        for i in np.unique(X[:, 2]):
+            ax.plot(X[:, 1][X[:, 2] == i], self.y_hat[X[:, 2] == i], color='black' if i==1 else 'red')
+        plt.savefig(filename_scatterplot)
+
+    def plot_population_vs_sample(self):
+        fig, ax = plt.subplots()
+        ax.scatter(self.y_hat_pop, self.y, facecolors='gray', edgecolors='gray', s=10, linewidths=0.5, alpha=0.3)
+        ax.scatter(self.y_hat_sample, self.y_sample, facecolor='None', edgecolors='red', linewidths=0.5, s=30)
+        ax.plot(self.y, self.y, color='gray')
+        ax.plot(self.y_sample, self.y_sample, color='red')
+        for i in range(len(self.beta)):
+            ax.text(x=0.02, y=0.93 - 0.075*i, transform=ax.transAxes, s=rf'$\beta_{i} = {self.beta[i]:.3f}, \hat{{\beta}}_{i} = {self.beta_hat[i]:.3f}$')        
+        ax.set_ylabel('y pred')
+        ax.set_xlabel('y obs')
+        plt.savefig('mlr_pop_vs_sample.png')
 
     def compute_residuals_stats(self):
         self.e_i = self.model_sample.resid
@@ -152,8 +178,9 @@ class MLR:
 
 if __name__ == '__main__':
     mlr = MLR()
-    #mlr.basic_model(1000, 300, 10, [10.3, 5.4, -6.78])
-    #mlr.model_with_interaction('mlr_distr_ei_missing_interaction.png')
-    mlr.model_with_categorical_predictors('mlr_scatterplot_with_categorical.png', 'mlr_diagnostics_with_categorical.png')
+    #mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
+    #mlr.model_interaction('mlr_distr_ei_missing_interaction.png')
+    #mlr.model_categorical_predictors('mlr_scatterplot_with_categorical.png', 'mlr_diagnostics_with_categorical.png')
+    mlr.model_interaction_categorical_predictors('mlr_scatterplot_categorical_interaction.png', 'mlr.diagnostics_categorical_interaction.png')
 
 
