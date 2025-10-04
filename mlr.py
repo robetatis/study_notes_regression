@@ -118,6 +118,37 @@ class MLR:
             ax.plot(X[:, 1][X[:, 2] == i], self.y_hat[X[:, 2] == i], color='black' if i==1 else 'red')
         plt.savefig(filename_scatterplot)
 
+    def model_missing_nonlinear_term(self, filename_diagnostics_ok, filename_diagnostics_missing):
+        n = 500
+        sigma_epsilon = 300
+        epsilon = np.random.normal(0, sigma_epsilon, n)
+        beta = [1.3, 0.4, 1.33]
+        X1 = np.random.normal(2, 10, n)
+        X2 = X1**2
+        X_real = sm.add_constant(np.column_stack([X1, X2]))
+        y = X_real@beta + epsilon
+
+        X_missing_nonlinear = X_real[:, :-1]
+        self.model_sample = sm.OLS(y, X_missing_nonlinear)
+        self.model_sample = self.model_sample.fit()
+        self.y_hat = self.model_sample.predict(X_missing_nonlinear)
+        print(self.model_sample.summary())
+
+        self.compute_residuals_stats()
+        self.compute_diagnostics()
+        self.plot_diagnostics(filename_diagnostics_missing)
+
+        self.model_sample = sm.OLS(y, X_real)
+        self.model_sample = self.model_sample.fit()
+        self.y_hat = self.model_sample.predict(X_real)
+        print(self.model_sample.summary())
+
+        self.compute_residuals_stats()
+        self.compute_diagnostics()
+        self.plot_diagnostics(filename_diagnostics_ok)
+
+
+
     def plot_population_vs_sample(self):
         fig, ax = plt.subplots()
         ax.scatter(self.y_hat_pop, self.y, facecolors='gray', edgecolors='gray', s=10, linewidths=0.5, alpha=0.3)
@@ -181,6 +212,7 @@ if __name__ == '__main__':
     #mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
     #mlr.model_interaction('mlr_distr_ei_missing_interaction.png')
     #mlr.model_categorical_predictors('mlr_scatterplot_with_categorical.png', 'mlr_diagnostics_with_categorical.png')
-    mlr.model_interaction_categorical_predictors('mlr_scatterplot_categorical_interaction.png', 'mlr.diagnostics_categorical_interaction.png')
+    #mlr.model_interaction_categorical_predictors('mlr_scatterplot_categorical_interaction.png', 'mlr.diagnostics_categorical_interaction.png')
+    mlr.model_missing_nonlinear_term('mlr_diagnostics_missing_nonlinear_ok.png', 'mlr_diagnostics_missing_nonlinear_missing.png')
 
 
