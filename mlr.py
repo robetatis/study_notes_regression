@@ -147,7 +147,23 @@ class MLR:
         self.compute_diagnostics()
         self.plot_diagnostics(filename_diagnostics_ok)
 
+    def model_heteroscedastic(self, filename_diagnostics_heteroscedastic):       
+        n = 500
+        sigma_epsilon = 3
+        X = np.random.uniform(10, 100, n)
+        epsilon_heteroscedastic = np.random.normal(0, sigma_epsilon*X**(0.66))
+        beta = [1.3, 2.4]
+        X = sm.add_constant(X)
+        y = X@beta + epsilon_heteroscedastic
 
+        self.model_sample = sm.OLS(y, X)
+        self.model_sample = self.model_sample.fit()
+        self.y_hat = self.model_sample.predict(X)
+        print(self.model_sample.summary())
+
+        self.compute_residuals_stats()
+        self.compute_diagnostics()
+        self.plot_diagnostics(filename_diagnostics_heteroscedastic)
 
     def plot_population_vs_sample(self):
         fig, ax = plt.subplots()
@@ -164,7 +180,7 @@ class MLR:
     def compute_residuals_stats(self):
         self.e_i = self.model_sample.resid
         self.e_i_mean = np.mean(self.e_i)
-        self.e_i_sd = np.sqrt(np.var(self.e_i, ddof=2)) # this is rse (the residuals' standart error)
+        self.e_i_sd = np.sqrt(np.var(self.e_i, ddof=2)) # this is rse (the residuals' standard error)
         self.e_i_x = np.linspace(self.e_i.min(), self.e_i.max(), 300)
         self.e_i_pdf = scipy.stats.norm.pdf(self.e_i_x, loc=self.e_i_mean, scale=self.e_i_sd)
         self.y_hat_i = self.model_sample.fittedvalues
@@ -194,8 +210,8 @@ class MLR:
         )
         ax[0].set_xlabel(r'$e_i$')
         ax[0].set_ylabel('Density')
-        ax[1].set_title(r'Fitted vals. vs. $e_i$')
-        ax[1].scatter(self.y_hat_i, self.e_i)
+        ax[1].set_title(r'Fitted vals. vs. studentized $e_i$')
+        ax[1].scatter(self.y_hat_i, self.studentized_resid)
         ax[1].axhline(y=0, color='black', linestyle='--')
         ax[1].set_xlabel('Fitted vals.')
         ax[1].set_ylabel(r'$e_i$')
@@ -209,10 +225,10 @@ class MLR:
 
 if __name__ == '__main__':
     mlr = MLR()
-    #mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
-    #mlr.model_interaction('mlr_distr_ei_missing_interaction.png')
-    #mlr.model_categorical_predictors('mlr_scatterplot_with_categorical.png', 'mlr_diagnostics_with_categorical.png')
-    #mlr.model_interaction_categorical_predictors('mlr_scatterplot_categorical_interaction.png', 'mlr.diagnostics_categorical_interaction.png')
+    mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
+    mlr.model_interaction('mlr_distr_ei_missing_interaction.png')
+    mlr.model_categorical_predictors('mlr_scatterplot_with_categorical.png', 'mlr_diagnostics_with_categorical.png')
+    mlr.model_interaction_categorical_predictors('mlr_scatterplot_categorical_interaction.png', 'mlr.diagnostics_categorical_interaction.png')
     mlr.model_missing_nonlinear_term('mlr_diagnostics_missing_nonlinear_ok.png', 'mlr_diagnostics_missing_nonlinear_missing.png')
-
+    mlr.model_heteroscedastic('mlr_diagnostics_heteroscedastic.png')
 

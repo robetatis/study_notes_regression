@@ -6,7 +6,7 @@
 
 Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a column vector (we prepend a column of ones on the left for the intercept). The deterministic part is $X\beta$, which is a model for $E(Y|X)$. $\epsilon$ is the random deviation of each $y_i$ from $E(Y|X)$, and is what makes $y$ a random variable.`
 
-The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us a function to estimate of $E(Y|X)$ and a way to compute confidence intervals. $\hat{\beta}$ is computed as (expected value):
+The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us a function to estimate of $E(Y|X)$ and a way to compute confidence intervals. $\hat{\beta}$ is computed as (more precisely, its expected value):
 
 $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
@@ -23,6 +23,13 @@ In general, larger samples with more spread $X$ have smaller variability; the me
 Note: these formulas are only valid if $Cov(X, \epsilon) = 0$. The intuition here is that if $\epsilon$ is related to the regressors $X$, these contain information about the part of $y$ that is supposed to be only noise, i.e., there's still variance in $\epsilon$ that is linked to $X$. It's also possible that an omitted variable is moving with $X$ and thus affecting $y$ indirectly. This then causes $X$ and $\epsilon$ to be related. 
 
 Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = XE(\epsilon) - E(X)E(\epsilon)$, the only way for $X$ and $\epsilon$ have zero covariance is if $E(\epsilon)=0$, which we achieve by correctly specifying the model (accounting for non-linearities and avoiding omitted variable bias). It's also worth noting that, with multiple regressors, checking which $X$ is responsible for $Cov(X, \epsilon) \neq 0$ helps determining which regressor drives the residuals.
+
+### A final note on predicted values
+
+Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values $\hat{y}$ are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Further, the matrix-vector product $Hy$ (which is computed as $\hat{y}_i = \sum_{i=1}^n h_{ij}y_j$) indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$
+
+
+diaonal elements of hat matrix are leverage of each observation
 
 ### Sums of squares and $R^2$
 
@@ -183,11 +190,16 @@ That way, the regression equation for $x_2 = 1$ has intercept $\beta_0 + \beta_2
 
 Any non-linear pattern in the residuals plot (fitted values vs. residuals) suggests the model is missspecified. This can mean a missing non-linear or interaction term, and manifests as autocorrelated residuals. This can be addressed by including a non-linear function of the existing regressor(s) and/or interaction terms. Non-linear terms can be, for instance, $X_j^c$, with $c$ = some power ('polynomial regression') or something like $log(X_j)$.
 
-For example, if our data-generating process is $y = \beta_0 + \beta_1X_1 + \beta_2X_1^2 + \epsilon$ but we fit $y = \beta_0 + \beta_1X_1 + \epsilon$, the residuals plot clearly shows a parabolic trend, suggestive of a missing quadratic term in the model. Note also the right-biased residuals distribution and the obvious pattern in the leverage vs. studentized residuals plot, showing that points with stronger leverage have larger residuals (which is very problematic). ![](mlr_diagnostics_missing_nonlinear_missing.png)
+For example, if our data-generating process is $y = \beta_0 + \beta_1X_1 + \beta_2X_1^2 + \epsilon$ but we fit $y = \beta_0 + \beta_1X_1 + \epsilon$, the residuals plot (in the middle) clearly shows a parabolic trend, suggestive of a missing quadratic term in the model. Note also the right-biased residuals distribution and the obvious pattern in the leverage vs. studentized residuals plot, showing that points with stronger leverage have larger residuals (which is very problematic). ![](mlr_diagnostics_missing_nonlinear_missing.png)
 
 In contrast, if we include the quadratic term, $y = \beta_0 + \beta_1X_1 + \beta_2X_1^2 + \epsilon$, and that removes the parabolic trend in the residuals plot, the bias in the distribution of $e_i$, and the trend in the leverage vs. studentized residuals plot: ![](mlr_diagnostics_missing_nonlinear_ok.png)
 
-### Heterosckedasticity
+### Heteroscedasticity
+
+
+
+![](mlr_diagnostics_heteroscedastic.png)
+
 
 ### Outliers
 
