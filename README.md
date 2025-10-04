@@ -16,7 +16,7 @@ $Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
 Two notes on this equation: 
 1. $\sigma^2$ is not observable, so we have to use the sample estimate $\text{RSE} = \hat{\sigma}^2 = \text{RSS}/(n-p-1)$, with $p$ = no. regressors (=1 in OLS) and $\text{RSS} = e^Te$, where $e$ = sample residuals (see below). $\text{RSE}$ = Residual Standard Error and $\text{RSS}$ = Residual Sum of Squares. We're allowed to use $\text{RSE}$ as an estimate of $\sigma^2$ becasue, _if the OLS assumptions hold_, $E(\hat{\sigma}^2) = E(\text{RSE}) = \sigma^2$
-2. The entries in $X^TX$ are just the dot-products $x_j^Tx_j$ for the diagonal elements and $x_j^Tx_{-j}$ for the off-diagonal elements. The former are related to the variance of regressor $x_j$ and the latter to the pairwise covariances between $x_j$ and each of the other regressors $x_{-j}$.
+2. The entries in $X^TX$ are just the dot-products $X_j^TX_j$ for the diagonal elements and $X_j^TX_{-j}$ for the off-diagonal elements. The former are related to the variance of regressor $X_j$ and the latter to the pairwise covariances between $X_j$ and each of the other regressors $X_{-j}$.
 
 In general, larger samples with more spread $X$ have smaller variability; the mechanism is simply that larger samples encompass a larger part of the population and hence have better chances of representing it well. In turn, more spread in $X$ implies more chances to capture the way $y$ varies over $X$. Conversely, a narrow interval of $X$ doesn't allow that and therefore leads to more variable (i.e., more uncertain) estimates of $\hat{\beta}$.
 
@@ -38,7 +38,7 @@ Informally, looking at the size of RSS relative to the mean of $y$ is a way to a
 
 Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical and business significance, we must check whether the linear model fit is usable. Several steps here:
 
-1. Normality of residuals: Look at histogram of $e$ (sample residuals, since the population residuals require the entire population, which we obviously don't have). Formal tests: **Omnibus**, **Jarque-Bera**. Both have $H_0$: Distribution of $\epsilon_i$ is normal. However, given the Central Limit Theorem, normality of residuals is less critical with larger sample sizes ($n > 30$)
+1. Normality of residuals: Look at histogram of $e_i$ (sample residuals, since the population residuals require the entire population, which we obviously don't have). Formal tests: **Omnibus**, **Jarque-Bera**. Both have $H_0$: Distribution of $\epsilon_i$ is normal. However, given the Central Limit Theorem, normality of residuals is less critical with larger sample sizes ($n > 30$)
 
 2. Autocorrelation of residuals: Look at fitted values vs. $e$. A random pattern suggests (however does not prove!) true linearity between $X$ and $y$. Any trend means systematic over/underpredicting depending on $y$; for instance, small values of $y$ overpredicted and large values of $y$ underpredicted -> we're likely missing a quadratic term -> model is **misspecified**. There can of course be other trends in fitted vals. vs. residuals: points along bands -> missing categorical variable, points funnel-shaped -> heteroscedasticity, etc. Formal test: **Ljung-Box**. Tests $H_0$: Zero residual autocorrelation.
 
@@ -50,11 +50,11 @@ Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical an
 
 ### Model and intuition
 
-Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, but now $\beta$ is a vector of shape ($p$+1, 1), with $p$ = number of regressors (+1 for the intercept), and $X$ is no longer a column vector but a matrix of shape ($n$, $p+1$), i.e, $n$ observations and $p$ factors (again, +1 for the intercept, for which we add a column of ones as the first column of $X$).
+Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, but now $\beta$ is a vector of shape ($p$+1, 1), with $p$ = number of regressors (+1 for the intercept), and $X$ is no longer a column vector but a matrix of shape ($n$, $p+1$), i.e, $n$ observations and $p$ factors (again, +1 for the intercept, for which we prepend a column of ones to $X$).
 
-Having multiple regressors opens up a host of possibilities, good and bad. Good because the world is multidimensional and including multiple regressors accounts for this; bad becasue regressors could be non-independent, we could be missing the right regressors, and we are forced to select a model, not to mention the problems with wide $X$ matrices, i.e., many features, few observations, and 'the curse of dimensionality'. More on all of these below.
+Having multiple regressors opens up a host of possibilities, good and bad. Good because the world is multidimensional and including multiple regressors accounts for this; bad becasue regressors could be non-independent, we could be missing the right regressors, and we are forced to select a model, not to mention the problems with wide $X$ matrices, i.e., many features + few observations, and 'the curse of dimensionality'. More on all of these below.
 
-In order to find $\hat{\beta}$ in $\hat{\beta} = (X^TX)^{-1}X^Ty$, **$X^TX$ must be invertible**, which requires the columns of $X$ to be _linearly indepenent_ (i.e., $X$ must have full column rank). The formula for $Var(\hat{\beta})$ is the same as in OLS (OLS is just a special case of MLR).
+In order to find $\hat{\beta}$ with $\hat{\beta} = (X^TX)^{-1}X^Ty$, **$X^TX$ must be invertible**, which requires the columns of $X$ to be _linearly indepenent_ (i.e., $X$ must have full column rank). The formula for $Var(\hat{\beta})$ is the same as in OLS (OLS is just a special case of MLR).
 
 Intuitively, each entry $\hat{\beta}_j$ in **$\hat{\beta}$** is the slope of the relationship between $X_j$ and $E(y|X)$ _holding all other predictors fixed_. That is, $\hat{\beta}_j$ measures the **true** effect of $X_j$, or, in other words, it isolates the effect of $X_j$ by measuring it **in the presence of all other factors**. Indeed, the entries in vector $\hat{\beta}$ are 
 
@@ -118,7 +118,7 @@ $F = \frac{(\text{RSS}_0 - \text{RSS})/q}{\text{RSS}/(n-p-1)}$,
 
 where the numerator captures the rise in $RSS$ we observe by removing the $q$ regressors - this measures the contribution of the $q$ omitted regressors. Since this measures the contribution of $q$ regressors, we divide by $q$' in order to get the 'residual rise per omitted regressor'.
 
-This same  logic can be used to asses inividual regressors. Actually, if we square the $t$-value of each individual regressor in an MLR, we get the $F$ value of a regression that omits that variable. Again, the logic here is: if we remove regressor $x_j$ and fit the model, and then compare the resduals to the full model, there should be a increase in $\text{RSS}$ if $x_j$ was important. 
+This same  logic can be used to asses inividual regressors. Actually, if we square the $t$-value of each individual regressor in an MLR, we get the $F$ value of a regression that omits that variable. Again, the logic here is: if we remove regressor $X_j$ and fit the model, and then compare the resduals to the full model, there should be a increase in $\text{RSS}$ if $X_j$ was important. 
 
 To test whether the omitted $q$ regressors are non-zero, we can't just fit a model with those $q$ regressors and check if they're non-significant. The reason is ommited variable bias - if the omitted $p-q$ regressors are correlated with the included ones, that bias will likely make the latter non-zero. The only way to avoid this is to take those $q$ regressors out of the model and fit the other $p-q$ regressors. That way, we can check if removing those $q$ regressors affects $\text{RSS}$, which is what we check with the above F-test. Note: if the removed $q$ regressors are correlated with the included ones, the F-test will have less power (because the effect of the omitted $q$ variables will still bias the $p-q$ included regressors, and this will lead to slightly smaller $\text{RSS}_0$).
 
@@ -175,7 +175,7 @@ $y = \begin{cases}
 \beta_0 + \beta_1x_1 + \epsilon & \text{if } x_2 = 0,
 \end{cases}$
 
-That way, the regression equation for $x_2 = 1$ has intercept $\beta_0 + \beta_2$ and slope $\beta_1 + \beta_3$, while the corresponding intercept and slope for $x_2 = 0$ are $\beta_0$ and $\beta_1$. This means that the line for $x_2=1$ lies higher (assuming $\beta_2$ is positive) and has a steeper slope (assuming $\beta_3$ is positive) than the line for $x_2=0$. 
+That way, the regression equation for $x_2 = 1$ has intercept $\beta_0 + \beta_2$ and slope $\beta_1 + \beta_3$, while the corresponding intercept and slope for $x_2 = 0$ are $\beta_0$ and $\beta_1$. This means that the line for $x_2=1$ lies higher (assuming $\beta_2$ is positive) and has a steeper slope (assuming $\beta_3$ is positive) than the line for $x_2=0$.
 
 ### Non-linearity
 
