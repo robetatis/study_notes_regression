@@ -134,7 +134,7 @@ The estimated mean of $y$ at some specific value $x_0$ ($x_0 = \langle x_{1,0}, 
 
 $\hat{y}_0 \pm 1$
 
-t_{1-\alpha/2, n-p}\frac{\text{RSS}}{(n-p)}\sqrt{x_0(X^TX)^{-1}x_0^T}$
+$t_{1-\alpha/2, n-p}\frac{\text{RSS}}{(n-p)}\sqrt{x_0(X^TX)^{-1}x_0^T}$
 
 This confidence interval captures how our estimate $\hat{y}_0$ varies upon replication. It reflects the fact that our estimate of $E(y|X=x_0)$ is based on a sample, and it's only equal to the actual population value in the limit. 
 
