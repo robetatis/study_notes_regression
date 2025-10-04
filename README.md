@@ -132,9 +132,9 @@ One interesting fact regarding including/removing variables is how $\text{RSS}$ 
 
 The estimated mean of $y$ at some specific value $x_0$ ($x_0 = \langle x_{1,0}, x_{2,0}, ... x_{p,0} \rangle$, i.e., a specific row of $X$) is $\hat{y}_0 = x_0\hat{\beta}$, and it's normally distributed with mean $x_0\beta$ and variance $\sigma^2x_0(X^TX)^{-1}x_0^T$. Since we don't have $\sigma^2$ we use $\hat{\sigma}^2 = s^2 = \text{RSS}/(n-p)$. With these quantities we can build a **confidence interval** for $\hat{y}_0$:
 
-$\hat{y}_0 \pm t_{1-\alpha/2, n-p}$
-
-$\frac{\text{RSS}}{(n-p)}\sqrt{x_0(X^TX)^{-1}x_0^T}$
+$$
+\hat{y}_0 \pm t_{1-\alpha/2, n-p}\sqrt{\frac{\text{RSS}}{(n-p)}\,x_0(X^TX)^{-1}x_0^T}
+$$
 
 This confidence interval captures how our estimate $\hat{y}_0$ varies upon replication. It reflects the fact that our estimate of $E(y|X=x_0)$ is based on a sample, and it's only equal to the actual population value in the limit. 
 
