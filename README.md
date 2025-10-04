@@ -132,11 +132,7 @@ One interesting fact regarding including/removing variables is how $\text{RSS}$ 
 
 The estimated mean of $y$ at some specific value $x_0$ ($x_0 = \langle x_{1,0}, x_{2,0}, ... x_{p,0} \rangle$, i.e., a specific row of $X$) is $\hat{y}_0 = x_0\hat{\beta}$, and it's normally distributed with mean $x_0\beta$ and variance $\sigma^2x_0(X^TX)^{-1}x_0^T$. Since we don't have $\sigma^2$ we use $\hat{\sigma}^2 = s^2 = \text{RSS}/(n-p)$. With these quantities we can build a **confidence interval** for $\hat{y}_0$:
 
-<div align="left">
-$$
-\hat{y}_0 \pm t_{1-\alpha/2, n-p}\sqrt{\frac{\text{RSS}}{(n-p)}\,x_0(X^TX)^{-1}x_0^T}
-$$
-</div>
+$$\hat{y}_0 \pm t_{1-\alpha/2, n-p}\sqrt{\frac{\text{RSS}}{(n-p)}\,x_0(X^TX)^{-1}x_0^T}$$
 
 This confidence interval captures how our estimate $\hat{y}_0$ varies upon replication. It reflects the fact that our estimate of $E(y|X=x_0)$ is based on a sample, and it's only equal to the actual population value in the limit. 
 
@@ -144,7 +140,7 @@ This confidence interval captures how our estimate $\hat{y}_0$ varies upon repli
 
 Formally, $y_0$ is the actual value at $x_0$ and our prediction is $\hat{y}_0 = x_0\hat{\beta} + \epsilon_0$. Notice we _must_ include $\epsilon_0$ because we're predicting a single value of the distribution, which is mean + random deviation ($\epsilon_0$). The estimation error here is $y_0-\hat{y}_0 = x_0\beta - x_0\hat{\beta} + \epsilon_0$. What we then need to build the prediction interval is how this prediction error varies upon replication, i.e., $Var(y_0-\hat{y}_0)$. This variance is $Var(y_0-\hat{y}_0) = Var(x_0\beta - x_0\hat{\beta} + \epsilon_0)$. After some algebra, this becomes $Var(y_0-\hat{y}_0) = \sigma^2(1 + x_0(X^TX)^ {-1}x_0^T)$, which is basically a sum of the uncertainty in $\hat{\beta}$ (the second term) and the variability of $y$ around its true mean $E(y|X=x_0)$ (the first term). With this variance, the prediction interval for $\hat{y}_0$ is:
 
-$\hat{y} \pm t_{1-\alpha/2, n-p}\frac{\text{RSS}}{(n-p)}\sqrt{1 + x_0(X^TX)^{-1}x_0^T}$
+$$\hat{y} \pm t_{1-\alpha/2, n-p}\frac{\text{RSS}}{(n-p)}\sqrt{1 + x_0(X^TX)^{-1}x_0^T}$$
 
 Notice this is very similar to the confidence interval except for the $1+$ in the square root, which accounts for the population-level variability in $y$.
 
