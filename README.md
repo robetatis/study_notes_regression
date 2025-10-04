@@ -102,7 +102,7 @@ In MLR, we test $H_0: \beta_j = 0$ vs. $H_A:$ at least one $\beta_j \neq 0$, and
 
 $F = \frac{(\text{TSS} - \text{RSS})/p}{\text{RSS}/(n-p-1)}$.
 
-What $F$ does is set the model effects ($TSS - RSS$) in relation to the residuals. If $X$ and $y$ _are_ related, $\text{RSS}$ will be smaller than $\text{TSS} - \text{RSS}$, making $F > 1$. $F$ follows an F-distribution, which determines how much larger than 1 $F$ must be to be statistically significant.
+What $F$ does is set the model effects ($TSS - RSS$) in relation to the residuals. If $X$ and $y$ _are_ related, $\text{RSS}/p$ will be smaller than $(\text{TSS} - \text{RSS})/(n-p-1)$, making $F > 1$. $F$ follows an F-distribution, which determines how much larger than 1 $F$ must be to be statistically significant.
 
 #### Testing individual or subsets of regressors
 
@@ -116,7 +116,7 @@ where $\beta_{p-q+1} = \beta_{p-1+2} ... \beta_p$ are the omitted regressors. Th
 
 $F = \frac{(\text{RSS}_0 - \text{RSS})/q}{\text{RSS}/(n-p-1)}$,
 
-where the numerator captures the rise in $RSS$ we observe by removing the $q$ regressors - this measures the contribution of the $q$ omitted regressors. Since this measures the contribution of $q$ regressors, we divide by $q$' in order to get the 'residual rise per omitted regressor'.
+where the numerator captures the rise in $\text{RSS}$ we observe by removing the $q$ regressors - this measures the contribution of the $q$ omitted regressors. Since this measures the contribution of $q$ regressors, we divide by $q$ in order to get the 'residual rise per omitted regressor'.
 
 This same  logic can be used to asses inividual regressors. Actually, if we square the $t$-value of each individual regressor in an MLR, we get the $F$ value of a regression that omits that variable. Again, the logic here is: if we remove regressor $X_j$ and fit the model, and then compare the resduals to the full model, there should be a increase in $\text{RSS}$ if $X_j$ was important. 
 
@@ -126,7 +126,7 @@ To test whether the omitted $q$ regressors are non-zero, we can't just fit a mod
 
 In MLR, the first step is to do the F-test with all regressors to see if there's an effect at all of _any_ of the predictors. If we do reject $H_0$, we obviously want to know _which_ predictors are relevant. This is called **model selection**. See next chapter.
 
-One interesting fact regarding including/removing variables is how $\text{RSS}$ and $\text{RSE}$ react to adding regressors. It's perfectly possible to have, say, a model with 3 regressors with an $\text{RSS}$ of 10 and an $\text{RSE}$ of 3.5, and then, after including a fourth regressor, have $\text{RSS}$ drop to 8 (becase $\text{RSS}$ can only drop with more regressors, since we're adding dimensions) while $\text{RSE}$ grows to 4. The reason is simple: given that $\text{RSE} = \sqrt{\frac{RSS}{n-p-1}}$, $\text{RSE}$ can grow if the drop in $\text{RSS}$ is smaller than the increase in $p$.
+One interesting fact regarding including/removing variables is how $\text{RSS}$ and $\text{RSE}$ react to adding regressors. It's perfectly possible to have, say, a model with 3 regressors with an $\text{RSS}$ of 10 and an $\text{RSE}$ of 3.5, and then, after including a fourth regressor, have $\text{RSS}$ drop to 8 (becase $\text{RSS}$ can only drop with more regressors, since we're adding dimensions) while $\text{RSE}$ grows to 4. The reason is simple: given that $\text{RSE} = \sqrt{RSS/(n-p-1)}$, $\text{RSE}$ can grow if the drop in $\text{RSS}$ is smaller than the increase in $p$.
 
 ### Confidence vs prediction intervals
 
