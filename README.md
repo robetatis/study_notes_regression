@@ -10,7 +10,7 @@ The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That
 
 $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
-and the variance of its sampling distribution $Var(\hat{\beta})$ is related to 1) the variance of the residuals $\sigma^2 = Var(\epsilon)$ and 2) $X^TX$ (so-called Gram matrix), which captures the degree to which the regressors line up in $n$-dimensional space ($n$ = no. observations). The formula is:
+and the variance of its sampling distribution $Var(\hat{\beta})$ is related to 1) the variance of the residuals $\sigma^2 = Var(\epsilon)$ and 2) $X^TX$ (so-called Gram matrix), which captures the degree to which regressors line up in $n$-dimensional space ($n$ = no. observations). The formula is:
 
 $Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
@@ -26,10 +26,14 @@ Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = XE(\epsilon) 
 
 ### A final note on predicted values
 
-Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values $\hat{y}$ are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Further, the matrix-vector product $Hy$ (which is computed as $\hat{y}_i = \sum_{i=1}^n h_{ij}y_j$) indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$
+Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values $\hat{y}$ are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Further, the matrix-vector product $Hy$ (which is computed as $\hat{y}_i = \sum_{i=1}^n h_{ij}y_j$) indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$.
+
+Another important fact about $H$ is that each of its diagonal elements $h_{i,i}$ is equal to the _leverage_ of the corresponding observation $y_i$. The intuition here is: if we take a specific estimated value, say $\hat{y}_4$, we see that it is equal to the dot product $h_{4,j} \cdot y$, i.e., the corresponding row of the hat matrix and the observed $y$ vector. The fourth entry in $h_{4,j}$ determines how much the fourth observed $y$, $y_4$, influences its estimated value $\hat{y}_4$, that is, $h_{4,4}$ captures how much $y_4$ 'tugs' on $\hat{y}_4$. Extending this to all observations $y_i$, we seee that each $h_{ii}$ measures how each observation influences its estimated $\hat{y}_i$ - that's $y_i$'s leverage.
+
+Leverage is important because it mesaures how critical outliers are:  the estimated regression line 
 
 
-diaonal elements of hat matrix are leverage of each observation
+Leverage is used when computing studentized residuals (see below). It turns out each $e_i$ has 'its own variance', which is equal to $Var(e_i) = \sigma^2(1-h_{ii})$
 
 ### Sums of squares and $R^2$
 
