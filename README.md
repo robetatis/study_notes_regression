@@ -26,10 +26,12 @@ Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = XE(\epsilon) 
 
 ### A final note on predicted values
 
-Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values $\hat{y}$ are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Further, the matrix-vector product $Hy$, which is computed as $\hat{y}_i = \sum_{i=1}^n 1$ 
+Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values $\hat{y}$ are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Further, the matrix-vector product $Hy$, which is computed as 
 
 
-$\sum_{i=1}^n h_{ij}y_j$, indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$.
+$\hat{y}_i = \sum_{i=1}^n h_{ij}y_j$, 
+
+indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$.
 
 Another important fact about $H$ is that each of its diagonal elements $h_{i,i}$ is equal to the _leverage_ of the corresponding observation $(x_i, y_i)$. The diagonal entries of $H$ are $h_{i,i} = x_i(X^TX)^{-1}x_i^T$, and this measures how distant (from the center) $x_i$ is in the column space of $X$. This 'distance', combined with an unusual value for $y_i$ (i.e., a large residual $e_i$), results in a strong _influence_ of that datapoint on $\hat{\beta}$, which in turn translates into a strong influence of that datapoint on the regression line as a whole. Leverage is relevant because if high-leverage points are also outliers, our entire analysis would be based on a single (or a few) atypical observations, which makes conclusions less reliable than if they were based on the dataset as a whole.
 
