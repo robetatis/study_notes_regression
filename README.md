@@ -28,12 +28,15 @@ Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = XE(\epsilon) 
 
 Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values $\hat{y}$ are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Further, the matrix-vector product $Hy$ (which is computed as $\hat{y}_i = \sum_{i=1}^n h_{ij}y_j$) indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$.
 
-Another important fact about $H$ is that each of its diagonal elements $h_{i,i}$ is equal to the _leverage_ of the corresponding observation $y_i$. The intuition here is: if we take a specific estimated value, say $\hat{y}_4$, we see that it is equal to the dot product $h_{4,j} \cdot y$, i.e., the corresponding row of the hat matrix and the observed $y$ vector. The fourth entry in $h_{4,j}$ determines how much the fourth observed $y$, $y_4$, influences its estimated value $\hat{y}_4$, that is, $h_{4,4}$ captures how much $y_4$ 'tugs' on $\hat{y}_4$. Extending this to all observations $y_i$, we seee that each $h_{ii}$ measures how each observation influences its estimated $\hat{y}_i$ - that's $y_i$'s leverage.
+Another important fact about $H$ is that each of its diagonal elements $h_{i,i}$ is equal to the _leverage_ of the corresponding observation $(x_i, y_i)$. The diagonal entries of $H$ are $h_{i,i} = x_i(X^TX)^{-1}x_i^T$, and this measures how distant (from the center) $x_i$ is in the column space of $X$. This 'distance' in the column space of $X$, combined with an unusual value for $y_i$ (i.e., a large residual $e_i$), results in a strong _influence_ of that datapoint on $\hat{\beta}$, which in turn translates into a strong influence of that datapoint on the regression line as a whole. Leverage is relevant because if that point is an outlier, our entire analysis would be based on a single (or a few) atypical observations, which makes conclusions less reliable than if they were based on the dataset as a whole.
 
-Leverage is important because it mesaures how critical outliers are:  the estimated regression line 
+Note: the off-diagonal elements of $H = X(X^TX)^{-1}X^T$ are $h_{i,j} = x_i(X^TX)^{-1}x_j^T$, and these measure the alignment or 'cross-similarity' of $x_i$ and $x_j$ in the column space of $X$. In turn, the diagonal elements $h_{ii}$ measure 'self-similarity' of $x_i$ with itself, which is actually the distance mentioned above.
 
+Leverage is also important because it's used when computing studentized residuals. The latter are needed when determining outliers because it's easier to spot them on a standard scale than on $y$'s natural scale. That standardization is done by divding each residual $e_i$ by its variance, which turns out to be equal to $Var(e_i) = \sigma^2(1-h_{ii})$. The fact that each residual has 'its own variance' seems counterintuitive.
 
-Leverage is used when computing studentized residuals (see below). It turns out each $e_i$ has 'its own variance', which is equal to $Var(e_i) = \sigma^2(1-h_{ii})$
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Intuitively, why leverage influences a residual's variability  is: datapoints with more leverage have less variability upon replication because they have a stronger influence on the regression line. Thus, every replication leads to a regression line that moves little with respect to high-leverage points. 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ### Sums of squares and $R^2$
 
