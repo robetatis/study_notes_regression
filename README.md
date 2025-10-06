@@ -32,12 +32,7 @@ Another important fact about $H$ is that each of its diagonal elements $h_{i,i}$
 
 Note: the off-diagonal elements of $H = X(X^TX)^{-1}X^T$ are $h_{i,j} = x_i(X^TX)^{-1}x_j^T$, and these measure the alignment or 'cross-similarity' of $x_i$ and $x_j$ in the column space of $X$. In turn, the diagonal elements $h_{ii} = x_i(X^TX)^{-1}x_i^T$ measure the 'self-similarity' of $x_i$ with itself, which is actually the distance mentioned above (that distance is measured along the principal components of $X$).
 
-Leverage is also important because it's used when computing studentized residuals. The latter are needed when determining outliers because it's easier to spot them on a standard scale than on $y$'s natural scale. That standardization is done by divding each residual $e_i$ by its variance, which turns out to be equal to $Var(e_i) = \sigma^2(1-h_{ii})$. 
-
-
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-Intuitively, why leverage influences a residual's variability  is: datapoints with more leverage have less variability upon replication because they have a stronger influence on the regression line. Thus, every replication leads to a regression line that moves little with respect to high-leverage points. 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Leverage is also important because it's needed to obtain studentized residuals. These help determining outliers because it's easier to spot them on a standard scale than on $y$'s natural scale. That standardization is done by divding each residual $e_i$ by its variance, which is equal to $Var(e_i) = \sigma^2(1-h_{ii})$. Intuitively, this relation means that residuals of datapoints with more leverage have less variability upon replication because those points 'pull' the regression line more strongly towards them. Thus, every replication leads to a regression line that moves little with respect to those high-leverage points, and therefore less variable $e_i$.
 
 ### Sums of squares and $R^2$
 
