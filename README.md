@@ -26,13 +26,11 @@ Since $Cov(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = XE(\epsilon) 
 
 ### A final note on predicted values
 
-Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values $\hat{y}$ are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Further, the matrix-vector product $Hy$, which is computed as
+Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values $\hat{y}$ are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Further, the matrix-vector product $Hy$, which is computed as $\hat{y}_i = \sum_{i=1}^n h_{i,j}y_j$, indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$, and that the degree to which each $y_i$ influences a given $\hat{y}_i$ is given by the corresponding row of $H$.
 
-$$\hat{y}_i = \sum_{i=1}^n h_{i,j}y_j$$ 
+Another important fact about $H$ is that each of its diagonal elements $h_{i,i}$ is equal to the _leverage_ of the corresponding observation $(x_i, y_i)$. The diagonal entries of $H$ are $h_{i,i} = x_i(X^TX)^{-1}x_i^T$, and this measures how distant (from the center) $x_i$ is in the column space of $X$ (factor (X^TX)^{-1} warps and scales space such that distance is measured in $X$'s column space instead of in Euclidean space, otherwise we'd simply have $||x_i^2||$, i.e., the squared length of $x_i$). 
 
-indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$, and that the degree to which each $y_i$ influences a given $\hat{y}_i$ is given by the corresponding row of $H$.
-
-Another important fact about $H$ is that each of its diagonal elements $h_{i,i}$ is equal to the _leverage_ of the corresponding observation $(x_i, y_i)$. The diagonal entries of $H$ are $h_{i,i} = x_i(X^TX)^{-1}x_i^T$, and this measures how distant (from the center) $x_i$ is in the column space of $X$. This 'distance', combined with an unusual value for $y_i$ (i.e., a large residual $e_i$), results in a strong _influence_ of that datapoint on $\hat{\beta}$, which in turn translates into a strong influence of that datapoint on the regression line as a whole. Leverage is relevant because if high-leverage points are also outliers, our entire analysis would be based on a single (or a few) atypical observations, which makes conclusions less reliable than if they were based on the dataset as a whole.
+This 'distance', combined with an unusual value for $y_i$ (i.e., a large residual $e_i$), results in a strong _influence_ of that datapoint on $\hat{\beta}$, which in turn translates into a strong influence of that datapoint on the regression line as a whole. Leverage is relevant because if high-leverage points are also outliers, our entire analysis would be based on a single (or a few) atypical observations, which makes conclusions less reliable than if they were based on the dataset as a whole.
 
 Note: the off-diagonal elements of $H = X(X^TX)^{-1}X^T$ are $h_{i,j} = x_i(X^TX)^{-1}x_j^T$, and these measure the alignment or 'cross-similarity' of $x_i$ and $x_j$ in the column space of $X$. In turn, the diagonal elements $h_{ii} = x_i(X^TX)^{-1}x_i^T$ measure the 'self-similarity' of $x_i$ with itself, which is actually the distance mentioned above (that distance is measured along the principal components of $X$).
 
@@ -176,9 +174,9 @@ we get the more familiar form for MLR with interaction. If it's significant, the
 
 Interestingly, it can happen that the interaction term is significant but not the two associated main effects. In that case, the 'hierarchical principle' indicates those non-significant main effects should still be kept in the model. The rationale is: if the interaction exists, whether main effects are zero or not is irrelevant because those factors must be present for an interaction to take place at all. Also, those main effects are likely correlated with the interaction term, so leaving them out makes no sense.
 
-### Interaction with binary qualitative terms
+### Interaction with qualitative terms
 
-This particular setup is very useful, namely in situations where we're studying the relationship of $y$ with an $X$ that has quantitative and binary (qualitative) columns. The binary fields act as 'switches' that split the regression line into several (because their regression coefficient will be multiplied by either 0 or 1) and the interaction between the quantitative $X_j$ and the binary $X_j$ determines which slope each of those separate regression lines will have (because the 0/1 fields switch the additional slope terms 'on' and 'off'). This can be illustrated with an example using one quantitative ($x_1$) and one binary ($x_2$) regressor. Our model would be:
+This particular setup is very useful, namely in situations where we're studying the relationship of $y$ with an $X$ that has quantitative and qualitative columns. The binary fields act as 'switches' that split the regression line into several (because their regression coefficient will be multiplied by either 0 or 1) and the interaction between the quantitative $X_j$ and the binary $X_j$ determines which slope each of those separate regression lines will have (because the 0/1 fields switch the additional slope terms 'on' and 'off'). This can be illustrated with an example using one quantitative ($x_1$) and one binary ($x_2$) regressor. Our model would be:
 
 $y = \beta_0 + \beta1x_1 + \beta_2x2 + \beta_3x_1x_2$
 
