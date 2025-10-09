@@ -44,7 +44,7 @@ This 'distance', combined with an unusual value for $y_i$ (i.e., a large residua
 
 Note: the off-diagonal elements of $H = X(X^TX)^{-1}X^T$ are $h_{i,j} = x_i(X^TX)^{-1}x_j^T$, and these measure the alignment or 'cross-similarity' of $x_i$ and $x_j$ in the column space of $X$. In turn, the diagonal elements $h_{ii} = x_i(X^TX)^{-1}x_i^T$ measure the 'self-similarity' of $x_i$ with itself, which is actually the distance mentioned above (that distance is measured along the principal components of $X$).
 
-Leverage is also important because it's needed to obtain studentized residuals; these are key for determining outliers because it's easier to spot them on a standard scale than on $y$'s natural scale. That standardization is done by divding each residual $e_i$ by its variance, which is equal to $Var(e_i) = \sigma^2(1-h_{ii})$. Intuitively, this relation means that residuals of datapoints with more leverage have less variability upon replication because those points 'pull' the regression line more strongly towards them. Thus, every replication leads to a regression line that moves little with respect to those high-leverage points, and therefore less variable $e_i$.
+Leverage is also important because it's needed to obtain studentized residuals; these are key for determining outliers because it's easier to spot them on a standard scale than on $y$'s natural scale. That standardization is done by divding each residual $e_i$ by its variance, which is equal to $Var(e_i) = \sigma^2(1-h_{ii})$. Intuitively, this relation means that residuals of datapoints with more leverage have less variability upon replication because those points 'pull' the regression line more strongly towards them. Thus, every replication leads to a regression line that moves little with respect to those high-leverage points.
 
 ### Sums of squares and $R^2$
 
@@ -211,24 +211,11 @@ In contrast, if we include the quadratic term, $y = \beta_0 + \beta_1X_1 + \beta
 
 ### Heteroscedasticity
 
-Hetero- and homoscedasticity refer to the variance of the random vector of residuals $\epsilon$. $Var(\epsilon) = E[(\epsilon - E(\epsilon))(\epsilon - E(\epsilon))^T]$, which is an $n$ x $n$ _variance-covariance matrix_ that measures $\epsilon$'s 'spread' in n-dimensional space (in this context, each obervation is a dimension). This 'n-dimensional' variability involves 1) the variability of each component by itself - $Var(\epsilon_i)$ and 2) how different components vary together - $Cov(\epsilon_i, \epsilon_j)$, i.e., all pairwise covariances. In the above matrix, diagonal entries correspond to variances and off-diagonal entries are the covariances between different components.
+Hetero- and homoscedasticity refer to the variance of the random vector of true model errors $\epsilon$. $Var(\epsilon) = E[(\epsilon - E(\epsilon))(\epsilon - E(\epsilon))^T]$, which is an $n$ x $n$ _variance-covariance matrix_ that measures $\epsilon$'s 'spread' in n-dimensional space (in this context, each obervation is a dimension). This 'n-dimensional' variability involves 1) the variability of each component by itself - $Var(\epsilon_i)$ and 2) how different components vary together - $Cov(\epsilon_i, \epsilon_j)$, i.e., all pairwise covariances. In the above matrix, diagonal entries correspond to variances and off-diagonal entries are the covariances between different components.
 
-A key assumption in MLR is that the data-generating process has residuals with constant variance, i.e., $Var(\epsilon) = \sigma^2I_n$, with $\sigma^2$ a scalar and $I_n$ the $n$ x $n$ identity matrix. This implies that the variance-covariance matrix of $\epsilon$ is a diagonal matrix where all diagonal elements have the same value $\sigma^2$. As shown above, this assumption is used in the derivation of $Var(\hat{\beta})$ when we do $Var(\hat{\beta}) = (X^TX)^{-1}X^T Var(\epsilon)X(X^TX)^{-1} = \sigma^2(X^TX)^{-1}X^T X(X^TX)^{-1}$. If we could not assume $Var(\epsilon) = \sigma^2I_n$, we'd have $Var(\hat{\beta}) = (X^TX)^{-1}X^T \Sigma X(X^TX)^{-1}$, where 
+A key assumption in MLR is that the data-generating process has errors with constant variance, i.e., $Var(\epsilon) = \sigma^2I_n$, with $\sigma^2$ a scalar and $I_n$ the $n$ x $n$ identity matrix. This implies that the variance-covariance matrix of $\epsilon$ is a diagonal matrix where all diagonal elements have the same value $\sigma^2$. As shown above, this assumption is used in the derivation of $Var(\hat{\beta})$ when we do $Var(\hat{\beta}) = (X^TX)^{-1}X^T Var(\epsilon)X(X^TX)^{-1} = \sigma^2(X^TX)^{-1}X^T X(X^TX)^{-1}$. If we could not assume $Var(\epsilon) = \sigma^2I_n$, we'd have $Var(\hat{\beta}) = (X^TX)^{-1}X^T \Sigma X(X^TX)^{-1}$, where $\Sigma$ is the variance-covariance matrix of $\epsilon$, with diagonal elements $Var(\epsilon_i)$ and off-diagonal elements $Cov(\epsilon_i, \epsilon_j)$. In this case MLR doesn't work and we need to resort to alternative techniques that use empirical estimates of $\Sigma$.
 
-$$
-\Sigma = 
-\operatorname{Var}(\varepsilon) 
-= 
-\mathbb{E}\!\left[(\varepsilon - \mathbb{E}[\varepsilon])(\varepsilon - \mathbb{E}[\varepsilon])^\top\right]
-=
-\begin{bmatrix}
-\operatorname{Var}(\varepsilon_1) & \operatorname{Cov}(\varepsilon_1, \varepsilon_2) & \cdots & \operatorname{Cov}(\varepsilon_1, \varepsilon_n) \\
-\operatorname{Cov}(\varepsilon_2, \varepsilon_1) & \operatorname{Var}(\varepsilon_2) & \cdots & \operatorname{Cov}(\varepsilon_2, \varepsilon_n) \\
-\vdots & \vdots & \ddots & \vdots \\
-\operatorname{Cov}(\varepsilon_n, \varepsilon_1) & \operatorname{Cov}(\varepsilon_n, \varepsilon_2) & \cdots & \operatorname{Var}(\varepsilon_n)
-\end{bmatrix}.
-$$
-
+In practive, heteroscedasticity looks like a funnel-shaped point cloud in the fitted-values vs. residuals plot. Simple solutions include transforming $y$ with $\sqrt{y}$ or $log(y)$.
 ![](mlr_diagnostics_heteroscedastic.png)
 
 
