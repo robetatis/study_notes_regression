@@ -14,13 +14,7 @@ $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
 The variance of $\hat{\beta}$'s sampling distribution can be obtained as follows: 
 
-$Var(\hat{\beta}) = Var((X^TX)^{-1}X^Ty)$ 
-
-$Var(\hat{\beta}) = Var((X^TX)^{-1}X^T(X\beta + \epsilon))$ (substituting in the equation for $y$)
-
-$Var(\hat{\beta}) = Var((X^TX)^{-1}X^TX\beta + (X^TX)^{-1}X^T\epsilon)$ (expanding)
-
-$Var(\hat{\beta}) = Var((X^TX)^{-1}X^T\epsilon)$ (because $Var(c + Z) = Var(Z)$)
+$Var(\hat{\beta}) = Var((X^TX)^{-1}X^Ty)$. Substituting in the equation for $y$, we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T(X\beta + \epsilon))$. Expanding leads to $Var(\hat{\beta}) = Var((X^TX)^{-1}X^TX\beta + (X^TX)^{-1}X^T\epsilon)$. Using the fact that $Var(c + Z) = Var(Z)$, we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T\epsilon)$. 
 
 $Var(\hat{\beta}) = (X^TX)^{-1}X^T Var(\epsilon)X(X^TX)^{-1}$ (because $Var(cZ) = c^2Var(Z)$)
 
