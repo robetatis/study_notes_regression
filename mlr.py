@@ -223,8 +223,31 @@ class MLR:
         plt.tight_layout()
         plt.savefig(filename)
 
+    def variance_inflation_colinear_X(self, X_is_colinear):
+        
+        X = sm.add_constant(np.array([[1, 0], [0, 1], [0, 0]]))
+        
+        if X_is_colinear:
+            X = sm.add_constant(np.array([[1, 2.05], [2, 3.95], [3, 6.1]]))
+        
+        beta = np.array([1.5, 2.3, 0.8])
+        sigma_epsilon = 0.05
+        epsilon = np.random.normal(0, sigma_epsilon, 3)
+        y = X@beta + epsilon
+
+        beta_hat = np.linalg.inv(X.T @ X) @ X.T @ y
+        var_beta_hat = sigma_epsilon**2 * np.linalg.inv(X.T @ X)
+
+        r_reg = np.corrcoef(X[:, 1], X[:, 2])[0, 1]
+        print(f'corr. btw. regressors = {r_reg:.4f}') 
+        print(f'beta_hat = {beta_hat[0]:.4f}, {beta_hat[1]:.4f}, {beta_hat[2]:.4f}')
+        print(f'var(beta_hat) = {var_beta_hat[0,0]:.4f}, {var_beta_hat[1,1]:.4f}, {var_beta_hat[2,2]:.4f}')
+
+
 if __name__ == '__main__':
     mlr = MLR()
+    mlr.variance_inflation_colinear_X(True)
+    exit()
     mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
     mlr.model_interaction('mlr_distr_ei_missing_interaction.png')
     mlr.model_categorical_predictors('mlr_scatterplot_with_categorical.png', 'mlr_diagnostics_with_categorical.png')
