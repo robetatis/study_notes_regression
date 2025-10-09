@@ -14,7 +14,7 @@ $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
 The variance of $\hat{\beta}$'s sampling distribution can be obtained as follows: 
 
-$Var(\hat{\beta}) = Var((X^TX)^{-1}X^Ty)$. Substituting in the equation for $y$, we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T(X\beta + \epsilon))$. Expanding leads to $Var(\hat{\beta}) = Var((X^TX)^{-1}X^TX\beta + (X^TX)^{-1}X^T\epsilon)$. Noting that $(X^TX)^{-1}X^TX\beta$ is a constant with respect to $X$ (and remembering that we're computing the variance given $X$), we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T\epsilon)$. This is the variance of a constant ($(X^TX)^{-1}X^T$) times a random variable ($\epsilon$). We can take the constant out, which leads to $Var(\hat{\beta}) = (X^TX)^{-1}X^T Var(\epsilon)X(X^TX)^{-1}$ (we must square the constant, which with matrices is done by multiplying once by the constant and then by its transpose).If we define $Var(\epsilon) = \sigma^2$, we can put the scalar $\sigma^2$ in front: $Var(\hat{\beta}) = \sigma^2 (X^TX)^{-1}X^T X(X^TX)^{-1}$. Finally, noting that $(X^TX)^{-1}X^T X = I$, we get:
+$Var(\hat{\beta}) = Var((X^TX)^{-1}X^Ty)$. Substituting in the equation for $y$, we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T(X\beta + \epsilon))$. Expanding leads to $Var(\hat{\beta}) = Var((X^TX)^{-1}X^TX\beta + (X^TX)^{-1}X^T\epsilon)$. Noting that $(X^TX)^{-1}X^TX\beta$ is a constant with respect to $X$ (and remembering that we're computing the variance given $X$), we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T\epsilon)$. This is the variance of a constant ($(X^TX)^{-1}X^T$) times a random variable ($\epsilon$). We can take the constant out, which leads to $Var(\hat{\beta}) = (X^TX)^{-1}X^T Var(\epsilon)X(X^TX)^{-1}$ (we must square the constant, which with matrices is done by multiplying once by the constant and then by its transpose). Using the homoscedasticity assuption, we can say $Var(\epsilon) = \sigma^2I$, where $\sigma^2$ is a scalar. With this simplification, we can put $\sigma^2$ in front and skip writing $I$ (the identity matrix): $Var(\hat{\beta}) = \sigma^2 (X^TX)^{-1}X^T X(X^TX)^{-1}$. Finally, noting that $(X^TX)^{-1}X^T X = I$, we get:
 
 $Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
@@ -211,7 +211,23 @@ In contrast, if we include the quadratic term, $y = \beta_0 + \beta_1X_1 + \beta
 
 ### Heteroscedasticity
 
+Hetero- and homoscedasticity refer to the variance of the random vector of residuals $\epsilon$. $Var(\epsilon) = E[(\epsilon - E(\epsilon))(\epsilon - E(\epsilon))^T]$, which is an $n$ x $n$ _variance-covariance matrix_ that measures $\epsilon$'s 'spread' in n-dimensional space (in this context, each obervation is a dimension). This 'n-dimensional' variability involves 1) the variability of each component by itself - $Var(\epsilon_i)$ and 2) how different components vary together - $Cov(\epsilon_i, \epsilon_j)$, i.e., all pairwise covariances. In the above matrix, diagonal entries correspond to variances and off-diagonal entries are the covariances between different components.
 
+A key assumption in MLR is that the data-generating process has residuals with constant variance, i.e., $Var(\epsilon) = \sigma^2I_n$, with $\sigma^2$ a scalar and $I_n$ the $n$ x $n$ identity matrix. This implies that the variance-covariance matrix of $\epsilon$ is a diagonal matrix where all diagonal elements have the same value $\sigma^2$. As shown above, this assumption is used in the derivation of $Var(\hat{\beta})$ when we do $Var(\hat{\beta}) = (X^TX)^{-1}X^T Var(\epsilon)X(X^TX)^{-1} = \sigma^2(X^TX)^{-1}X^T X(X^TX)^{-1}$. If we could not assume $Var(\epsilon) = \sigma^2I_n$, we'd have $Var(\hat{\beta}) = (X^TX)^{-1}X^T \Sigma X(X^TX)^{-1}$, where 
+
+$$
+\Sigma = 
+\operatorname{Var}(\varepsilon) 
+= 
+\mathbb{E}\!\left[(\varepsilon - \mathbb{E}[\varepsilon])(\varepsilon - \mathbb{E}[\varepsilon])^\top\right]
+=
+\begin{bmatrix}
+\operatorname{Var}(\varepsilon_1) & \operatorname{Cov}(\varepsilon_1, \varepsilon_2) & \cdots & \operatorname{Cov}(\varepsilon_1, \varepsilon_n) \\
+\operatorname{Cov}(\varepsilon_2, \varepsilon_1) & \operatorname{Var}(\varepsilon_2) & \cdots & \operatorname{Cov}(\varepsilon_2, \varepsilon_n) \\
+\vdots & \vdots & \ddots & \vdots \\
+\operatorname{Cov}(\varepsilon_n, \varepsilon_1) & \operatorname{Cov}(\varepsilon_n, \varepsilon_2) & \cdots & \operatorname{Var}(\varepsilon_n)
+\end{bmatrix}.
+$$
 
 ![](mlr_diagnostics_heteroscedastic.png)
 
