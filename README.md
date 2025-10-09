@@ -4,9 +4,9 @@
 
 ### Model and intuition
 
-Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a column vector (we prepend a column of ones on the left for the intercept). The deterministic part is $X\beta$, which is a model for $E(Y|X)$. $\epsilon$ is the random deviation of each $y_i$ from $E(Y|X)$, and is what makes $y$ a random variable.
+Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a column vector (we prepend a column of ones on the left for the intercept). The deterministic part is $X\beta$, which is a model for $E(y|X)$. $\epsilon$ is the random deviation of each $y_i$ from $E(y|X)$, and is what makes $y$ a random variable.
 
-The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us a function to estimate of $E(Y|X)$ and a way to compute confidence intervals. $X$ is a matrix with $p$ columns and $n$ rows, where $p$ is the number of regressors and $n$ is the number of observations. In OLS, $p=1$. 
+The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us a function to estimate of $E(y|X)$ and a way to compute confidence intervals. $X$ is a matrix with $p$ columns and $n$ rows, where $p$ is the number of regressors and $n$ is the number of observations. In OLS, $p=1$. 
 
 Geometrically, predicting $E(y|X)$ corresponds to projecting $y$ onto the column space of $X$, that is, finding a linear combination $\hat{\beta}$ of the columns of $X$ that minimizes the residuals vector $e = y - \hat{y}$, where $\hat{y} = X\hat{\beta}$. Since $e$ and $X$'s column space are orthogonal, we can say $X^T(y - X\hat{\beta}) = 0$. Solving for $\hat{\beta}$ yields:
 
@@ -14,13 +14,7 @@ $\hat{\beta} = (X^TX)^{-1}X^Ty$
 
 The variance of $\hat{\beta}$'s sampling distribution can be obtained as follows: 
 
-$Var(\hat{\beta}) = Var((X^TX)^{-1}X^Ty)$. Substituting in the equation for $y$, we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T(X\beta + \epsilon))$. Expanding leads to $Var(\hat{\beta}) = Var((X^TX)^{-1}X^TX\beta + (X^TX)^{-1}X^T\epsilon)$. Using the fact that $Var(c + Z) = Var(Z)$, we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T\epsilon)$. 
-
-$Var(\hat{\beta}) = (X^TX)^{-1}X^T Var(\epsilon)X(X^TX)^{-1}$ (because $Var(cZ) = c^2Var(Z)$)
-
-$Var(\hat{\beta}) = \sigma^2 (X^TX)^{-1}X^T X(X^TX)^{-1}$ (defining $Var(\epsilon) = \sigma^2$)
-
-Finally, noting that $(X^TX)^{-1}X^T X = I$, we get:
+$Var(\hat{\beta}) = Var((X^TX)^{-1}X^Ty)$. Substituting in the equation for $y$, we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T(X\beta + \epsilon))$. Expanding leads to $Var(\hat{\beta}) = Var((X^TX)^{-1}X^TX\beta + (X^TX)^{-1}X^T\epsilon)$. Noting that $(X^TX)^{-1}X^TX\beta$ is a constant with respect to $X$ (and remembering that we're computing the variance given $X$), we get $Var(\hat{\beta}) = Var((X^TX)^{-1}X^T\epsilon)$. This is the variance of a constant ($(X^TX)^{-1}X^T$) times a random variable ($\epsilon$). We can take the constant out, which leads to $Var(\hat{\beta}) = (X^TX)^{-1}X^T Var(\epsilon)X(X^TX)^{-1}$ (we must square the constant, which with matrices is done by multiplying once by the constant and then by its transpose).If we define $Var(\epsilon) = \sigma^2$, we can put the scalar $\sigma^2$ in front: $Var(\hat{\beta}) = \sigma^2 (X^TX)^{-1}X^T X(X^TX)^{-1}$. Finally, noting that $(X^TX)^{-1}X^T X = I$, we get:
 
 $Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
