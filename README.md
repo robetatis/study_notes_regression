@@ -32,9 +32,9 @@ Since $\text{Cov}(X, \epsilon) = E(X\epsilon | X) - E(X)E(\epsilon | X) = XE(\ep
 
 ### A final note on predicted values $\hat{y}$
 
-Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values $\hat{y}$ are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Further, the matrix-vector product $Hy$, which is computed as 
+Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Geometrically, $X(X^TX)^{-1}X^T$ is a projection matrix, i.e., it's the matrix that projects $y$ onto the column space of $X$. Further, the matrix-vector product $Hy$, which is computed as 
 
-$$\hat{y}_i = \sum_{i=1}^n h_{i,j}y_j$$
+$$\hat{y}_i = \sum_{j=1}^n h_{i,j}y_j$$
 
 indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$, and that the degree to which each $y_i$ influences a given $\hat{y}_i$ is given by the corresponding row of $H$.
 
