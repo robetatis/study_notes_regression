@@ -96,7 +96,7 @@ Suppose the true model is $y = X\beta + \epsilon$. Say $X$ is of shape (n, m), b
 
 With this split, we can write the true model as $y = X_1\beta_1 + X_2\beta_2 + \epsilon$, where we've also split $\beta$ into an included part $\beta_1$ and an omitted part $\beta_2$. By implication, $X\beta = X_1\beta_1 + X_2\beta_2$.
 
-Then our incomplete model is $y = X_1\alpha + \delta$, and $\hat{y} = \hat{\alpha}X_1$, so $\hat{\alpha}$ is the regression coefficient we estimate when we only include the subset of regressors $X_1$ ($\delta$ is the residual of this incomplete model). Now, by definition
+Then our incomplete model is $y = X_1\alpha + \delta$, and $\hat{y} = \hat{\alpha}X_1$, so $\hat{\alpha}$ is the regression coefficient we estimate when we only include the subset of regressors $X_1$ ($\delta$ is the error of this incomplete model). Now, by definition
 
 $\hat{\alpha} = (X_1^TX_1)^{-1}X_1^Ty$. If we substitute in the true model for $y$, we can see how the missing $X_2$ influences $\hat{\alpha}$:
 
@@ -112,11 +112,11 @@ $E(\hat{\alpha} | X_1, X_2) = \beta_1 + E[(X_1^TX_1)^{-1}X_1^TX_2\beta_2 | X_1, 
 
 $E(\hat{\alpha} | X_1, X_2) = \beta_1 + (X_1^TX_1)^{-1}X_1^TX_2\beta_2$
 
-This result indicates that the expected value of $\hat{\alpha}$ is $\beta_1$ **plus a bias** (remember that bias = how much the expected value of our estimate deviates from the true value). That bias depends on 1) $\beta_2$ - the true effect of the omitted variable on $y$ and 2) $X_1^TX_2$ - how much the included and omitted regressors covary.
+This result indicates that the expected value of $\hat{\alpha}$ is the true value $\beta_1$ **plus a bias** (remember that bias = how much the expected value of our estimate deviates from the true value). That bias depends on 1) $\beta_2$ - the true effect of the omitted variable on $y$ and 2) $X_1^TX_2$ - how much the included and omitted regressors covary.
 
-$(X_1^TX_1)^{-1}X_1^TX_2$ -> this term has two parts: $X_1^TX_2$ measures how strongly the included ($X_1$) and omitted ($X_2$) regressors covary, and $(X_1^TX_1)^{-1}$ acts as a 'distributor' of the previous quantity. Namely, this factor 'allocates' bias to the entries of $\hat{\alpha}$ based on how redundant the columns of $X_1$ are. Columns of $X_1$ that can be predicted from the others (collinear regressors) get more bias (due to the way entries in $(X_1^TX_1)^{-1}$ capture $\text{Var}(x_1,j)$ vs. $\text{Cov}(x_1,j, x_{1,-j})$ -> the variance and covariance of the included regressors).
+$(X_1^TX_1)^{-1}X_1^TX_2$ -> this term has two parts: $X_1^TX_2$ measures how strongly the included ($X_1$) and omitted ($X_2$) regressors covary, and $(X_1^TX_1)^{-1}$, which acts as a 'distributor' of the previous quantity. In other words, this factor 'allocates' bias to the entries of $\hat{\alpha}$ based on how redundant the columns of $X_1$ are. Columns of $X_1$ that can be predicted from the others (collinear regressors) get more bias given to the way entries in $(X_1^TX_1)^{-1}$ capture $\text{Var}(x_1,j)$ vs. $\text{Cov}(x_1,j, x_{1,-j})$ (i.e., the variance and covariance of the included regressors).
 
-In summary, if we omit variables that are possitively associated with $y$ and with $X_1$ (the included regressors) we will have inflated coefficients for the regressors we do include, since they represent the true value $\beta_1$ plus the bias $(X_1^TX_1)^{-1}X_1^TX_2\beta_2$. If the omitted variables are negatively associated with $y$ and with the included regressors, coefficient estimates will be smaller because the true effect will be dampened by the bias. In cases where the omitted variables have a positive (negative) relation with $y$ and a negative (positive) relation with $X_1$, the net effect depends on whether $\beta_2$ or $X_1^TX_2$ is larger.
+In summary, if we omit variables that are positively associated with $y$ and with $X_1$ (the included regressors) we will have inflated coefficients for the regressors we do include, since they represent the true value $\beta_1$ plus the bias $(X_1^TX_1)^{-1}X_1^TX_2\beta_2$. If the omitted variables are negatively associated with $y$ and with the included regressors, coefficient estimates will be smaller because the true effect will be dampened by the bias. In cases where the omitted variables have a positive (negative) relation with $y$ and a negative (positive) relation with $X_1$, the net effect depends on whether $\beta_2$ or $X_1^TX_2$ is larger.
 
 ### Hypothesis test
 
