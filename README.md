@@ -90,7 +90,9 @@ The part of $X_j$ not explained by the other regressors is captured by the resid
 
 ### Omitted variable bias
 
-When we omit relevant regressors we are 'burying' their effect in the $\hat{\beta}_j$ of the factors we do include. This happens when the omitted regressors meet two conditions: 1) the omitted regressors correlate with $y$ **and** 2) the omitted regressors correlate with the included regressors. Formally: 
+In practice, MLR is often used in _observational_ contexts, where it's hard to include all relevant variables and/or randomize observations in order to balance the effect of unseen factors. For this reason, it's important to explore what happens when we **omit relevant regressors** in MLR.
+
+Intuitively, when we omit relevant regressors we are 'burying' their effect in the $\hat{\beta}_j$ of the factors we do include. This happens when the omitted regressors meet two conditions: 1) the omitted regressors correlate with $y$ **and** 2) the omitted regressors correlate with the included regressors. Formally: 
 
 Suppose the true model is $y = X\beta + \epsilon$. Say $X$ is of shape (n, m), but we only include $k$ regressors ($k < m$), i.e., we leave $m-k$ regressors out of the model. We can say $X$ is made up of two parts (included and omitted columns), so we can write it as $X = [X_1 \ X_2]$, with $X_1$ = the included regressors and $X_2$ = the omitted regressors. Each of these is just a matrix, one with the included ($X_1$) and another with the omitted ($X_2$) columns of $X$.
 
@@ -112,9 +114,7 @@ $E(\hat{\alpha} | X_1, X_2) = \beta_1 + E[(X_1^TX_1)^{-1}X_1^TX_2\beta_2 | X_1, 
 
 $E(\hat{\alpha} | X_1, X_2) = \beta_1 + (X_1^TX_1)^{-1}X_1^TX_2\beta_2$
 
-This result indicates that the expected value of $\hat{\alpha}$ is the true value $\beta_1$ **plus a bias** (remember that bias = how much the expected value of our estimate deviates from the true value). That bias depends on 1) $\beta_2$ - the true effect of the omitted variable on $y$ and 2) $X_1^TX_2$ - how much the included and omitted regressors covary.
-
-Note that the second term $(X_1^TX_1)^{-1}X_1^TX_2$ has two parts: $X_1^TX_2$ measures how strongly the included ($X_1$) and omitted ($X_2$) regressors covary, and $(X_1^TX_1)^{-1}$ acts as a 'distributor' of the previous quantity which 'allocates' bias to the entries of $\hat{\alpha}$ based on how redundant the columns of $X_1$ are. Columns of $X_1$ that can be predicted from the others (collinear regressors) get more bias given to the way entries in $(X_1^TX_1)^{-1}$ capture $\text{Var}(x_1,j)$ vs. $\text{Cov}(x_1,j, x_{1,-j})$ (i.e., the variance and covariance of the included regressors).
+This result indicates that the expected value of $\hat{\alpha}$ is the true value $\beta_1$ **plus a bias** (remember that bias = how much the expected value of our estimate deviates from the true value). That bias depends on 1) $\beta_2$ - the true effect of the omitted variable on $y$ and 2) $X_1^TX_2$ - how much the included and omitted regressors covary. Note that the second term also includes factor $(X_1^TX_1)^{-1}$, which accounts for the fact that highly correlated regressors in $X_1$ (included regressors) amplify the bias caused by correlation between included and omitted regressors.
 
 In summary, if we omit variables that are positively associated with $y$ and with $X_1$ (the included regressors) we will have inflated coefficients for the regressors we do include, since they represent the true value $\beta_1$ plus the bias $(X_1^TX_1)^{-1}X_1^TX_2\beta_2$. If the omitted variables are negatively associated with $y$ and with the included regressors, coefficient estimates will be smaller because the true effect will be dampened by the bias. In cases where the omitted variables have a positive (negative) relation with $y$ and a negative (positive) relation with $X_1$, the net effect depends on whether $\beta_2$ or $X_1^TX_2$ is larger.
 
@@ -150,9 +150,9 @@ In MLR, the first step is to do the F-test with all regressors to see if there's
 
 One interesting fact regarding including/removing variables is how $\text{RSS}$ and $\text{RSE}$ react to adding regressors. It's perfectly possible to have, say, a model with 3 regressors with an $\text{RSS}$ of 10 and an $\text{RSE}$ of 3.5, and then, after including a fourth regressor, have $\text{RSS}$ drop to 8 (becase $\text{RSS}$ can only drop with more regressors, since we're adding dimensions) while $\text{RSE}$ grows to 4. The reason is simple: given that $\text{RSE} = \sqrt{RSS/(n-p-1)}$, $\text{RSE}$ can grow if the drop in $\text{RSS}$ is smaller than the increase in $p$.
 
-### Confidence vs prediction intervals
+### Confidence and prediction intervals
 
-The estimated mean of $y$ at some specific value $x_0$ ($x_0 = \langle x_{1,0}, x_{2,0}, ... x_{p,0} \rangle$, i.e., a specific row of $X$) is $\hat{y}_0 = x_0^T\hat{\beta}$, and it's normally distributed with mean $x_0^T\beta$ and variance $\sigma^2x_0(X^TX)^{-1}x_0^T$. Since we don't have $\sigma^2$ we use $\hat{\sigma}^2 = s^2 = \text{RSS}/(n-p)$. With these quantities we can build a **confidence interval** for $\hat{y}_0$:
+The estimated mean of $y$ at some specific value $x_0$ ($x_0 = \langle x_{1,0}, x_{2,0}, ... x_{p,0} \rangle$, i.e., a specific row of $X$) is $\hat{y}_0 = x_0\hat{\beta}$, and it's normally distributed with mean $x_0\beta$ and variance $\sigma^2x_0(X^TX)^{-1}x_0^T$. Since we don't have $\sigma^2$ we use $\hat{\sigma}^2 = s^2 = \text{RSS}/(n-p)$. With these quantities we can build a **confidence interval** for $\hat{y}_0$:
 
 $$\hat{y}_0 \pm t_{1-\alpha/2, n-p}\sqrt{\frac{\text{RSS}}{(n-p)}x_0(X^TX)^{-1}x_0^T}$$
 
