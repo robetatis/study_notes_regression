@@ -225,9 +225,8 @@ Simple solutions include transforming $y$ with $\sqrt{y}$ or $log(y)$. However, 
 
 ### Collinearity in $X$
 
-Whenever $X$ has columns that tend to line up in n-dimensional space, i.e., are correlated, the entries in $(X^TX)^{-1}$ become larger, increasing the value of any of the quantities we've computed so far where this inverse is involved. The most direct cases are $\text{Var}(\hat{\beta})$ and  confidence and prediction intervals, all of which become more uncertain (wider intervals). Intuitively, what this means is that MLR is less capable of finding significant effects and producing accurate predictions when the columns of $X$ are 'entangled', that is, when it's not clear which of them are responsible for variation in $y$ given that they do not vary independently of one another.
+Whenever $X$ has columns that tend to line up in n-dimensional space, i.e., are correlated/collinear, the entries in $(X^TX)^{-1}$ become larger, increasing the value of any of the quantities we've computed so far where this inverse is involved. The most direct cases are $\text{Var}(\hat{\beta})$ and  confidence and prediction intervals, all of which become larger. The overall consequence of this increase in standard errors is a drop in the statistical power of hypothesis tests - with collinearity, we're less likely to reject a false $H_0$. 
 
+Another effect of collinearity is that the involved $\hat{\beta}_j$ become smaller. Remember that $\hat{\beta}_j = (r_j^Ty)/(r_j^Tr_j)$, where $r_j$ are the residuals of regressing $X_j$ against all other regressors $X_{-j}$. If $X_j$ can be predicted from the other regressors, then there's little variation left in $X_j$, i.e., $r_j$ is small, which leads to a small $\hat{\beta}_j$.
 
-
-
-
+Intuitively, what happens with collinear regressors is that changes in $y$ due to changes in a specific regressor $X_j$ are 'contaminated' with changes in $y$ caused by $X_j$'s collinear regressors. This happens because any change in $X_j$ is always 'tied' to changes in the other regressors, so the model cannot measure $X_j$'s unique effect. Again, this is linked to the fact that $\hat{\beta}_j = (r_j^Ty)/(r_j^Tr_j)$, and collinearity leaves very little unique variation in $X_j$ after regressing it against the other regressors (i.e.,  $r_j$). Thus, changes in $y$ cannot be clearly attributed.
