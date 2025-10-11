@@ -225,7 +225,7 @@ Simple solutions include transforming $y$ with $\sqrt{y}$ or $log(y)$. However, 
 
 ### Collinearity in $X$
 
-Whenever $X$ has columns that tend to line up in n-dimensional space, i.e., are correlated/collinear, the entries in $(X^TX)^{-1}$ become larger, increasing the value of any of the quantities we've computed so far where this inverse is involved. The most direct cases are $\text{Var}(\hat{\beta})$ and  confidence and prediction intervals, all of which become larger. The overall consequence of this increase in standard errors is a drop in the statistical power of hypothesis tests - with collinearity, we're less likely to reject a false $H_0$. 
+Whenever $X$ has columns that tend to line up in n-dimensional space, i.e., are correlated/collinear, the entries in $(X^TX)^{-1}$ become larger, increasing the value of any of the quantities we've computed so far where this inverse is involved. The most direct cases are $\text{Var}(\hat{\beta})$ and  confidence and prediction intervals, all of which become larger. The overall consequence of this increase in standard errors is a **drop in the statistical power of hypothesis tests** - with collinearity, we're less likely to reject a false $H_0$. 
 
 Another effect of collinearity is that the involved $\hat{\beta}_j$ become smaller. Remember that $\hat{\beta}_j = (r_j^Ty)/(r_j^Tr_j)$, where $r_j$ are the residuals of regressing $X_j$ against all other regressors $X_{-j}$. If $X_j$ can be predicted from the other regressors, then there's little variation left in $X_j$, i.e., $r_j$ is small, which leads to a small $\hat{\beta}_j$.
 
