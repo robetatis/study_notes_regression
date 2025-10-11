@@ -6,7 +6,7 @@ James., G., Witten, D., Hastie, T., Tibshirani, R. (2017). An Introduction to St
 
 and
 
-Hastie., T., Tibshirani, R., Friedman, J. (2017). The Elements of Statistical Learning. Data Mining, Inference, and Prediction. Springer
+Hastie, T., Tibshirani, R., Friedman, J. (2017). The Elements of Statistical Learning. Data Mining, Inference, and Prediction. Springer
 
 ## Ordinary least-squares - OLS
 
