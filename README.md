@@ -40,7 +40,7 @@ indicates that each $\hat{y}_i$ is a linear combination of all observed $y_i$, a
 
 Another important fact about $H$ is that each of its diagonal elements $h_{i,i}$ is equal to the _leverage_ of the corresponding observation $(x_i, y_i)$. The diagonal entries of $H$ are $h_{i,i} = x_i(X^TX)^{-1}x_i^T$, and this measures how distant (from the center) $x_i$ is in the column space of $X$. Factor $(X^TX)^{-1}$ warps and scales space such that distance is measured in $X$'s column space instead of in Euclidean space, otherwise we'd simply have $\lVert x_i^2 \rVert$, i.e., the squared length of $x_i$. 
 
-This 'distance', combined with an unusual value for $y_i$ (i.e., a large residual $e_i$), results in a strong _influence_ of that datapoint on $\hat{\beta}$, which in turn translates into a strong influence of that datapoint on the regression line as a whole. Leverage is relevant because if high-leverage points are also outliers, our entire analysis would be based on a single (or a few) atypical observations, which makes conclusions less reliable than if they were based on the dataset as a whole.
+This 'distance', combined with an unusual value for $y_i$ (i.e., a large residual $e_i$), results in a strong _influence_ of that datapoint on $\hat{\beta}$, which in turn translates into a strong influence of that datapoint on the regression line as a whole. Leverage is relevant because if high-leverage points are also outliers, our entire analysis would be based on a single (or a few) atypical observations, which makes conclusions less reliable than if they were based on the dataset as a whole. It's also important to mention that leverage measures how 'unusual' a specific row of $X$, $x_i = \langle x_{i,1}, x_{i,2}, ..., x_{i,p} \rangle$, is **in p-dimensional space**, and this **cannot be assessed visually via pairwise comparisons** of the columns of $X$ unless $X$ has only two columns. The reason is that a given $x_i$ can be within range for two of the variables (columns of $X$) and still be unusual in the other $p-2$ dimensions.
 
 Note: the off-diagonal elements of $H = X(X^TX)^{-1}X^T$ are $h_{i,j} = x_i(X^TX)^{-1}x_j^T$, and these measure the alignment or 'cross-similarity' of $x_i$ and $x_j$ in the column space of $X$. In turn, the diagonal elements $h_{ii} = x_i(X^TX)^{-1}x_i^T$ measure the 'self-similarity' of $x_i$ with itself, which is actually the distance mentioned above (that distance is measured along the principal components of $X$).
 
@@ -223,15 +223,9 @@ In practice, heteroscedasticity looks like a funnel-shaped point cloud in the fi
 
 Simple solutions include transforming $y$ with $\sqrt{y}$ or $log(y)$. However, many real-world problems require techniques that use empirical estimates of $\Sigma$. Among these are, for instance, 1) robust standard errors, where $\text{Var}(\hat{\beta}) = (X^TX)^{-1}X^T\hat{\Sigma}X(X^TX)^{-1}$, with $\hat{\Sigma} = \text{diag}(e_1^2, e_2^2, ..., e_n^2)$; or 2) weighted least squares, where $\hat{\beta} = (X^TWX)^{-1}X^TWy$, with $W=\text{diag}(1/\sigma_i^2)$ and we can, for instance, assume $\sigma$ is a function of $X$, such as $\text{Var}(\epsilon_i) = \sigma^2f(x_i)$. 
 
-### Outliers
+### Collinearity in $X$
 
-
-### Leverage
-
-
-### Collinearity
-
-inflated variance of beta
+Whenever $X$ has columns that tend to line up in n-dimensional space, i.e., are correlated, the entries in $(X^TX)^{-1}$ become larger, increasing the value of any of the quantities we've computed so far where this inverse is involved. The most direct cases are $\text{Var}(\hat{\beta})$ and  confidence and prediction intervals, all of which become more uncertain (wider intervals). Intuitively, what this means is that MLR is less capable of finding significant effects and producing accurate predictions when the columns of $X$ are 'entangled', that is, when it's not clear which of them are responsible for variation in $y$ given that they do not vary independently of one another.
 
 
 
