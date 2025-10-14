@@ -4,9 +4,9 @@ Based largely on
 
 James., G., Witten, D., Hastie, T., Tibshirani, R. (2017). An Introduction to Statistical Learning with Applications in R. Springer. ISBN 978-1-4614-7137-0
 
-and
-
 Hastie, T., Tibshirani, R., Friedman, J. (2017). The Elements of Statistical Learning. Data Mining, Inference, and Prediction. Springer
+
+https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
 
 ## Ordinary least-squares - OLS
 
@@ -242,3 +242,58 @@ $$\hat{\beta}_j = (r_j^Ty)/(r_j^Tr_j)$$
 where $r_j$ are the residuals of regressing $X_j$ against all other regressors $X_{-j}$. If $X_j$ can be predicted from the other regressors, then there's little unique variation left in $X_j$, i.e., $r_j$ is small, which leads to a small $\hat{\beta}_j$.
 
 Intuitively, what happens with collinear regressors is that changes in $y$ due to changes in a specific regressor, say $X_1$, are 'contaminated' with the changes in $y$ caused by $X_1$'s collinear regressors, say $X_2$. That is, when we move along $X_1$ and observe what happens to $y$, the amount by which $y$ changes also contains the effect of $X_2$, and the reason is that we're also 'unknowingly' moving along $X_2$ because these two regressors are correlated. Again, this happens because any change in $X_j$ is always 'tied' to changes in $X_j$'s collinear regressors, so the model cannot measure $X_j$'s unique effect. As above, this is linked to the fact that $\hat{\beta}_j = (r_j^Ty)/(r_j^Tr_j)$, and collinearity leaves very little unique variation in $X_j$ after regressing it against the other regressors (i.e., small $r_j$). Thus, changes in $y$ cannot be clearly attributed.
+
+### Detecting multicollinearity
+
+Simply looking at a heatmap of bivariate correlations among columns of $X$ is not enough to detect multicollinearity. The reason is that it's perfectly possible for collinearity to involve several regressors, even with no strong bivariate correlations between them (!). Hence, more reliable approaches look at collinearity between _all_ $X_j$ simultaneously.
+
+The most common approach is the Variance Inflation Factor VIF, which is the ratio of the variance of $\hat{\beta}_j$ when fitting the full model to the variance of $\hat{\beta}_j$ when fitting a reduced model with only $X_j$. The logic is that, if there's collinearity in $X$, $\text{Var}(\hat{\beta}_j)$ will be larger in the full than in the reduced model, simply because collinearity with the other regressors $X_{-j}$ will inflate $X_j$'s standard error as we've seen above. In this approach, we then obtain the VIF for each $\hat{\beta}_j$, and the ones that are large (rule of thumb: > 5) are considered to be collinear columns of $X$.
+
+Although the VIF is clearly very practical, there's another, more intuitive way of looking at collinearity which goes deeper into the geometry of regression. This approach is based on **eigenvalue decomposition** of $X^TX$. The intuition is as follows. 
+
+We've said that $X^TX$, which is a $p$ x $p$ matrix, captures the variance-covariance structure of $X$; each entry is the dot product $X_i^T X_j$, i.e., a measure of how much column $i$ and column $j$, when viewed as vectors, align in $n$-dimensional space ($n$ = no. rows of $X$). That means that the first column of $X^TX$, for instance, holds the dot product $X_1^TX_1$ in its first row, $X_1^TX_2$ in row 2, $X_1^TX_3$ in row 3, etc., and the same for all other columns. Hence, each column of $X^TX$ is something like the '**correlation signature**' of that feature, where row 1 is its covariance with feature 1, row 2 is its covariance with feature 2, etc. Since $X$ is $n$ x $p$, $X^TX$ is $p$ x $p$. 
+
+Note that the correlation signature of a feature that's independent will have near-zero entries in most rows except in the row corresponding to the correlation with itself, which corresponds to its variance. This structure indicates that that column's variability mostly occurs in 'its own direction', i.e., in a direction that's independent of the other columns. In contrast, a column of $X$ that's correlated with other columns will have larger entries in the rows corresponding to its covariance with other columns, indicating that its variability is 'tied' to other features' variation.
+
+We can plot these covariance signatures (columns of $X^TX$) as vectors in $p$-dimensional _feature space_, where each axis is a feature (column) of $X$. This is the same space where we'd plot the $n$ observations of $X$ (the 'cloud of points' in every regression, where each axis is a variable; obviously plotting is only possible for $p \le 3$). When placing the columns of $X^TX$ in this space, we put the 1st component of each vector along the axis corresponding to feature 1 (because that's the covariance with feature 1), the second along the axis for feature 2 (because that's the covariance with feature 2), and so on. Columns of $X^TX$ with similar correlation signature (i.e., similar correlation patterns with all columns of $X$) will point in a similar direction. In contrast, if the columns of $X$, and therefore also of $X^TX$, are independent, those vectors will point in different directions that closer to being independent (orthogonal).
+
+The directions of the columns of $X^TX$ in feature space capture the $p$-dimensional 'shape' of the data. The 3-dimensional example below shows a nicely shaped dataset where the point cloud is roughly spherical and therefore doesn't show any correlation among columns of $X$. The lines are the 3d vectors corresponding to the three columns of $X^X$, and we see that they point in near orthogonal directions. 
+
+![](mlr_3d_example_collinearity_independent.png). 
+
+In contrast, the next example, also 3d, shows a dataset with a clear dependence between features, namely between $X_1$ and $X_3$, which is visible in the nearly collinear red ($X_1$) and blue ($X_3$) vectors. Column 2 of $X^TX$ does vary independently (green vector)
+
+![](mlr_3d_example_collinearity_dependent.png). 
+
+
+dependent
+Eigenvalues: [ 10.88691537 307.78578064 978.46976661]
+Eigenvectors (columns):
+ [[ 0.70294297  0.04691889 -0.70969697]
+ [ 0.00397435  0.9975471   0.06988553]
+ [-0.71123511  0.05194613 -0.70103225]]
+
+independent
+Eigenvalues: [265.11771584 283.51880521 336.56983432]
+Eigenvectors (columns):
+ [[-0.2613745   0.73155878 -0.62968653]
+ [ 0.13995195  0.67419325  0.72517372]
+ [ 0.9550376   0.10141606 -0.2786    ]]
+
+
+if columns of X are independent, are eigenvectors of X^TX always aligned with original axes of feature space (features of X)?
+yes, because $X^TX$ would be diagonal (off-diagonal elements are 0; no covariance), so the columns of $X^TX$ already constitute an orthonormal basis, thus the eigenvectors of $X^TX$ are perfectly aligned with the axes of feature space. 
+
+As collinearity increases, eigenvectors become mixtures of multiple features — they “rotate” to capture shared directions of variance. eigenvectors becomes a linear combination of multiple features, with large contributions from the correlated features, i.e., those components of the eigenvectors become larger.
+
+
+, is to look at the condition number $\kappa = \lambda_{max}/\lambda_{min}$, which captures how much larger the largest eigenvalue of $X^TX$ $\lambda_{max}$ is relative to than the smallest one $\lambda_{min}$. Whenever there's collinearity, $X^TX$ will have small eigenvalues ($\lambda$) for the directions of small variance, i.e., the directions in $p$-dimensional space in which the dataset is missing variability. At the same time, there will be larger eigenvalues for the directions of larger independent variability. As a result, $\kappa = \lambda_{max}/\lambda_{min}$ will be large. I contrast, without collinearity in $X$, $\kappa$ will be small because the $\lambda_j$ will be more similar.
+
+
+The eigenvectors corresponding to these small eigenvalues show the linear combination of features $X_j$ that define those low-variance directions, and the larger components of those eigenvectors show which $X_j$ are involved in the collinearity ('collinearity' here means 'approximate collinearity'; in practice it's obvioulsy very unlikely to have perfect collinearity).
+
+In practice, you typically have many features, and my goal is to see which features are collinear and which are not. if I have 10 features and the eigenvector for the small eigenvalue is <0.3, 0.23, -0.17, 0.01, 0.04, 0.01, -0.02, 0.01, 0.01, 0.003>, can i safely say features 1, 2 and 3 are collinear.
+
+
+
+ 

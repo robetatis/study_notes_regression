@@ -5,9 +5,12 @@
 # X is of shape (n, p) with p > 1
 # each beta_j is the effect of factor j **holding all other factors constant**
 
+import pandas as pd
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_california_housing
+from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import omni_normtest, jarque_bera
@@ -243,15 +246,70 @@ class MLR:
         print(f'beta_hat = {beta_hat[0]:.4f}, {beta_hat[1]:.4f}, {beta_hat[2]:.4f}')
         print(f'var(beta_hat) = {var_beta_hat[0,0]:.4f}, {var_beta_hat[1,1]:.4f}, {var_beta_hat[2,2]:.4f}')
 
+    def check_collinearity(self):
+
+        np.random.seed(0)
+        X = np.random.randn(300, 3) @ np.array([[1,   0, 0.8],
+                                                [0,   1,   0],
+                                                [0.8, 0,   1]])
+
+        XTX = X.T @ X
+
+        eigvals, eigvecs = np.linalg.eigh(XTX)
+
+        print("Eigenvalues:", eigvals)
+        print("Eigenvectors (columns):\n", eigvecs)
+
+        fig = plt.figure(figsize=(5, 4))
+        ax = fig.add_subplot(111, projection='3d')
+        ax.scatter(X[:, 0], X[:, 1], X[:, 2], alpha=0.3, label='Rows of X (observations)')
+
+        origin = np.zeros(3)
+        colors = ['r', 'g', 'b']
+        for i in range(3):
+            vec = XTX[:, i]
+            ax.quiver(*origin, *vec, color=colors[i], arrow_length_ratio=0.1, label=f'col {i+1} of X^T X')
+
+        ax.set_xlabel('X1')
+        ax.set_ylabel('X2')
+        ax.set_zlabel('X3')
+        ax.legend()
+        plt.tight_layout()
+        plt.savefig('mlr_3d_example_collinearity_dependent.png')
+
+
+
+        exit()
+
+
+    def california_housing(self):
+        ch = fetch_california_housing()
+
+        X = pd.DataFrame(ch.data, columns = ch.feature_names)
+        X = sm.add_constant(X)
+        y = pd.DataFrame(ch.target, columns=['med_house_val_100k'])
+        self.model_sample = sm.OLS(y,X)
+        self.model_sample = self.model_sample.fit()
+        self.y_hat = self.model_sample.predict(X)
+        print(self.model_sample.summary())
+
+        self.compute_residuals_stats()
+        self.compute_diagnostics()
+        self.plot_diagnostics('mlr_diagnostis_california_housing')
+
+        
+
 
 if __name__ == '__main__':
+
     mlr = MLR()
-    mlr.variance_inflation_colinear_X(True)
-    exit()
-    mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
-    mlr.model_interaction('mlr_distr_ei_missing_interaction.png')
-    mlr.model_categorical_predictors('mlr_scatterplot_with_categorical.png', 'mlr_diagnostics_with_categorical.png')
-    mlr.model_interaction_categorical_predictors('mlr_scatterplot_categorical_interaction.png', 'mlr.diagnostics_categorical_interaction.png')
-    mlr.model_missing_nonlinear_term('mlr_diagnostics_missing_nonlinear_ok.png', 'mlr_diagnostics_missing_nonlinear_missing.png')
-    mlr.model_heteroscedastic('mlr_diagnostics_heteroscedastic.png')
+    mlr.check_collinearity()
+
+    #mlr.variance_inflation_colinear_X(True)
+    #mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
+    #mlr.model_interaction('mlr_distr_ei_missing_interaction.png')
+    #mlr.model_categorical_predictors('mlr_scatterplot_with_categorical.png', 'mlr_diagnostics_with_categorical.png')
+    #mlr.model_interaction_categorical_predictors('mlr_scatterplot_categorical_interaction.png', 'mlr.diagnostics_categorical_interaction.png')
+    #mlr.model_missing_nonlinear_term('mlr_diagnostics_missing_nonlinear_ok.png', 'mlr_diagnostics_missing_nonlinear_missing.png')
+    #mlr.model_heteroscedastic('mlr_diagnostics_heteroscedastic.png')
 
