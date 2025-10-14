@@ -257,13 +257,17 @@ Note that the correlation signature of a feature that's independent will have ne
 
 We can plot these covariance signatures (columns of $X^TX$) as vectors in $p$-dimensional _feature space_, where each axis is a feature (column) of $X$. This is the same space where we'd plot the $n$ observations of $X$ (the 'cloud of points' in every regression, where each axis is a variable; obviously plotting is only possible for $p \le 3$). When placing the columns of $X^TX$ in this space, we put the 1st component of each vector along the axis corresponding to feature 1 (because that's the covariance with feature 1), the second along the axis for feature 2 (because that's the covariance with feature 2), and so on. Columns of $X^TX$ with similar correlation signature (i.e., similar correlation patterns with all columns of $X$) will point in a similar direction. In contrast, if the columns of $X$, and therefore also of $X^TX$, are independent, those vectors will point in different directions that closer to being independent (orthogonal).
 
-The directions of the columns of $X^TX$ in feature space capture the $p$-dimensional 'shape' of the data. The 3-dimensional example below shows a nicely shaped dataset where the point cloud is roughly spherical and therefore doesn't show any correlation among columns of $X$. The lines are the 3d vectors corresponding to the three columns of $X^X$, and we see that they point in near orthogonal directions. 
+The directions of the columns of $X^TX$ in feature space capture the $p$-dimensional 'shape' of the data. This happens because covariance measures joint variation, and joint variation, when it exists, means the data points move together in space instead of moving independently and 'fill' the entire space. With joint variation, there will be areas without points because moving in one direction is tied to movement in another direction, which determines the shape of the point cloud. 
+
+The 3-dimensional example below shows a nicely shaped dataset where the point cloud is roughly spherical and therefore doesn't show any correlation among columns of $X$. The lines are the 3d vectors corresponding to the three columns of $X^X$, and we see that they point in nearly orthogonal directions. 
 
 ![](mlr_3d_example_collinearity_independent.png). 
 
-In contrast, the next example, also 3d, shows a dataset with a clear dependence between features, namely between $X_1$ and $X_3$, which is visible in the nearly collinear red ($X_1$) and blue ($X_3$) vectors. Column 2 of $X^TX$ does vary independently (green vector)
+In contrast, the next example shows a dataset with a clear dependence between features, namely between $X_1$ and $X_3$, which is visible in the nearly collinear red ($X_1$) and blue ($X_3$) vectors. Column 2 of $X^TX$ varies independently (green vector). The alignment between the covariance signatures of $X_1$ and $X_3$ is directly tied to the shape of the point cloud, which is almost two-dimensional, i.e., it lacks variation in one dimension. In other words, in this context, 
 
 ![](mlr_3d_example_collinearity_dependent.png). 
+
+What these examples show is that the columns of $X^TX$ capture the $p$-dimensional shape of the data. However, what we're interested in is the directions of independent variation that the 'point cloud' has, and this is exactly what the **orthonormal basis** of $X^TX$ provides. So far we've used the columns of $X^TX$ to describe the shape of the data, but those vectors don't show the independent directions of variation of the data. Hence, using eigenvalue decomposition of $X^TX$, we can describe those independent directions, which are simply linear combinations of the original directions of the feature space, i.e., of the columns of $X$.
 
 
 dependent
@@ -281,18 +285,10 @@ Eigenvectors (columns):
  [ 0.9550376   0.10141606 -0.2786    ]]
 
 
-if columns of X are independent, are eigenvectors of X^TX always aligned with original axes of feature space (features of X)?
-yes, because $X^TX$ would be diagonal (off-diagonal elements are 0; no covariance), so the columns of $X^TX$ already constitute an orthonormal basis, thus the eigenvectors of $X^TX$ are perfectly aligned with the axes of feature space. 
-
-As collinearity increases, eigenvectors become mixtures of multiple features — they “rotate” to capture shared directions of variance. eigenvectors becomes a linear combination of multiple features, with large contributions from the correlated features, i.e., those components of the eigenvectors become larger.
-
 
 , is to look at the condition number $\kappa = \lambda_{max}/\lambda_{min}$, which captures how much larger the largest eigenvalue of $X^TX$ $\lambda_{max}$ is relative to than the smallest one $\lambda_{min}$. Whenever there's collinearity, $X^TX$ will have small eigenvalues ($\lambda$) for the directions of small variance, i.e., the directions in $p$-dimensional space in which the dataset is missing variability. At the same time, there will be larger eigenvalues for the directions of larger independent variability. As a result, $\kappa = \lambda_{max}/\lambda_{min}$ will be large. I contrast, without collinearity in $X$, $\kappa$ will be small because the $\lambda_j$ will be more similar.
 
 
-The eigenvectors corresponding to these small eigenvalues show the linear combination of features $X_j$ that define those low-variance directions, and the larger components of those eigenvectors show which $X_j$ are involved in the collinearity ('collinearity' here means 'approximate collinearity'; in practice it's obvioulsy very unlikely to have perfect collinearity).
-
-In practice, you typically have many features, and my goal is to see which features are collinear and which are not. if I have 10 features and the eigenvector for the small eigenvalue is <0.3, 0.23, -0.17, 0.01, 0.04, 0.01, -0.02, 0.01, 0.01, 0.003>, can i safely say features 1, 2 and 3 are collinear.
 
 
 
