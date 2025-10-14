@@ -267,7 +267,7 @@ In contrast, the next example shows a dataset with a clear dependence between fe
 
 ![](mlr_3d_example_collinearity_dependent.png). 
 
-What these examples show is that the columns of $X^TX$ capture the $p$-dimensional shape of the data. However, what we're interested in is the directions of independent variation that the 'point cloud' has, and this is exactly what the **orthonormal basis** of $X^TX$ provides. So far we've used the columns of $X^TX$ to describe the shape of the data, but those vectors don't show the independent directions of variation of the data. Hence, using eigenvalue decomposition of $X^TX$, we can describe those independent directions, which are simply linear combinations of the original directions of the feature space, i.e., of the columns of $X$.
+What these examples show is that the columns of $X^TX$ capture the $p$-dimensional shape of the data. However, what we're interested in is the directions of independent variation that the 'point cloud' has, and this is exactly what the **orthonormal basis** of $X^TX$ provides. So far we've used the columns of $X^TX$ to describe the shape of the data, but those vectors don't show the dataset's independent directions of variation. Hence, using eigenvalue decomposition of $X^TX$, we can describe those independent directions, which are simply linear combinations of the original directions of the feature space, i.e., of the columns of $X$.
 
 
 dependent
