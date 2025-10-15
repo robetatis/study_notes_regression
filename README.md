@@ -247,9 +247,7 @@ Intuitively, what happens with collinear regressors is that changes in $y$ due t
 
 Simply looking at a heatmap of bivariate correlations among columns of $X$ is not enough to detect multicollinearity. The reason is that it's perfectly possible for collinearity to exist between multiple regressors even with no strong bivariate correlations between them (!). For instance, we could have $X_3 \approx 3.2X_5 + 1.3X_6 - 0.5X_9$, which can exist without any correlation between $X_5$, $X_6$ and/or $X_9$. Hence, more reliable approaches look at **collinearity between _all_ $X_j$ simultaneously**.
 
-The most common approach is the Variance Inflation Factor VIF, which is the ratio of the variance of $\hat{\beta}_j$ when fitting the full model to the variance of $\hat{\beta}_j$ when fitting a reduced model with only $X_j$. The logic is that, if there's collinearity in $X$, $\text{Var}(\hat{\beta}_j)$ 
-
-will be larger in the full than in the reduced model, simply because collinearity with the other regressors $X_{-j}$ will inflate $X_j$'s standard error as we've seen above. In this approach, we then obtain the VIF for each $\hat{\beta}_j$, and the ones that are large (rule of thumb: > 5) are considered to be collinear columns of $X$.
+The most common approach is the Variance Inflation Factor VIF, which is the ratio of the variance of $\hat{\beta}_j$ when fitting the full model to the variance of $\hat{\beta}_j$ when fitting a reduced model with only $X_j$. The logic is that, if there's collinearity in $X$, $\text{Var}(\hat{\beta}_j)$ will be larger in the full than in the reduced model, simply because collinearity with the other regressors $X_{-j}$ will inflate $X_j$'s standard error as we've seen above. In this approach, we then obtain the VIF for each $\hat{\beta}_j$, and the ones that are large (rule of thumb: > 5) are considered to be collinear columns of $X$.
 
 Although the VIF is clearly very practical, there's another, more intuitive way of looking at collinearity which goes deeper into the geometry of regression. This approach is based on **eigenvalue decomposition** of $X^TX$. The logic is as follows. 
 
