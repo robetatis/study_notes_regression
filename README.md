@@ -255,6 +255,8 @@ will be larger in the full than in the reduced model, simply because collinearit
 
 Although the VIF is clearly very practical, there's another, more intuitive way of looking at collinearity which goes deeper into the geometry of regression. This approach is based on **eigenvalue decomposition** of $X^TX$. The logic is as follows. 
 
+### The geometry of regression and $X^TX$
+
 We've said that $X^TX$, which is a $p$ x $p$ matrix, captures the variance-covariance structure of $X$. The first column of $X^TX$, for instance, holds the dot product $X_1^TX_1$ in its first row, $X_1^TX_2$ in row 2, $X_1^TX_3$ in row 3, etc., and the same for all other columns. Hence, each column of $X^TX$ is something like the '**correlation signature**' of that feature, where row 1 is its covariance with feature 1, row 2 is its covariance with feature 2, etc. 
 
 The columns of $X^TX$ can be thought of as vectors in the $p$-dimensional _feature space_, which is just the coordinate system whose axes are the regressors $X_j$ (columns of $X$). You can imagine a 'point cloud' in that space, where every point is a row of $X$ (an observation) and its coordinates are the values of each regressor for that observation (this is just like a common scatterplot but in a higher dimensional space; obviously we can only visualize it if $p \leq 3$). 
