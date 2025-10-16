@@ -247,9 +247,8 @@ class MLR:
         print(f'var(beta_hat) = {var_beta_hat[0,0]:.4f}, {var_beta_hat[1,1]:.4f}, {var_beta_hat[2,2]:.4f}')
 
     def check_collinearity(self):
-
         np.random.seed(0)
-        X = np.random.randn(300, 3) @ np.array([[1,   0, 0.8],
+        X = np.random.randn(300, 2) @ np.array([[1,   0, 0.8],
                                                 [0,   1,   0],
                                                 [0.8, 0,   1]])
 
@@ -281,6 +280,21 @@ class MLR:
 
         exit()
 
+    def collinearity_2d_example(self):
+
+        base_noise = np.random.randn(100, 2)
+        var_covar = np.array([[1, 0.8], [0.8, 1]])
+        X = base_noise @ var_covar
+        XTX = X.T @ X
+        evals, evects = np.linalg.eigh(XTX)
+
+        print(evals)
+        print(evects)
+
+        fig, ax = plt.subplots()
+        ax.scatter(X[:, 0], X[:, 1])
+        plt.savefig('mlr_collinearity_2d_example.png')
+
 
     def california_housing(self):
         ch = fetch_california_housing()
@@ -303,7 +317,7 @@ class MLR:
 if __name__ == '__main__':
 
     mlr = MLR()
-    mlr.check_collinearity()
+    mlr.collinearity_2d_example()
 
     #mlr.variance_inflation_colinear_X(True)
     #mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
