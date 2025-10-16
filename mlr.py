@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 from sklearn.datasets import fetch_california_housing
 from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
@@ -246,7 +247,24 @@ class MLR:
         print(f'beta_hat = {beta_hat[0]:.4f}, {beta_hat[1]:.4f}, {beta_hat[2]:.4f}')
         print(f'var(beta_hat) = {var_beta_hat[0,0]:.4f}, {var_beta_hat[1,1]:.4f}, {var_beta_hat[2,2]:.4f}')
 
-    def check_collinearity(self):
+    def diagnose_collinearity(self, X_raw):
+        # center X
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X_raw)
+
+        # compute X^TX
+        XTX = X.T @ X
+
+        # eigen-decomposition of X^TX
+        eigvals, eigvects = np.linalg.eigh(XTX)
+
+        # compute condition number lambda_max/lambda_min
+        kappa = np.max(eigvals)/np.min(eigvals)
+        print(eigvals)
+        print(kappa)
+        print(eigvects)
+
+    def collinearity_3d_example(self):
         np.random.seed(0)
         X = np.random.randn(300, 2) @ np.array([[1,   0, 0.8],
                                                 [0,   1,   0],
@@ -283,20 +301,44 @@ class MLR:
     def collinearity_2d_example(self):
 
         base_noise = np.random.randn(100, 2)
-        var_covar = np.array([[1, 0.8], [0.8, 1]])
+        var_covar = np.array([[1, 0], [0, 1]])
         X = base_noise @ var_covar
         XTX = X.T @ X
         evals, evects = np.linalg.eigh(XTX)
 
-        print(evals)
-        print(evects)
-        print(X @ evects[:, 0])
+        print(f'X^T X:\n{XTX}')
+        print(f'\nEigenvalues:\n{evals}')
+        print(f'\nEigenvectors:\n{evects}')
 
-        fig, ax = plt.subplots()
-        ax.scatter(X[:, 0], X[:, 1])
-
-        plt.savefig('mlr_collinearity_2d_example.png')
-
+        origin = np.zeros(2)
+        scale = 1
+        xmin, xmax, ymin, ymax = 1.05*np.min(X[:, 0]), 1.05*np.max(X[:, 0]), 1.05*np.min(X[:, 1]), 1.05*np.max(X[:, 1])
+        fig, ax = plt.subplots(figsize=(4, 4))
+        ax.scatter(X[:, 0], X[:, 1], edgecolors='black', facecolor='none', label=r'$X$')
+        for i in range(XTX.shape[1]):
+            ax.plot([0, XTX[0, i]], [0, XTX[1, i]], color='blue' if i == 0 else 'green', linestyle='--', label=rf'$X^TX_{{\cdot {i+1}}}$')
+        ax.quiver(
+            np.zeros(evects.shape[1]),
+            np.zeros(evects.shape[1]),
+            evects[0, :]*scale,
+            evects[1, :]*scale,
+            angles='xy', scale_units='xy', scale=1,
+            color='r',
+            width=0.005
+        )
+        ax.axvline(x=0, linestyle=':', color='gray')
+        ax.axhline(y=0, linestyle=':', color='gray')
+        ax.set_aspect('equal', adjustable='box')
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+        ax.set_xlabel(r'$X_1$')
+        ax.set_ylabel(r'$X_2$')
+        arrow_handle = mlines.Line2D([], [], color='r', marker=r'$\rightarrow$', label='Eigenvectors')
+        handles, labels = ax.get_legend_handles_labels()
+        handles.append(arrow_handle)
+        labels.append('Eigenvectors')
+        ax.legend(handles, labels)
+        plt.savefig('mlr_2d_example_collinearity_independent.png')
 
     def california_housing(self):
         ch = fetch_california_housing()
@@ -313,14 +355,12 @@ class MLR:
         self.compute_diagnostics()
         self.plot_diagnostics('mlr_diagnostis_california_housing')
 
-        
-
 
 if __name__ == '__main__':
 
     mlr = MLR()
     mlr.collinearity_2d_example()
-
+    #mlr.collinearity_3d_example()
     #mlr.variance_inflation_colinear_X(True)
     #mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
     #mlr.model_interaction('mlr_distr_ei_missing_interaction.png')

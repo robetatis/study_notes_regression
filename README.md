@@ -255,7 +255,7 @@ will be larger in the full than in the reduced model, simply because collinearit
 
 Although the VIF is clearly very practical, there's another, more intuitive way of looking at collinearity which goes deeper into the geometry of regression. This approach is based on **eigenvalue decomposition** of $X^TX$. The logic is as follows. 
 
-### The geometry of regression and $X^TX$
+#### The geometry of regression and $X^TX$
 
 We've said that $X^TX$, which is a $p$ x $p$ matrix, captures the variance-covariance structure of $X$. The first column of $X^TX$, for instance, holds the dot product $X_1^TX_1$ in its first row, $X_1^TX_2$ in row 2, $X_1^TX_3$ in row 3, etc., and the same for all other columns. Hence, each column of $X^TX$ is something like the '**correlation signature**' of that feature, where row 1 is its covariance with feature 1, row 2 is its covariance with feature 2, etc. 
 
@@ -269,7 +269,7 @@ The 3-dimensional example below shows a nicely shaped $X$ where the point cloud 
 
 ![](mlr_3d_example_collinearity_independent.png). 
 
-In contrast, the next example shows a dataset with a clear dependence between features, namely between $X_1$ and $X_3$, which is visible in the nearly collinear red ($X_1$) and blue ($X_3$) vectors. Column 2 of $X^TX$ varies independently (green vector). The alignment between the covariance signatures of $X_1$ and $X_3$ is directly tied to the shape of the point cloud, which is almost two-dimensional, i.e., it lacks variation in one dimension. In other words, in this context, 
+In contrast, the next example shows a dataset with a clear dependence between features, namely between $X_1$ and $X_3$, which is visible in the nearly collinear red ($X_1$) and blue ($X_3$) vectors. Column 2 of $X^TX$ varies independently (green vector). The alignment between the covariance signatures of $X_1$ and $X_3$ is directly tied to the shape of the point cloud, which is almost two-dimensional, i.e., it lacks variation in one dimension.
 
 ![](mlr_3d_example_collinearity_dependent.png). 
 
@@ -279,10 +279,22 @@ The logic of eigenvalues and eigenvectors is the following: when we multiply a s
 
 If $A$ is $p$ x $p$, there will be $p$ eigenvalues and each of those will have a corresponding eigenvector (so there'll also be $p$ eigenvectors). In addition, because $X^TX$ is symmetric, 1) its eigenvalues are always real numbers, and 2) the eigenvectors corresponding to distinct eigenvalues will be **orthogonal**. For instance, sometimes eigenvalues can have the same value, say, if $A$ is 3x3, $\lambda_1 = 0$, $\lambda_2=0$ and $\lambda_3=2$; in that case only the eigenvector corresponding to $\lambda_3$ will be orthogonal to those of $\lambda_1$ and $\lambda_2$.
 
-### Example
+#### A 3d example
 
 The dataset with independent features in the first example above has eigenvalues $\lambda_1 = 265.11$, $\lambda_2 = 283.52$ and $\lambda_3 = 336.57$. The corresponding eigenvectors are $q_1 = \langle -0.26, 0.14, 0.95 \rangle$, $q_2 = \langle 0.73, 0.67, 0.10 \rangle$, and $q_3 = \langle -0.63, 0.73, -0.28 \rangle$. Notice that all eigenvalues are of the same order, so variation in all dimensions in feature space is similarly strong.
 
 In contrast, the second example, in which $X_3$ and $X_1$ are correlated, has eigenvalues $\lambda_1 = 10.88$, $\lambda_2 = 307.78$ and $\lambda_3 = 978.57$, with corresponding eigenvectors $q_1 = \langle 0.70, 0.004, -0.711 \rangle$, $q_2 = \langle 0.047, 0.99, 0.05 \rangle$, and $q_3 = \langle -0.71, 0.07, -0.70 \rangle$. In this case, eigenvalues vary over a wide range, indicating that the point cloud is stretched/compressed. In this example, the direction corresponding eigenvalue $\lambda_1$ has very little variation compared to the other two. If we look at its corresponding eigenvector $q_1$, we see that the linear combination of features that defines this direction involves mostly $X1$ (the corresponding component is 0.70) and $X3$ (-0.711) **with similar magnitude and opposite signs**, which is how collinearity manifests in eigendecomposition. What happens here is, if we want to know how much the data varies along the direction of $q_1$, we can compute the projection of $X$ in that direction, which is $Xq_1$. For each row $i$ of $X$, this calculation is $0.70x_{i,1} + 0.004x_{i,2} - 0.711x_{i,3}$
+
+#### A 2d example
+
+Similar patterns as in 3d can be observed in the following 2d examples. In the first one, the point cloud is more or less symmetric and the columns of $X^TX$ (dashed green and blue lines) are closer to orthogonality. Accordingly, the eigenvectors (red arrows) point in somewhat similar directions and are of roughly the same length, i.e, the eigenvalues are of similar value ($\lambda_1 = 81.2$, $\lambda_2 = 117.5$). The eigenvectors are $q_1 = \langle 0.26, -0.96 \rangle$ and $q_2 = \langle -0.96, -0.26 \rangle$
+
+![](mlr_2d_example_collinearity_independent.png)
+
+In contrast, the next example shows a strongly collinear $X$ where the columns of $X^TX$ are heavily tilted and themselves almost collinear. In line with this, the eigenvalues are very different ($\lambda_1 = 3.33$, $\lambda_2 = 257.6$) and the small-eigenvalue eigenvector ($q_1$) has components with similar magnitude and opposite sign; $q_1 = \langle -0.71, 0.701 \rangle$, $q_2 = \langle -0.701, 0.713 \rangle$.
+
+![](mlr_2d_example_collinearity_dependent.png)
+
+#### The condition number $\kappa$
 
 Lastly, the fact that eigenvalues differ when there's collinearity, formally called **anisotropy**, can be used to measure it. This is the **condition number** $\kappa = \lambda_{max}/\lambda_{min}$, which captures how much larger the largest eigenvalue of $X^TX$ $\lambda_{max}$ is relative to the smallest one $\lambda_{min}$. Whenever there's collinearity, $X^TX$ will have small eigenvalues ($\lambda$) for the directions of small variance, i.e., the directions in $p$-dimensional space in which the dataset is missing variability. At the same time, there will be larger eigenvalues for the directions of larger independent variability. As a result, $\kappa = \lambda_{max}/\lambda_{min}$ will be large. I contrast, without collinearity in $X$, $\kappa$ will be small because the $\lambda_j$ will be more similar.
