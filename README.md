@@ -273,22 +273,21 @@ In contrast, the next example shows a dataset with a clear dependence between fe
 
 ![](mlr_3d_example_collinearity_dependent.png). 
 
-What these examples show is that the columns of $X^TX$ _roughly approximate_ the $p$-dimensional shape of the data. However, what we ultimately seek are the true **independent directions of variation** - the orthogonal axes that describe how the data vary **without redundancy**. This is exactly what the **orthonormal basis** (the eigenvalues and eigenvectors) of $X^TX$ provides. So far we've used the columns of $X^TX$ to describe the shape of the data, but those vectors don't show the dataset's independent directions of variation. Through eigenvalue decomposition of $X^TX$, we can identify those orthogonal directions, which are linear combinations of the original feature axes, i.e., of the columns of $X$.
+What these examples show is that the columns of $X^TX$ _roughly approximate_ the $p$-dimensional shape of the data. However, what we ultimately seek are the true **independent directions of variation** - the orthogonal axes that describe how the data vary **without redundancy**. We can think of these axes as the main axes of the point cloud (there are $p$ such axes). This is exactly what the **orthonormal basis**, i.e., the _eigenvalues_ and _eigenvectors_ of $X^TX$ provides. So far we've used the columns of $X^TX$ to describe the shape of the data, but those vectors don't show the dataset's independent directions of variation **because they tilt when the features covary**. Through eigenvalue decomposition of $X^TX$, we can identify the actual orthogonal directions, which are made up of $X^TX$'s eigenvectors and show the directions in which we have no covariance among the features, i.e., the directions in which variation is truly independent. The corresponding eigenvalues measure how large the variation in each of those directions is. since, the eigenvectors of $X^TX$ don't normally allign perfectly with the axes of feature space, unless columns of $X$ are truly independent, the directions of independent variation will be combinations of the original features.
+
+> **Eigenvectors and eigenvalues**
+
+> The logic of eigenvalues and eigenvectors is the following: when we multiply a square matrix $A$ (eigenvectors only exist for square matrices) with a vector $v$, what we're doing is creating a new vector $Av$. This new vector lives in the same space as $v$ and the columns of $A$ (for instance, 2-dimensional space), and it can point in any direction. What makes eigenvectors special is that they don't change direction when multiplied with $A$, they only become scaled, and that scaling factor is the eigenvalue $\lambda$. This is captured by the relation $A\bold{v} = \lambda \bold{v}$. 
+
+> If $A$ is $p$ x $p$, there will be $p$ eigenvalues and each of those will have a corresponding eigenvector (so there'll also be $p$ eigenvectors). In addition, because $X^TX$ is symmetric, 1) its eigenvalues are always real numbers, and 2) the eigenvectors corresponding to distinct eigenvalues will be **orthogonal**. For instance, sometimes eigenvalues can have the same value, say, if $A$ is 3x3, $\lambda_1 = 0$, $\lambda_2=0$ and $\lambda_3=2$; in that case only the eigenvector corresponding to $\lambda_3$ will be orthogonal to those of $\lambda_1$ and $\lambda_2$.
 
 
-dependent
-Eigenvalues: [ 10.88691537 307.78578064 978.46976661]
-Eigenvectors (columns):
- [[ 0.70294297  0.04691889 -0.70969697]
- [ 0.00397435  0.9975471   0.06988553]
- [-0.71123511  0.05194613 -0.70103225]]
+The dataset with independent features in the first example above has eigenvalues $\lambda_1 = 265.11$, $\lambda_2 = 283.52$ and $\lambda_3 = 336.57$. The corresponding eigenvectors are $q_1 = \langle -0.26, 0.14, 0.95 \rangle$, $q_2 = \langle 0.73, 0.67, 0.10 \rangle$, and $q_3 = \langle -0.63, 0.73, -0.28 \rangle$. Notice first that all eigenvalues are of the same order, so variation in all dimensions in feature space is similarly strong. Eigenvalues capture this because they are a scaling factor that multiplies eigenvectors, and we're looking at the eigenvectors of $X^TX$, which show the directions of independent variation of our dataset.
 
-independent
-Eigenvalues: [265.11771584 283.51880521 336.56983432]
-Eigenvectors (columns):
- [[-0.2613745   0.73155878 -0.62968653]
- [ 0.13995195  0.67419325  0.72517372]
- [ 0.9550376   0.10141606 -0.2786    ]]
+ 
+
+In contrast, the second example, in which $X_3$ and $X_1$ are correlated, has eigenvalues $\lambda_1 = 10.88$, $\lambda_2 = 307.78$ and $\lambda_3 = 978.47.57$, with corresponding eigenvectors $q_1 = \langle -0.70, 0.004, -0.711 \rangle$, $q_2 = \langle 0.047, 0.99, 0.05 \rangle$, and $q_3 = \langle -0.71, 0.07, -0.70 \rangle$.
+
 
 
 
