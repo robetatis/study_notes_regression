@@ -290,9 +290,11 @@ class MLR:
 
         print(evals)
         print(evects)
+        print(X @ evects[:, 0])
 
         fig, ax = plt.subplots()
         ax.scatter(X[:, 0], X[:, 1])
+
         plt.savefig('mlr_collinearity_2d_example.png')
 
 
