@@ -380,6 +380,23 @@ class MLR:
         self.y_hat = ridge.predict(self.X_centered)
         self.e_i = self.y - self.y_hat
 
+        # print beta and se(beta)
+        n, p = self.X_centered.shape
+
+        sigma2 = np.sum(self.e_i**2) / (n - p)
+
+        XtX = self.X_centered.T @ self.X_centered
+
+        ridge_cov = sigma2 * np.linalg.inv(XtX + ridge.alpha * np.eye(p)) @ XtX @ np.linalg.inv(XtX + ridge.alpha * np.eye(p))
+
+        ridge_se = np.sqrt(np.diag(ridge_cov))
+
+        coef_summary = pd.DataFrame({
+            "Coefficient": ridge.coef_.ravel(),
+            "Std. Error": ridge_se
+        })
+        print(coef_summary)
+
 
     def california_housing(self):
 
