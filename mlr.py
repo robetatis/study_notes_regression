@@ -194,13 +194,18 @@ class MLR:
         print(f'Real Var(epsilon) = {self.sigma_epsilon:.2f} --- RSE = {self.e_i_sd:.2f}')
 
     def compute_diagnostics(self):
+
         self.omnibus_stat, self.omnibus_p = omni_normtest(self.e_i) 
         self.jb_stat, self.jb_p, self.skew, self.kurtosis = jarque_bera(self.e_i)
         lb = acorr_ljungbox(self.e_i, lags=[1], return_df=True)
         self.lb_stat, self.lb_pvalue = lb['lb_stat'].values[0], lb['lb_pvalue'].values[0]
-        influence = OLSInfluence(self.model_sample)
-        self.leverage = influence.hat_matrix_diag
-        self.studentized_resid = influence.resid_studentized_external
+
+        X = self.model_sample.model.exog
+        XtX_inv = np.linalg.inv(X.T @ X)
+        self.leverage = np.einsum('ij,jk,ik->i', X, XtX_inv, X)
+        resid = self.model_sample.resid
+        mse = np.mean(resid**2)
+        self.studentized_resid = resid / np.sqrt(mse * (1 - self.leverage))
 
     def plot_diagnostics(self, filename):
         fig, ax = plt.subplots(1, 3, figsize=(15, 4))
@@ -218,13 +223,22 @@ class MLR:
         ax[1].scatter(self.y_hat_i, self.studentized_resid)
         ax[1].axhline(y=0, color='black', linestyle='--')
         ax[1].set_xlabel('Fitted vals.')
-        ax[1].set_ylabel(r'$e_i$')
+        ax[1].set_ylabel(r'Studentized $e_i$')
         ax[1].text(0.025, 0.95, f'Ljung-Box:{self.lb_stat:.2f}({self.lb_pvalue:.2f})', transform=ax[1].transAxes, verticalalignment='top')
         ax[2].set_title(r'Leverage vs. studentized $e_i$')
         ax[2].scatter(self.leverage, self.studentized_resid)
         ax[2].set_xlabel('Leverage')
         ax[2].set_ylabel(r'Studentized $e_i$')
         plt.tight_layout()
+        plt.savefig(filename)
+
+    def plot_y_obs_vs_y_pred(self, filename):
+        y_obs = self.model_sample.model.endog
+        y_pred = self.y_hat
+        fig, ax = plt.subplots()
+        ax.scatter(y_obs, y_pred)
+        ax.set_ylabel('y pred')
+        ax.set_xlabel('y obs')
         plt.savefig(filename)
 
     def variance_inflation_colinear_X(self, X_is_colinear):
@@ -247,10 +261,12 @@ class MLR:
         print(f'beta_hat = {beta_hat[0]:.4f}, {beta_hat[1]:.4f}, {beta_hat[2]:.4f}')
         print(f'var(beta_hat) = {var_beta_hat[0,0]:.4f}, {var_beta_hat[1,1]:.4f}, {var_beta_hat[2,2]:.4f}')
 
-    def diagnose_collinearity(self, X_raw):
+    def diagnose_collinearity(self, X, center=True):
+
         # center X
-        scaler = StandardScaler()
-        X = scaler.fit_transform(X_raw)
+        if center:
+            scaler = StandardScaler()
+            X = scaler.fit_transform(X)
 
         # compute X^TX
         XTX = X.T @ X
@@ -260,9 +276,9 @@ class MLR:
 
         # compute condition number lambda_max/lambda_min
         kappa = np.max(eigvals)/np.min(eigvals)
-        print(eigvals)
-        print(kappa)
-        print(eigvects)
+        print(f'Eigenvalues:\n{eigvals}')
+        print(f'Condition number (kappa) = {kappa}')
+        print(f'Eigenvectors: \n{eigvects}')
 
     def collinearity_3d_example(self):
         np.random.seed(0)
@@ -340,23 +356,27 @@ class MLR:
         ax.legend(handles, labels)
         plt.savefig('mlr_2d_example_collinearity_independent.png')
 
+    def plot_y_distribution(self, y, bins, filename):
+        fig, ax = plt.subplots()
+        ax.hist(y, bins=bins, density=True)
+        ax.set_title('Histogram of y')
+        ax.set_xlabel('y')
+        ax.set_ylabel('Density')
+        plt.savefig(filename)
+
+
     def california_housing(self):
+
         ch = fetch_california_housing()
 
         X = pd.DataFrame(ch.data, columns = ch.feature_names)
-
-        # check collinearity
-        scaler = StandardScaler()
-        X_centered = scaler.fit_transform(X)
-        
-        print(type(X_centered))
-        exit()
-
-
-        
-        
         X = sm.add_constant(X)
         y = pd.DataFrame(ch.target, columns=['med_house_val_100k'])
+        self.plot_y_distribution(y, np.arange(0, 6.0, 0.25), 'mlr_y_distribution_california_housing.png')
+
+        exit()
+
+        self.diagnose_collinearity(X=np.array(X), center=False)
 
         self.model_sample = sm.OLS(y,X)
         self.model_sample = self.model_sample.fit()
@@ -365,7 +385,8 @@ class MLR:
 
         self.compute_residuals_stats()
         self.compute_diagnostics()
-        self.plot_diagnostics('mlr_diagnostis_california_housing')
+        self.plot_y_obs_vs_y_pred('mlr_y_obs_y_pred_california_housing.png')
+        self.plot_diagnostics('mlr_diagnostis_california_housing.png')
 
 
 if __name__ == '__main__':
