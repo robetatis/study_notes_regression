@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from sklearn.datasets import fetch_california_housing
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Ridge
 import statsmodels.api as sm
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import omni_normtest, jarque_bera
@@ -182,12 +183,10 @@ class MLR:
         plt.savefig('mlr_pop_vs_sample.png')
 
     def compute_residuals_stats(self):
-        self.e_i = self.model_sample.resid
         self.e_i_mean = np.mean(self.e_i)
         self.e_i_sd = np.sqrt(np.var(self.e_i, ddof=2)) # this is rse (the residuals' standard error)
         self.e_i_x = np.linspace(self.e_i.min(), self.e_i.max(), 300)
         self.e_i_pdf = scipy.stats.norm.pdf(self.e_i_x, loc=self.e_i_mean, scale=self.e_i_sd)
-        self.y_hat_i = self.model_sample.fittedvalues
 
     def print_rss_relative_to_y_mean(self):
         print(f'RSS relative to y_meam: {self.e_i_sd:.2f} --- {self.y_sample.mean():.2f}')
@@ -200,12 +199,10 @@ class MLR:
         lb = acorr_ljungbox(self.e_i, lags=[1], return_df=True)
         self.lb_stat, self.lb_pvalue = lb['lb_stat'].values[0], lb['lb_pvalue'].values[0]
 
-        X = self.model_sample.model.exog
-        XtX_inv = np.linalg.inv(X.T @ X)
-        self.leverage = np.einsum('ij,jk,ik->i', X, XtX_inv, X)
-        resid = self.model_sample.resid
-        mse = np.mean(resid**2)
-        self.studentized_resid = resid / np.sqrt(mse * (1 - self.leverage))
+        XtX_inv = np.linalg.inv(self.X.T @ self.X)
+        self.leverage = np.einsum('ij,jk,ik->i', self.X, XtX_inv, self.X)
+        mse = np.mean(self.e_i**2)
+        self.studentized_resid = self.e_i / np.sqrt(mse * (1 - self.leverage))
 
     def plot_diagnostics(self, filename):
         fig, ax = plt.subplots(1, 3, figsize=(15, 4))
@@ -220,7 +217,7 @@ class MLR:
         ax[0].set_xlabel(r'$e_i$')
         ax[0].set_ylabel('Density')
         ax[1].set_title(r'Fitted vals. vs. studentized $e_i$')
-        ax[1].scatter(self.y_hat_i, self.studentized_resid)
+        ax[1].scatter(self.y_hat, self.studentized_resid)
         ax[1].axhline(y=0, color='black', linestyle='--')
         ax[1].set_xlabel('Fitted vals.')
         ax[1].set_ylabel(r'Studentized $e_i$')
@@ -261,7 +258,9 @@ class MLR:
         print(f'beta_hat = {beta_hat[0]:.4f}, {beta_hat[1]:.4f}, {beta_hat[2]:.4f}')
         print(f'var(beta_hat) = {var_beta_hat[0,0]:.4f}, {var_beta_hat[1,1]:.4f}, {var_beta_hat[2,2]:.4f}')
 
-    def diagnose_collinearity(self, X, center=True):
+    def diagnose_collinearity(self, center=False):
+
+        X = self.X
 
         # center X
         if center:
@@ -356,40 +355,55 @@ class MLR:
         ax.legend(handles, labels)
         plt.savefig('mlr_2d_example_collinearity_independent.png')
 
-    def y_distribution(self, y, bins, filename):
+    def y_distribution(self, bins, filename):
         
-        hist, bin_edges = np.histogram(y, bins=bins)
+        hist, bin_edges = np.histogram(self.y, bins=bins)
         for i, h in enumerate(hist):
-            print(f'{bin_edges[i]:.3f} - {bin_edges[i+1]:.3f}: {h}')
+            print(f'[{bin_edges[i]:.3f} - {bin_edges[i+1]:.3f}): {h}')
 
 
         fig, ax = plt.subplots()
-        ax.hist(y, bins=bins, density=True)
+        ax.hist(self.y, bins=bins, density=True)
         ax.set_title('Histogram of y')
         ax.set_xlabel('y')
         ax.set_ylabel('Density')
         plt.savefig(filename)
+
+    def fit_ridge_regression(self):
+
+        scaler = StandardScaler()
+        self.X_centered = scaler.fit_transform(self.X)
+
+        ridge = Ridge(alpha=1.0) # regularization strength
+        ridge.fit(self.X_centered, self.y)
+
+        self.y_hat = ridge.predict(self.X_centered)
+        self.e_i = self.y - self.y_hat
 
 
     def california_housing(self):
 
         ch = fetch_california_housing()
 
-        X = pd.DataFrame(ch.data, columns = ch.feature_names)
-        X = sm.add_constant(X)
-        y = pd.DataFrame(ch.target, columns=['med_house_val_100k'])
-        self.y_distribution(y, np.arange(0, 6.0, 0.25), 'mlr_y_distribution_california_housing.png')
+        self.X = pd.DataFrame(ch.data, columns = ch.feature_names)
+        self.X = sm.add_constant(self.X)
+        self.y = pd.DataFrame(ch.target, columns=['med_house_val_100k'])
 
-        exit()
+        # remove censored data y>=5
+        idx = self.y['med_house_val_100k'] < 5
+        self.y = self.y.loc[idx, :]['med_house_val_100k']
+        self.X = self.X.loc[idx, :]
 
-        self.diagnose_collinearity(X=np.array(X), center=False)
+        self.y_distribution(bins=np.arange(0, 5.25, 0.25), filename='mlr_y_distribution_california_housing.png')
 
-        #remove censored data y>=5
-        self.model_sample = sm.OLS(y,X)
+        self.diagnose_collinearity(center=False)
+
+        self.model_sample = sm.OLS(self.y, self.X)
         self.model_sample = self.model_sample.fit()
-        self.y_hat = self.model_sample.predict(X)
+        self.y_hat = self.model_sample.predict(self.X)
         print(self.model_sample.summary())
 
+        self.fit_ridge_regression()
         self.compute_residuals_stats()
         self.compute_diagnostics()
         self.plot_y_obs_vs_y_pred('mlr_y_obs_y_pred_california_housing.png')

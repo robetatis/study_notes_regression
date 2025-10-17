@@ -12,9 +12,9 @@ Based largely on
 
 ### Model and intuition
 
-Model: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma^2)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a column vector (we prepend a column of ones on the left for the intercept). The deterministic part is $X\beta$, which is a model for $E(y|X)$. $\epsilon$ is the random deviation of each $y_i$ from $E(y|X)$, and is what makes $y$ a random variable.
+The model in OLS is $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma^2)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a **fixed** (non-random) column vector (we prepend a column of ones on the left for the intercept). The deterministic part is $X\beta$, which is a model for $E(y|X)$. $\epsilon$ is the random deviation of each $y_i$ from $E(y|X)$, and is what makes $y$ a random variable.
 
-The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us a function to estimate of $E(y|X)$ and a way to compute confidence intervals. $X$ is a matrix with $p+1$ columns (+1 for the intercept) and $n$ rows, where $p$ is the number of regressors and $n$ is the number of observations. In OLS, $p=1$. 
+The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us a function to estimate of $E(y|X)$ and a way to compute confidence intervals. $X$ is a matrix with $p+1$ columns (+1 for the intercept) and $n$ rows, where $p$ is the number of regressors and $n$ is the number of observations. In OLS, $p=1$.
 
 Geometrically, predicting $E(y|X)$ corresponds to projecting $y$ onto the column space of $X$, that is, finding a linear combination $\hat{\beta}$ of the columns of $X$ that minimizes the residuals vector $e = y - \hat{y}$, where $\hat{y} = X\hat{\beta}$. Since $e$ and $X$'s column space are orthogonal, we can say $X^T(y - X\hat{\beta}) = 0$. Solving for $\hat{\beta}$ yields:
 
@@ -83,6 +83,8 @@ Before interpreting $\hat{\beta}_0$ and $\hat{\beta}_1$ and their statistical an
 ### Model and intuition
 
 Model is the same as above: $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma)$, but now $\beta$ is a vector of shape ($p$+1, 1), with $p$ = number of regressors (+1 for the intercept), and $X$ is no longer a column vector but a matrix of shape ($n$, $p+1$), i.e, $n$ observations and $p$ factors (again, +1 for the intercept, for which we prepend a column of ones to $X$).
+
+A critical point here is that $n > p$, i.e., we have many more observations that features. If we view each feature of $X$ as an $n$-dimensional vector in $n$-dimensional space ('observation space'), what we have if $n > p$ is $p$ vectors spanning a _subspace_ of that space. In contrast, if $n<p$ then the $p$ vectors span the entire $n$-dimensional space (not just a subspace of it), and any vector (feature) beyond the $n$-th vector will unavoidably be a linear combination of all previous vectors. This means that $X$ is not _full rank_, $X^TX$ is _singular_ and the modelling problem is unsolvable because there are _infinitely_ many different $\beta$ that give the same fitted values.
 
 Having multiple regressors opens up a host of possibilities, good and bad. Good because the world is multidimensional and including multiple regressors accounts for this; bad becasue regressors could be non-independent, we could be missing the right regressors, and we are forced to select a model, not to mention the problems with wide $X$ matrices, i.e., many features + few observations, and 'the curse of dimensionality'. More on all of these below.
 
