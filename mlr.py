@@ -344,8 +344,20 @@ class MLR:
         ch = fetch_california_housing()
 
         X = pd.DataFrame(ch.data, columns = ch.feature_names)
+
+        # check collinearity
+        scaler = StandardScaler()
+        X_centered = scaler.fit_transform(X)
+        
+        print(type(X_centered))
+        exit()
+
+
+        
+        
         X = sm.add_constant(X)
         y = pd.DataFrame(ch.target, columns=['med_house_val_100k'])
+
         self.model_sample = sm.OLS(y,X)
         self.model_sample = self.model_sample.fit()
         self.y_hat = self.model_sample.predict(X)
