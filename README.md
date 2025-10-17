@@ -2,11 +2,11 @@
 
 Based largely on 
 
-James., G., Witten, D., Hastie, T., Tibshirani, R. (2017). An Introduction to Statistical Learning with Applications in R. Springer. ISBN 978-1-4614-7137-0
+- James., G., Witten, D., Hastie, T., Tibshirani, R. (2017). An Introduction to Statistical Learning with Applications in R. Springer. ISBN 978-1-4614-7137-0
 
-Hastie, T., Tibshirani, R., Friedman, J. (2017). The Elements of Statistical Learning. Data Mining, Inference, and Prediction. Springer
+- Hastie, T., Tibshirani, R., Friedman, J. (2017). The Elements of Statistical Learning. Data Mining, Inference, and Prediction. Springer
 
-https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
+- https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
 
 ## Ordinary least-squares - OLS
 
