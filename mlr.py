@@ -371,7 +371,8 @@ class MLR:
 if __name__ == '__main__':
 
     mlr = MLR()
-    mlr.collinearity_2d_example()
+    mlr.california_housing()
+    #mlr.collinearity_2d_example()
     #mlr.collinearity_3d_example()
     #mlr.variance_inflation_colinear_X(True)
     #mlr.model_basic(1000, 300, 10, [10.3, 5.4, -6.78])
