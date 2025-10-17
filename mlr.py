@@ -356,7 +356,13 @@ class MLR:
         ax.legend(handles, labels)
         plt.savefig('mlr_2d_example_collinearity_independent.png')
 
-    def plot_y_distribution(self, y, bins, filename):
+    def y_distribution(self, y, bins, filename):
+        
+        hist, bin_edges = np.histogram(y, bins=bins)
+        for i, h in enumerate(hist):
+            print(f'{bin_edges[i]:.3f} - {bin_edges[i+1]:.3f}: {h}')
+
+
         fig, ax = plt.subplots()
         ax.hist(y, bins=bins, density=True)
         ax.set_title('Histogram of y')
@@ -372,12 +378,13 @@ class MLR:
         X = pd.DataFrame(ch.data, columns = ch.feature_names)
         X = sm.add_constant(X)
         y = pd.DataFrame(ch.target, columns=['med_house_val_100k'])
-        self.plot_y_distribution(y, np.arange(0, 6.0, 0.25), 'mlr_y_distribution_california_housing.png')
+        self.y_distribution(y, np.arange(0, 6.0, 0.25), 'mlr_y_distribution_california_housing.png')
 
         exit()
 
         self.diagnose_collinearity(X=np.array(X), center=False)
 
+        #remove censored data y>=5
         self.model_sample = sm.OLS(y,X)
         self.model_sample = self.model_sample.fit()
         self.y_hat = self.model_sample.predict(X)
