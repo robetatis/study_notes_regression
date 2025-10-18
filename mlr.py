@@ -14,6 +14,7 @@ from sklearn.datasets import fetch_california_housing
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Ridge
 import statsmodels.api as sm
+import statsmodels.formula.api as smf
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import omni_normtest, jarque_bera
 from statsmodels.stats.outliers_influence import OLSInfluence
@@ -230,10 +231,9 @@ class MLR:
         plt.savefig(filename)
 
     def plot_y_obs_vs_y_pred(self, filename):
-        y_obs = self.model_sample.model.endog
-        y_pred = self.y_hat
+
         fig, ax = plt.subplots()
-        ax.scatter(y_obs, y_pred)
+        ax.scatter(self.y, self.y_hat)
         ax.set_ylabel('y pred')
         ax.set_xlabel('y obs')
         plt.savefig(filename)
@@ -308,10 +308,6 @@ class MLR:
         ax.legend()
         plt.tight_layout()
         plt.savefig('mlr_3d_example_collinearity_dependent.png')
-
-
-
-        exit()
 
     def collinearity_2d_example(self):
 
@@ -397,30 +393,35 @@ class MLR:
         })
         print(coef_summary)
 
-
     def california_housing(self):
 
         ch = fetch_california_housing()
 
         self.X = pd.DataFrame(ch.data, columns = ch.feature_names)
-        self.X = sm.add_constant(self.X)
         self.y = pd.DataFrame(ch.target, columns=['med_house_val_100k'])
+        self.df = pd.concat([self.y, self.X], axis=1)
 
         # remove censored data y>=5
         idx = self.y['med_house_val_100k'] < 5
         self.y = self.y.loc[idx, :]['med_house_val_100k']
         self.X = self.X.loc[idx, :]
+        self.df = self.df.loc[idx, :]
 
         self.y_distribution(bins=np.arange(0, 5.25, 0.25), filename='mlr_y_distribution_california_housing.png')
 
         self.diagnose_collinearity(center=False)
 
-        self.model_sample = sm.OLS(self.y, self.X)
-        self.model_sample = self.model_sample.fit()
+        main_effects = ' + '.join(self.X.columns)
+        squares = ' + '.join([f'I({x}**2)' for x in self.X.columns])
+        formula = f'med_house_val_100k ~ ({main_effects})**2 + {squares}'
+        self.model_sample = smf.ols(formula, data=self.df).fit()
         self.y_hat = self.model_sample.predict(self.X)
+        self.e_i = self.y - self.y_hat
+
         print(self.model_sample.summary())
 
-        self.fit_ridge_regression()
+        #self.fit_ridge_regression()
+        
         self.compute_residuals_stats()
         self.compute_diagnostics()
         self.plot_y_obs_vs_y_pred('mlr_y_obs_y_pred_california_housing.png')

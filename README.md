@@ -30,7 +30,7 @@ $\text{Var}(\hat{\beta}) = \sigma^2(X^TX)^{-1}$
 
 This means that, **under the homoscedasticity assumption** (!), $\text{Var}(\hat{\beta})$ is related to 1) the variance of the residuals $\sigma^2 = \text{Var}(\epsilon)$ and 2) $X^TX$ (so-called Gram matrix), which captures the degree to which regressors line up in $n$-dimensional space ($n$ = no. observations).
 
-$\sigma^2$ is not observable, so we have to use the sample estimate $\text{RSE} = \hat{\sigma}^2 = \text{RSS}/(n-p-1)$, with $p$ = no. regressors (=1 in OLS) and $\text{RSS} = e^Te$, where $e$ = sample residuals (see below). $\text{RSE}$ = Residual Standard Error and $\text{RSS}$ = Residual Sum of Squares. We're allowed to use $\text{RSE}$ as an estimate of $\sigma^2$ becasue, _if the OLS assumptions hold_, $E(\hat{\sigma}^2) = E(\text{RSE}) = \sigma^2$
+$\sigma^2$ is not observable, so we have to use the sample estimate $\text{RSE} = \hat{\sigma}^2 = \text{RSS}/(n-p-1)$, with $p$ = no. regressors (=1 in OLS) and $\text{RSS} = e^Te$, where $e$ = sample residuals (see below). Note that $e^Te$, which is a scalar, is not the same as $ee^T$, which is the variance-covariance matrix of the sample residuals (see section on heteroscedasticity below). $\text{RSE}$ = Residual Standard Error and $\text{RSS}$ = Residual Sum of Squares. We're allowed to use $\text{RSE}$ as an estimate of $\sigma^2$ becasue, _if the OLS assumptions hold_, $E(\hat{\sigma}^2) = E(\text{RSE}) = \sigma^2$
 
 The entries in $X^TX$ are just the dot-products $X_j^TX_j$ for the diagonal elements and $X_j^TX_{-j}$ for the off-diagonal elements. The former are related to the variance of regressor $X_j$ and the latter to the pairwise covariances between $X_j$ and each of the other regressors $X_{-j}$.
 
