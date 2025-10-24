@@ -8,16 +8,23 @@
 import pandas as pd
 import numpy as np
 import scipy
+from pygam import LinearGAM, s
+import xgboost as xgb
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from sklearn.datasets import fetch_california_housing
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import Ridge
+from sklearn.cross_decomposition import PLSRegression
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
+from sklearn.linear_model import Ridge, LinearRegression
+from sklearn.decomposition import PCA
+from sklearn.metrics import r2_score, root_mean_squared_error
 import statsmodels.api as sm
+from statsmodels.regression.mixed_linear_model import MixedLM
 import statsmodels.formula.api as smf
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import omni_normtest, jarque_bera
-from statsmodels.stats.outliers_influence import OLSInfluence
+from statsmodels.stats.outliers_influence import OLSInfluence, variance_inflation_factor
 
 
 class MLR:
@@ -217,23 +224,30 @@ class MLR:
         )
         ax[0].set_xlabel(r'$e_i$')
         ax[0].set_ylabel('Density')
-        ax[1].set_title(r'Fitted vals. vs. studentized $e_i$')
-        ax[1].scatter(self.y_hat, self.studentized_resid)
+
+        ax[1].set_title(r'Fitted vals. vs. $e_i$')
+        ax[1].scatter(self.y_hat, self.e_i, alpha=0.3)
         ax[1].axhline(y=0, color='black', linestyle='--')
         ax[1].set_xlabel('Fitted vals.')
         ax[1].set_ylabel(r'Studentized $e_i$')
         ax[1].text(0.025, 0.95, f'Ljung-Box:{self.lb_stat:.2f}({self.lb_pvalue:.2f})', transform=ax[1].transAxes, verticalalignment='top')
+
         ax[2].set_title(r'Leverage vs. studentized $e_i$')
-        ax[2].scatter(self.leverage, self.studentized_resid)
+        ax[2].scatter(self.leverage, self.studentized_resid, alpha=0.3)
         ax[2].set_xlabel('Leverage')
         ax[2].set_ylabel(r'Studentized $e_i$')
+
         plt.tight_layout()
         plt.savefig(filename)
 
     def plot_y_obs_vs_y_pred(self, filename):
 
+        ymin = np.min([self.y, self.y_hat])
+        ymax = np.max([self.y, self.y_hat])
+
         fig, ax = plt.subplots()
-        ax.scatter(self.y, self.y_hat)
+        ax.scatter(self.y, self.y_hat, alpha=0.3)
+        ax.plot([ymin, ymax], [ymin, ymax], 'k--')
         ax.set_ylabel('y pred')
         ax.set_xlabel('y obs')
         plt.savefig(filename)
@@ -260,6 +274,8 @@ class MLR:
 
     def diagnose_collinearity(self, center=False):
 
+        self.compute_vif()
+
         X = self.X
 
         # center X
@@ -273,6 +289,8 @@ class MLR:
         # eigen-decomposition of X^TX
         eigvals, eigvects = np.linalg.eigh(XTX)
 
+        eigvects = pd.DataFrame(eigvects, columns=eigvals, index=self.X.columns)
+        
         # compute condition number lambda_max/lambda_min
         kappa = np.max(eigvals)/np.min(eigvals)
         print(f'Eigenvalues:\n{eigvals}')
@@ -353,17 +371,55 @@ class MLR:
 
     def y_distribution(self, bins, filename):
         
-        hist, bin_edges = np.histogram(self.y, bins=bins)
-        for i, h in enumerate(hist):
-            print(f'[{bin_edges[i]:.3f} - {bin_edges[i+1]:.3f}): {h}')
-
-
         fig, ax = plt.subplots()
         ax.hist(self.y, bins=bins, density=True)
         ax.set_title('Histogram of y')
         ax.set_xlabel('y')
         ax.set_ylabel('Density')
         plt.savefig(filename)
+
+    def fit_mlr(self):
+        columns = [
+            'MedInc',
+            'HouseAge',
+            'Latitude',
+            'Longitude',
+            '_log1pTransformed_AveRooms',
+            '_log1pTransformed_AveBedrms',
+            '_log1pTransformed_AveOccup',
+            '_log1pTransformed_Population'
+        ]
+
+        self.df = pd.concat([self.y, self.X[columns]], axis=1)
+        formula = f"med_house_val_100k ~ {' + '.join(self.df.columns[1:])}"
+        self.model_sample = smf.ols(formula, data=self.df).fit()
+        self.y_hat = self.model_sample.fittedvalues
+        self.e_i = self.y.values.ravel() - self.y_hat
+        print(self.model_sample.summary())
+
+    def plot_groups(self):
+        group = self.X['geo_bin'].unique()[0]
+        X_group = self.X[self.X['geo_bin'] == group]
+        y_group = self.y[self.X['geo_bin'] == group]
+
+        fig, ax = plt.subplots(figsize=(10, 3))
+        ax.scatter(X_group['MedInc'], y_group, alpha=0.3, s=3)
+        plt.savefig('mlr_groups_california_housing.png')
+
+    def fit_mixed_effects_model(self):
+        regressors = ['geo_bin', 'MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup'] # 
+        self.df = pd.concat([self.y, self.X[regressors]], axis=1)
+        formula = "med_house_val_100k ~ MedInc + HouseAge + AveRooms + AveBedrms + Population + AveOccup"
+        self.model_sample = smf.mixedlm(formula, self.df, groups=self.df["geo_bin"]).fit()
+        self.y_hat = self.model_sample.fittedvalues
+        self.e_i = self.y.values.ravel() - self.y_hat
+        print(self.model_sample.summary())
+
+    def compute_vif(self):
+        self.vif = pd.DataFrame()
+        self.vif['feature'] = self.X.columns
+        self.vif['vif'] = [variance_inflation_factor(self.X.values, i)  for i in range(self.X.shape[1])]
+        print(self.vif)
 
     def fit_ridge_regression(self):
 
@@ -393,45 +449,317 @@ class MLR:
         })
         print(coef_summary)
 
-    def california_housing(self):
+    def rj_vs_ei(self, filename):
 
-        ch = fetch_california_housing()
+        # rj (residuals of Xj vs. all other regressors X_j) vs. e_i. meant to show which Xj drives residuals of full model
+        regressors = ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']
+        model = LinearRegression()
+        model.fit(self.X[regressors], self.y)
+        y_hat = model.predict(self.X[regressors])
+        e_i = self.y.values.ravel() - y_hat
 
-        self.X = pd.DataFrame(ch.data, columns = ch.feature_names)
-        self.y = pd.DataFrame(ch.target, columns=['med_house_val_100k'])
+        r_j = list()
+        for j in regressors:
+            Xj = self.X[j]
+            X_except_j = self.X.drop(j, axis=1, inplace=False)
+            model = LinearRegression()
+            model.fit(X_except_j, Xj)
+            Xj_hat = model.predict(X_except_j)
+            r_j.append(Xj - Xj_hat)
+
+        counter = 0
+        fig, ax = plt.subplots(2, 4, figsize=(7, 4))
+        for i in range(2):
+            for j in range(4):
+                Xj = self.X.iloc[:, counter]
+                ax[i, j].scatter(r_j[counter], e_i, s=1, alpha=0.3)
+                ax[i, j].set_title(self.X.columns[counter])
+                counter += 1
+        plt.tight_layout()
+        plt.savefig(filename)
+
+    def partial_residuals_plots(self, filename):
+
+        # Xj vs. r_yj = ei + Xj*beta_j, where r_yj = ei + Xj*beta_j = residuals of full model (ei) + variation uniquely explained by Xj
+        regressors = ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']
+        model = LinearRegression()
+        model.fit(self.X[regressors], self.y)
+        y_hat = model.predict(self.X[regressors])
+        e_i = self.y.values.ravel() - y_hat
+        
+        r_y = list()
+        for j in range(len(model.coef_)):
+            r_y_j = e_i + self.X.iloc[:, j] * model.coef_[j]
+            r_y.append(r_y_j)
+
+        counter = 0
+        fig, ax = plt.subplots(2, 4, figsize=(7, 4))
+        for i in range(2):
+            for j in range(4):
+                Xj = self.X.iloc[:, counter]
+                ax[i, j].scatter(Xj, r_y[counter], s=1, alpha=0.3)
+                ax[i, j].set_title(self.X.columns[counter])
+                counter += 1
+        plt.tight_layout()
+        plt.savefig(filename)
+        plt.close()
+
+    def fit_mlr_using_principal_components(self):
+        scaler = StandardScaler()
+        X_centered = scaler.fit_transform(self.X)
+        pca = PCA()
+        self.X = pd.DataFrame(pca.fit_transform(X_centered), columns=[f'PC{i}' for i, _ in enumerate(self.X.columns)])
         self.df = pd.concat([self.y, self.X], axis=1)
-
-        # remove censored data y>=5
-        idx = self.y['med_house_val_100k'] < 5
-        self.y = self.y.loc[idx, :]['med_house_val_100k']
-        self.X = self.X.loc[idx, :]
-        self.df = self.df.loc[idx, :]
-
-        self.y_distribution(bins=np.arange(0, 5.25, 0.25), filename='mlr_y_distribution_california_housing.png')
-
-        self.diagnose_collinearity(center=False)
-
-        main_effects = ' + '.join(self.X.columns)
-        squares = ' + '.join([f'I({x}**2)' for x in self.X.columns])
-        formula = f'med_house_val_100k ~ ({main_effects})**2 + {squares}'
+        formula = f"med_house_val_100k ~ {' + '.join(self.df.columns[1:])}"
         self.model_sample = smf.ols(formula, data=self.df).fit()
-        self.y_hat = self.model_sample.predict(self.X)
-        self.e_i = self.y - self.y_hat
-
+        self.y_hat = self.model_sample.fittedvalues
+        self.e_i = self.y.values.ravel() - self.y_hat
         print(self.model_sample.summary())
 
-        #self.fit_ridge_regression()
+    def fit_linear_gam(self):
+
+        X_coords = self.X[['Latitude', 'Longitude']].values
+        y = self.y.values.ravel()
+        gam = LinearGAM(s(0, n_splines=10) + s(1, n_splines=10)).fit(X_coords, y)
+        self.y_hat = gam.predict(X_coords)
+        self.e_i = self.y.values.ravel() - self.y_hat
+
+    def fit_partial_least_squares(self):
+        columns = [
+            'MedInc',
+            'HouseAge',
+            'Latitude',
+            'Longitude',
+            '_log1pTransformed_AveRooms',
+            '_log1pTransformed_AveBedrms',
+            '_log1pTransformed_AveOccup',
+            '_log1pTransformed_Population'
+        ]
+
+        scaler = StandardScaler()
+        X_centered = scaler.fit_transform(self.X[columns])
+        pls = PLSRegression(n_components=8)
+        pls.fit(X_centered, self.y)
+        self.y_hat = pls.predict(X_centered).ravel()
+        self.e_i = self.y.values.ravel() - self.y_hat
+
+        print(f"R² = {r2_score(self.y, self.y_hat):.3f}")
+        print(f"RMSE = {root_mean_squared_error(self.y, self.y_hat):.3f}")
+
+        fig, ax = plt.subplots()
+        ax.scatter(self.y_hat, self.e_i, alpha=0.3)
+        ax.axhline(0, color='r', linestyle='--')
+        ax.set_xlabel("Fitted values (y_hat)")
+        ax.set_ylabel("Residuals")
+        ax.set_title("PLS: Fitted vs. Residuals")
+        plt.savefig('mlr_partial_least_squares_e_i.png')
+
+    def make_geo_bins(self):
+        lat_bin = pd.cut(self.X['Latitude'], bins=10)
+        lon_bin = pd.cut(self.X['Longitude'], bins=10)
+        self.X['geo_bin'] = lat_bin.astype(str) + '_' + lon_bin.astype(str)
+
+    def preprocess(self):
+
+        self.X = pd.DataFrame(self.ch.data, columns = self.ch.feature_names)
+        self.y = pd.DataFrame(self.ch.target, columns=['med_house_val_100k'])
+
+        # remove high-leverage points
+        idx = [1979, 13366]
+        self.y = self.y.drop(index=idx)
+        self.X = self.X.drop(index=idx)
+
+        # mask some problematic datapoints
+        mask = (
+            (self.y['med_house_val_100k'] < 5) & # remove censored data y>=5
+            (self.X['HouseAge'] < 52) & # remove censored data HouseAge > 50
+            (self.X['AveOccup'] < 50) # remove obvious data error AveOccup > 1000
+        )
+        self.X = self.X.loc[mask]
+        self.y = self.y.loc[mask]
+
+        # scale population
+        self.X['Population'] = self.X['Population']/1000
+
+        # turn y into pd series
+        self.y = self.y['med_house_val_100k']
+
+        # reset indices
+        self.X = self.X.reset_index(drop=True)
+        self.y = self.y.reset_index(drop=True)
+
+        # log-transform right-skewed variables
+        self.X['_log1pTransformed_AveRooms'] = self.X['AveRooms'].apply(lambda x: np.log1p(x))
+        self.X['_log1pTransformed_AveBedrms'] = self.X['AveBedrms'].apply(lambda x: np.log1p(x))
+        self.X['_log1pTransformed_AveOccup'] = self.X['AveOccup'].apply(lambda x: np.log1p(x))
+        self.X['_log1pTransformed_Population'] = self.X['Population'].apply(lambda x: np.log1p(x))
         
+    def plot_histograms_X(self):
+        columns = [
+            'MedInc',
+            'HouseAge',
+            'Latitude',
+            'Longitude',
+            '_log1pTransformed_AveRooms',
+            '_log1pTransformed_AveBedrms',
+            '_log1pTransformed_AveOccup',
+            '_log1pTransformed_Population'
+        ]
+        counter = 0
+        fig, ax = plt.subplots(2, 4, figsize=(7, 4))
+        for i in range(2):
+            for j in range(4):
+                Xj = self.X[columns[counter]]
+                ax[i, j].hist(Xj, density=True)
+                ax[i, j].set_title(columns[counter])
+                counter += 1
+        plt.tight_layout()
+        plt.savefig('mlr_hist_X_california_housing.png')
+
+    def fit_mixed_effects_model_pca(self):
+
+        columns = [
+            'MedInc',
+            'HouseAge',
+            'Latitude',
+            'Longitude',
+            '_log1pTransformed_AveRooms',
+            '_log1pTransformed_AveBedrms',
+            '_log1pTransformed_AveOccup',
+            '_log1pTransformed_Population'
+        ]
+
+        # create orthogonal version of X
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(self.X[columns])          # self.X has Latitude & Longitude columns
+        pca = PCA(n_components=min(8, X_scaled.shape[1]))
+        X_pca = pca.fit_transform(X_scaled)
+        X_pca = pd.DataFrame(X_pca, columns=[f'PC{i}' for i in range(X_pca.shape[1])])
+        X_pca = X_pca.set_index(self.X.index)
+
+        # create geo_bins
+        bins_lat = 10
+        bins_lon = 10
+        lat = self.X['Latitude'].values
+        lon = self.X['Longitude'].values
+        lat_bin = np.digitize(lat, np.linspace(lat.min(), lat.max(), bins_lat))
+        lon_bin = np.digitize(lon, np.linspace(lon.min(), lon.max(), bins_lon))
+        groups = pd.Series((lat_bin - 1) * bins_lon + (lon_bin - 1), name='bin')
+        groups.index = self.X.index
+        
+        # convert X_pca into deviations from geo-bin means        
+        group_means = X_pca.groupby(groups).transform('mean')
+        X_within = X_pca - group_means
+        X_within = X_within.reset_index(drop=True)
+
+        # prepare data frame for mixed model
+        self.df = pd.concat([
+            pd.Series(self.y.values.ravel(), name='y').reset_index(drop=True),
+            X_within,
+            groups.reset_index(drop=True)
+        ], axis=1)
+
+        # fit mixed model: random intercept by bin; fixed slopes = within-PCs
+        endog = self.df['y']
+        exog = sm.add_constant(self.df[[c for c in X_within.columns]])   # fixed effects
+        exog_re = sm.add_constant(self.df[[c for c in X_within.columns]]) # random effects
+        md = MixedLM(endog, exog, groups=self.df['bin'], exog_re=exog_re)
+        mdf = md.fit(reml=True)
+        self.y_hat = mdf.fittedvalues
+        self.e_i = endog - self.y_hat
+        print(mdf.summary())
+
+    def fit_xgboost(self):
+
+        columns = [
+            'MedInc',
+            'HouseAge',
+            'Latitude',
+            'Longitude',
+            '_log1pTransformed_AveRooms',
+            '_log1pTransformed_AveBedrms',
+            '_log1pTransformed_AveOccup',
+            '_log1pTransformed_Population'
+        ]
+
+        X_xgb = self.X[columns]
+
+        model = xgb.XGBRegressor(
+            n_estimators=500,
+            max_depth=6,
+            learning_rate=0.05,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            random_state=42
+        )
+        model.fit(X_xgb, self.y)
+
+        self.y_hat = model.predict(X_xgb)
+        self.e_i = self.y.values - self.y_hat        
+
+        print(f"R²: {r2_score(self.y, self.y_hat):.3f}")
+        print(f"RMSE: {root_mean_squared_error(self.y, self.y_hat):.3f}")
+
+    def california_housing(self):
+
+        self.ch = fetch_california_housing()
+        self.preprocess()
+        self.plot_histograms_X()
+        self.partial_residuals_plots('mlr_diagnostics_partial_residuals_california_housing.png')
+
+        # run diagnostics
+        self.partial_residuals_plots('mlr_diagnostics_partial_residuals_california_housing.png')
+        self.rj_vs_ei('mlr_diagnostics_rj_vs_ei_california_housing.png')
+        self.y_distribution(bins=np.arange(0, 5.25, 0.25), filename='mlr_y_distribution_california_housing.png')
+        self.diagnose_collinearity(center=False)
+        
+        # modelling
+        self.fit_xgboost()
+
+        # diagnostics
         self.compute_residuals_stats()
         self.compute_diagnostics()
         self.plot_y_obs_vs_y_pred('mlr_y_obs_y_pred_california_housing.png')
         self.plot_diagnostics('mlr_diagnostis_california_housing.png')
+
+    def example_mixed_effects_model(self):
+
+        # y = X@beta + Z@u + epsilon
+        # y_ij + (beta0 + u0j) + (beta1 + u1j)x_ij + epsilon_ij
+
+        n = 100
+        epsilon = np.random.normal(0, 1, n)
+        X = np.random.normal(0, 5, n)
+        X = sm.add_constant(X)
+        g = np.random.choice([0, 1, 2], size=n)
+        Z = pd.get_dummies(g, prefix='X3_').astype(int)
+        beta = np.array([0.2, 0.4])
+        u = np.array([-0.54, 0.2, 0.4])
+        y = X @ beta + Z @ u + epsilon
+        df = pd.DataFrame(np.column_stack((y, X[:, 1], g)), columns=['y', 'X1', 'X2']) 
+
+        formula = "y ~  X1"
+        model = smf.mixedlm(formula, df, groups=df['X2']).fit()
+        y_hat = model.predict(df)
+        e_i = y.values.ravel() - y_hat
+        print(model.summary())
+        print(model.random_effects)
+
+        ymin, ymax = np.min([y, y_hat]), np.max([y, y_hat])
+        fig, ax = plt.subplots(1, 2, figsize=(5, 3))
+        ax[0].scatter(y_hat, e_i)
+        ax[0].axhline(y=0, color='black', linestyle='--')
+        ax[1].scatter(y, y_hat)
+        ax[1].plot([ymin, ymax], [ymin, ymax], 'k--')
+        plt.show()
+
 
 
 if __name__ == '__main__':
 
     mlr = MLR()
     mlr.california_housing()
+    #mlr.example_mixed_effects_model()
     #mlr.collinearity_2d_example()
     #mlr.collinearity_3d_example()
     #mlr.variance_inflation_colinear_X(True)
