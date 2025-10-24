@@ -1,8 +1,8 @@
 # Hierarchical models
 
-Also called mixed effects models
+Based on [UCLA STATS 205](https://www.youtube.com/watch?v=flEIC4_bt8c&list=PLAYxx7zX5F1O2HbRr4gORnscbM9EszYbK&index=1)
 
-## Starting point: multiple linear model
+## Starting point: the multiple linear model
 
 $
 \mathbf{y} =
