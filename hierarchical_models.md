@@ -4,15 +4,7 @@ Based on [UCLA STATS 205](https://www.youtube.com/watch?v=flEIC4_bt8c&list=PLAYx
 
 ## Starting point: the multiple linear model
 
-$
-\mathbf{y} =
-\begin{bmatrix}
-y_1 \\
-y_2 \\
-... \\
-y_3
-\end{bmatrix}
-$
+The response is $y = \langle y_1, y_2, ..., y_n \rangle$
 
 
 
