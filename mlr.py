@@ -12,6 +12,7 @@ from pygam import LinearGAM, s
 import xgboost as xgb
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+from sklearn.model_selection import train_test_split
 from sklearn.datasets import fetch_california_housing
 from sklearn.preprocessing import StandardScaler
 from sklearn.cross_decomposition import PLSRegression
@@ -684,6 +685,9 @@ class MLR:
 
         X_xgb = self.X[columns]
 
+        X_train, X_test, y_train, y_test = train_test_split(
+            X_xgb, self.y, test_size=0.33, random_state=42)        
+
         model = xgb.XGBRegressor(
             n_estimators=500,
             max_depth=6,
@@ -692,7 +696,10 @@ class MLR:
             colsample_bytree=0.8,
             random_state=42
         )
-        model.fit(X_xgb, self.y)
+        model.fit(X_train, y_train)
+
+        print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
+        exit()
 
         self.y_hat = model.predict(X_xgb)
         self.e_i = self.y.values - self.y_hat        
