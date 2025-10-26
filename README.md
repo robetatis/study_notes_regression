@@ -12,7 +12,7 @@ Based largely on
 
 ### Model and intuition
 
-The model in OLS is $y = X\beta + \epsilon$, with $\epsilon \sim N(0, \sigma^2)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a **fixed** (non-random) column vector (we prepend a column of ones on the left for the intercept). The deterministic part is $X\beta$, which is a model for $E(y \mid X)$. $\epsilon$ is the random deviation of each $y_i$ from $E(y \mid X)$, and is what makes $y$ a random variable.
+The model in OLS is $y = X\beta + \epsilon$, with $\epsilon_i \sim N(0, \sigma^2)$, $\beta= \langle\beta_0, \beta_1\rangle$ and $X$ a **fixed** (non-random) column vector (we prepend a column of ones on the left for the intercept). The deterministic part is $X\beta$, which is a model for $E(y \mid X)$. $\epsilon$ is the random deviation of each $y_i$ from $E(y \mid X)$, and is what makes $y$ a random variable.
 
 The modelling task in OLS is to estimate $\hat{\beta}$ and its variability. That gives us a function to estimate of $E(y \mid X)$ and a way to compute confidence intervals. $X$ is a matrix with $p+1$ columns (+1 for the intercept) and $n$ rows, where $p$ is the number of regressors and $n$ is the number of observations. In OLS, $p=1$.
 

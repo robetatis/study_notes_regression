@@ -6,7 +6,7 @@ Based on [UCLA STATS 205](https://www.youtube.com/watch?v=flEIC4_bt8c&list=PLAYx
 
 The response is $y = \langle y_1, y_2, ..., y_n \rangle^T$, which is continuous.
 
-We have a **fixed** design matrix $X$:
+We have a **fixed (i.e., non-random)** design matrix $X$:
 
 $$
 X =
@@ -20,8 +20,11 @@ $$
 
 Note that $X$ has $p-1$ predictors and a column of ones on the left for the intercept.
 
-This setup is called the _fixed design problem_, where the modelling task is to find a function of $X$ that describes $E(y \mid X), where we assume that the distribution of $y$ along $X$ is always the same, which is the same as to say that $X$ is fixed. Otherwise we have the so-called _random design problem_.
+This setup, where we condition on $X$ and thereofore assume it's **fixed (i.e., non-random)**, is called the _fixed design problem_, where the modelling task is to find a function of $X$ that describes $E(y \mid X)$. Setups where $X$ is not assumed fixed give rise to the so-called _random design problem_.
 
+The model for $y$ is $y = X\beta + \epsilon$. Here, $y$ is $n$ x 1, $X$ is $n$ x $p$, $\beta$ is $p$ x 1 and $\epsilon$ is $n$ x 1.
 
+$\epsilon$ is an $n$-dimensional **random error vector** $\epsilon = \langle \epsilon_1, ... \epsilon_n \rangle$, where each $\epsilon_i$ is a random variable and we assume they are _iid_ with $E(\epsilon_i) = 0$. We can further assume the $\epsilon_i$ are _iid_ with $\epsilon_i \sim N(0, \sigma^2)$, i.e., that the $\epsilon_i$ all have the same distribution with mean zero and variance $\sigma^2$ (_homoscedasticity_).
 
-
+With this setup, the parameter set defining the model is $\theta = (\beta ,\sigma^2)$. $\theta$ can be estimated either via $L2$ (ordinary
+least squares OLS) or Maximum Likelihood Estimation MLE. 
