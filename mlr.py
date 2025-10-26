@@ -595,7 +595,7 @@ class MLR:
         self.X['_log1pTransformed_AveOccup'] = self.X['AveOccup'].apply(lambda x: np.log1p(x))
         self.X['_log1pTransformed_Population'] = self.X['Population'].apply(lambda x: np.log1p(x))
         
-    def plot_histograms_X(self):
+    def plot_histograms_X(self, filename):
         columns = [
             'MedInc',
             'HouseAge',
@@ -615,7 +615,7 @@ class MLR:
                 ax[i, j].set_title(columns[counter])
                 counter += 1
         plt.tight_layout()
-        plt.savefig('mlr_hist_X_california_housing.png')
+        plt.savefig(filename)
 
     def fit_mixed_effects_model_pca(self):
 
@@ -698,11 +698,12 @@ class MLR:
         )
         model.fit(X_train, y_train)
 
-        print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
-        exit()
+        self.y_hat = model.predict(X_test)
+        self.e_i = y_test - self.y_hat
 
-        self.y_hat = model.predict(X_xgb)
-        self.e_i = self.y.values - self.y_hat        
+        # needed so that model diagnostics can be run
+        self.X = X_test
+        self.y = y_test
 
         print(f"R²: {r2_score(self.y, self.y_hat):.3f}")
         print(f"RMSE: {root_mean_squared_error(self.y, self.y_hat):.3f}")
@@ -711,13 +712,13 @@ class MLR:
 
         self.ch = fetch_california_housing()
         self.preprocess()
-        self.plot_histograms_X()
-        self.partial_residuals_plots('mlr_diagnostics_partial_residuals_california_housing.png')
+        self.plot_histograms_X('output/mlr_hist_X_california_housing.png')
+        self.partial_residuals_plots('output/mlr_diagnostics_partial_residuals_california_housing.png')
 
-        # run diagnostics
-        self.partial_residuals_plots('mlr_diagnostics_partial_residuals_california_housing.png')
-        self.rj_vs_ei('mlr_diagnostics_rj_vs_ei_california_housing.png')
-        self.y_distribution(bins=np.arange(0, 5.25, 0.25), filename='mlr_y_distribution_california_housing.png')
+        # run dataset diagnostics
+        self.partial_residuals_plots('output/mlr_diagnostics_partial_residuals_california_housing.png')
+        self.rj_vs_ei('output/mlr_diagnostics_rj_vs_ei_california_housing.png')
+        self.y_distribution(bins=np.arange(0, 5.25, 0.25), filename='output/mlr_y_distribution_california_housing.png')
         self.diagnose_collinearity(center=False)
         
         # modelling
@@ -726,8 +727,8 @@ class MLR:
         # diagnostics
         self.compute_residuals_stats()
         self.compute_diagnostics()
-        self.plot_y_obs_vs_y_pred('mlr_y_obs_y_pred_california_housing.png')
-        self.plot_diagnostics('mlr_diagnostis_california_housing.png')
+        self.plot_y_obs_vs_y_pred('output/mlr_y_obs_y_pred_california_housing.png')
+        self.plot_diagnostics('output/mlr_diagnostis_california_housing.png')
 
     def example_mixed_effects_model(self):
 
