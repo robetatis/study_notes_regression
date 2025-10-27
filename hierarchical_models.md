@@ -24,7 +24,7 @@ This setup, where we condition on $X$ and thereofore assume it's **fixed (i.e., 
 
 The model for $y$ is $y = X\beta + \epsilon$. Here, $y$ is $n$ x 1, $X$ is $n$ x $p$, $\beta$ is $p$ x 1 and $\epsilon$ is $n$ x 1.
 
-$\epsilon$ is an $n$-dimensional **random error vector** $\epsilon = \langle \epsilon_1, ... \epsilon_n \rangle$, where each $\epsilon_i$ is a random variable and we assume they are _iid_ with $E(\epsilon_i) = 0$. We can further assume the $\epsilon_i$ are _iid_ with $\epsilon_i \sim N(0, \sigma^2)$, i.e., that the $\epsilon_i$ all have the same distribution with mean zero and variance $\sigma^2$ (_homoscedasticity_).
+$\epsilon$ is an $n$-dimensional **random error vector** $\epsilon = \langle \epsilon_1, ... \epsilon_n \rangle$, where each $\epsilon_i$ is a random variable and we assume they are _iid_ with $E(\epsilon_i) = 0$. We can further assume that $\epsilon_i \sim N(0, \sigma^2)$, i.e., that the $\epsilon_i$ all have the same distribution with mean zero and variance $\sigma^2$ (_homoscedasticity_).
 
 With this setup, the parameter set defining the model is $\theta = (\beta ,\sigma^2)$. $\theta$ can be estimated either via $L2$ (ordinary
-least squares OLS) or Maximum Likelihood Estimation MLE. 
+least squares OLS) or Maximum Likelihood Estimation MLE. OLS does not rely on any distributional assumptions for $\epsilon_i$, whereas MLE relies on $\epsilon_i \sim N(0, \sigma^2)$. Both estimation methods coincide under the previous assumption, i.e., $\hat{\beta}_{MLE} = \hat{\beta}_{OLS} = (X^TX)^{-1}X^Ty$. The result is a $p$ x 1 vector $\hat{\beta}^T = \langle \hat{\beta}_0, \hat{\beta}_1, ..., \hat{\beta}_{p-1} \rangle$
