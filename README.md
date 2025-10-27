@@ -223,9 +223,9 @@ That way, the regression equation for $x_2 = 1$ has intercept $\beta_0 + \beta_2
 
 Any non-linear pattern in the residuals plot (fitted values vs. residuals) suggests the model is missspecified. This can mean missing predictors (**confounders**), non-linear or interaction terms, and manifests as autocorrelated residuals, or _tracking_. The consequence is that the assumption $\text{Cov}(X, \epsilon) = 0$ does not hold, and therefore all calculations involving this assumption are 'off' by this amount, which leads to confidence intervals that are too narrow/optimistic (because we're underestimating variance).
 
-This can be addressed by including a non-linear function of the existing regressor(s) and/or interaction terms. Non-linear terms can be, for instance, $X_j^c$, with $c$ = some power ('polynomial regression') or something like $log(X_j)$. For example, if our data-generating process is $y = \beta_0 + \beta_1X_1 + \beta_2X_1^2 + \epsilon$ but we fit $y = \beta_0 + \beta_1X_1 + \epsilon$, the residuals plot (in the middle) clearly shows a parabolic trend, suggestive of a missing quadratic term in the model. Note also the right-biased residuals distribution and the obvious pattern in the leverage vs. studentized residuals plot, showing that points with stronger leverage have larger residuals (which is very problematic). ![](mlr_diagnostics_missing_nonlinear_missing.png)
+This can be addressed by including a non-linear function of the existing regressor(s) and/or interaction terms. Non-linear terms can be, for instance, $X_j^c$, with $c$ = some power ('polynomial regression') or something like $log(X_j)$. For example, if our data-generating process is $y = \beta_0 + \beta_1X_1 + \beta_2X_1^2 + \epsilon$ but we fit $y = \beta_0 + \beta_1X_1 + \epsilon$, the residuals plot (in the middle) clearly shows a parabolic trend, suggestive of a missing quadratic term in the model. Note also the right-biased residuals distribution and the obvious pattern in the leverage vs. studentized residuals plot, showing that points with stronger leverage have larger residuals (which is very problematic). ![](output/mlr_diagnostics_missing_nonlinear_missing.png)
 
-In contrast, if we include the quadratic term, $y = \beta_0 + \beta_1X_1 + \beta_2X_1^2 + \epsilon$, and that removes the parabolic trend in the residuals plot, the bias in the distribution of $e_i$, and the trend in the leverage vs. studentized residuals plot: ![](mlr_diagnostics_missing_nonlinear_ok.png)
+In contrast, if we include the quadratic term, $y = \beta_0 + \beta_1X_1 + \beta_2X_1^2 + \epsilon$, and that removes the parabolic trend in the residuals plot, the bias in the distribution of $e_i$, and the trend in the leverage vs. studentized residuals plot: ![](output/mlr_diagnostics_missing_nonlinear_ok.png)
 
 ### Heteroscedasticity
 
@@ -237,7 +237,7 @@ A key assumption in MLR is that the data-generating process has errors with cons
 
 In practice, heteroscedasticity looks like a funnel-shaped point cloud in the fitted-values vs. studentized residuals plot:
 
-![](mlr_diagnostics_heteroscedastic.png)
+![](output/mlr_diagnostics_heteroscedastic.png)
 
 Simple solutions include transforming $y$ with $\sqrt{y}$ or $log(y)$. However, many real-world problems require techniques that use empirical estimates of $\Sigma$. Among these are, for instance, 1) robust standard errors, where $\text{Var}(\hat{\beta}) = (X^TX)^{-1}X^T\hat{\Sigma}X(X^TX)^{-1}$, with $\hat{\Sigma} = \text{diag}(e_1^2, e_2^2, ..., e_n^2)$; or 2) weighted least squares, where $\hat{\beta} = (X^TWX)^{-1}X^TWy$, with $W=\text{diag}(1/\sigma_i^2)$ and we can, for instance, assume $\sigma$ is a function of $X$, such as $\text{Var}(\epsilon_i) = \sigma^2f(x_i)$. 
 
@@ -277,11 +277,11 @@ When features are independent, their covariances are small and most variation ha
 
 The 3-dimensional example below shows a nicely shaped $X$ where the point cloud is roughly spherical and therefore doesn't show any correlation among columns. The lines are the 3d vectors corresponding to the three columns of $X^TX$, and we see that they point in nearly orthogonal directions. 
 
-![](mlr_3d_example_collinearity_independent.png). 
+![](output/mlr_3d_example_collinearity_independent.png). 
 
 In contrast, the next example shows a dataset with a clear dependence between features, namely between $X_1$ and $X_3$, which is visible in the nearly collinear red ($X_1$) and blue ($X_3$) vectors. Column 2 of $X^TX$ varies independently (green vector). The alignment between the covariance signatures of $X_1$ and $X_3$ is directly tied to the shape of the point cloud, which is almost two-dimensional, i.e., it lacks variation in one dimension.
 
-![](mlr_3d_example_collinearity_dependent.png). 
+![](output/mlr_3d_example_collinearity_dependent.png). 
 
 What these examples show is that the columns of $X^TX$ _roughly approximate_ the $p$-dimensional shape of the data. However, what we ultimately seek are the true **independent directions of variation** - the orthogonal axes that describe how the data vary **without redundancy**. We can think of these axes as the main axes of the point cloud (there are $p$ such axes). This is exactly what the **orthonormal basis**, i.e., the _eigenvalues_ and _eigenvectors_ of $X^TX$ provides. So far we've used the columns of $X^TX$ to describe the shape of the data, but those vectors don't show the dataset's independent directions of variation **because they tilt when the features covary**. Through eigenvalue decomposition of $X^TX$, we can identify the actual orthogonal directions, which are made up of $X^TX$'s eigenvectors and show the directions in which we have no covariance among the features, i.e., the directions in which variation is truly independent. The corresponding eigenvalues measure how large the variation in each of those directions is. Since the eigenvectors of $X^TX$ don't normally allign perfectly with the axes of feature space, unless columns of $X$ are truly independent, the directions of independent variation will be combinations of the original features.
 
@@ -299,11 +299,11 @@ In contrast, the second example, in which $X_3$ and $X_1$ are correlated, has ei
 
 Similar patterns as in 3d can be observed in the following 2d examples. In the first one, the point cloud is more or less symmetric and the columns of $X^TX$ (dashed green and blue lines) are closer to orthogonality. Accordingly, the eigenvectors (red arrows) point in somewhat similar directions and are of roughly the same length, i.e, the eigenvalues are of similar value ($\lambda_1 = 81.2$, $\lambda_2 = 117.5$). The eigenvectors are $q_1 = \langle 0.26, -0.96 \rangle$ and $q_2 = \langle -0.96, -0.26 \rangle$
 
-![](mlr_2d_example_collinearity_independent.png)
+![](output/mlr_2d_example_collinearity_independent.png)
 
 In contrast, the next example shows a strongly collinear $X$ where the columns of $X^TX$ are heavily tilted and themselves almost collinear. In line with this, the eigenvalues are very different ($\lambda_1 = 3.33$, $\lambda_2 = 257.6$) and the small-eigenvalue eigenvector ($q_1$) has components with similar magnitude and opposite sign; $q_1 = \langle -0.71, 0.701 \rangle$, $q_2 = \langle -0.701, 0.713 \rangle$.
 
-![](mlr_2d_example_collinearity_dependent.png)
+![](output/mlr_2d_example_collinearity_dependent.png)
 
 #### The condition number $\kappa$
 
