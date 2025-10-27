@@ -42,7 +42,7 @@ In general, larger samples with more spread $X$ have smaller variability in $\ha
 
 All the above formulas are only valid if $\text{Cov}(X, \epsilon) = 0$, and here I really mean the _unconditional_ covariance (since the covariance of $X$ and $\epsilon$ at a fixed $X$ is always zero: $\text{Cov}(\epsilon, X \mid X) = E([X - E(X \mid X)][\epsilon - E(\epsilon \mid X)]^T) = E([X - X][\epsilon - E(\epsilon \mid X)]^T) = E(0[\epsilon - E(\epsilon \mid X)]^T) = 0$). The intuition behind $\text{Cov}(X, \epsilon) = 0$ is that if $\epsilon$ is related to the regressors $X$, $\epsilon$ contain information about the part of $y$ that is supposed to be only noise, i.e., there's still variance in $\epsilon$ that is linked to $X$. It's also possible that an omitted variable is moving with $X$ and thus affecting $y$ indirectly. This then causes $X$ and $\epsilon$ to be related. It's also worth noting that, with multiple regressors, checking which $X$ is responsible for $\text{Cov}(X, \epsilon) \neq 0$ helps determining which regressor is driving the residuals.
 
-### A final note on predicted values $\hat{y}$
+### A note on predicted values $\hat{y}$
 
 Since $\hat{\beta} = (X^TX)^{-1}X^Ty$, the estimated values are $\hat{y} = X\hat{\beta} = X(X^TX)^{-1}X^Ty$. The product $X(X^TX)^{-1}X^T$ is known as the 'hat' matrix $H$, since multiplying it with $y$ generates $\hat{y}$. Geometrically, $X(X^TX)^{-1}X^T$ is a projection matrix, i.e., it's the matrix that projects $y$ onto the column space of $X$. Further, the matrix-vector product $Hy$, which is computed as 
 
