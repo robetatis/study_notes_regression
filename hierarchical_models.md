@@ -32,8 +32,10 @@ With this setup, the parameter set defining the model is $\theta = (\beta ,\sigm
 
 ### Bias and variance of $\hat{\beta}$
 
-If _exogeneity_ holds, i.e., if $E(\epsilon \mid X)=0$, then $E(\hat{\beta}) = 0$. In this case, $\hat{\beta}$ is an unbiased estimator of $\beta$.
+If _exogeneity_ holds, i.e., if $E(\epsilon \mid X)=0$, then $E(\hat{\beta}) = \beta$. In this case, $\hat{\beta}$ is an unbiased estimator of $\beta$. $\hat{\beta}$ is a $p$ x 1 column vector.
 
-If _homoscedasticity_ holds, $$
+The variance of $\hat{\beta}$ is $\text{Var}(\hat{\beta}) = (X^TX)^{-1}X^T \text{Var}(\epsilon)X(X^TX)^{-1}$. $\text{Var}(\epsilon)$ is an $n$ x $n$ matrix that captures the variances (diagonal elements) and pairwise covariances (off-diagonal elements) of all elements of the error vector $\epsilon$, whose components are the individual **population-level** model errors $\epsilon_i$. $\text{Var}(\epsilon) = E[(\epsilon - E(\epsilon))(\epsilon - E(\epsilon))^T]$. If _homoscedasticity_ holds and errors are uncorrelated, all pairwise covariances (off-diagonal elements) are zero and all diagonal elements of $\text{Var}(\epsilon)$ have the same value $\sigma^2$. In that case, $\text{Var}(\hat{\beta}) = (X^TX)^{-1}X^T \sigma^2I_n X(X^TX)^{-1} = \sigma^2 (X^TX)^{-1}$. $\text{Var}(\hat{\beta}) is a $p$ x $p$ matrix whose diagonal entries are the variances of the corresponding regression coefficients. The off-diagonal elements are the pairwise covariances between regression coefficients.
 
-$\text{Var}(\hat{\beta}) = (X^TX)^{-1}X^T \text{Var}(\epsilon)X(X^TX)^{-1}$
+Note that neither of these derivations requires that $\epsilon_i$ be normally distributed. 
+
+
