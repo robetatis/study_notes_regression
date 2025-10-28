@@ -43,4 +43,4 @@ Note that neither of these derivations requires that $\epsilon_i$ be normally di
 2. Errors must be uncorrelated ($\text{Cov}(\epsilon_i, \epsilon_j \mid X) = 0$), which is the same to say that the observations themselves must be _iid_, and 
 3. Errors must be homoscedastic ($\text{Cov}(\epsilon_i, \epsilon_i \mid X) = \text{Var}(\epsilon_i \mid X) = 0$).
 
-$\sigma^2$ is not observable, so we use $\hat{\sigma}^2 = 1/(n-p)e^Te$, where $e^T = \langle e_1, e_2, ..., e_n \rangle = y - \hat{y} = y - Hy = (I_n - H)y$, with $I_n$ the $n$ x $n$ identity matrix and $H$ is the 'hat matrix' $H = X(X^TX)^{-1}X^T$.
+$\sigma^2$ is not observable, so we use $\hat{\sigma}^2 = \frac{1}{n-p}e^Te$, where $e^T = \langle e_1, e_2, ..., e_n \rangle = y - \hat{y} = y - Hy = (I_n - H)y$, with $I_n$ the $n$ x $n$ identity matrix and $H$ is the 'hat matrix' $H = X(X^TX)^{-1}X^T$.
