@@ -14,7 +14,7 @@
 
 # logistic regression
 # --------------------------------------------------------------------------------
-# Y_i in {0, 1}. we model P(Y_i = 1 | X_i)
+# Y_i {0, 1}. we model P(Y_i = 1 | X_i)
 # Y_i ~ Bernoulli(p_i), E[Y_i] = p_i, Var[Y_i] = p_i*(1-p_i) -> as in all GLMs, variance depends on mean, and the model is inherently heteroscedastic
 # logistic/logit link: g(p) = log(p/(1-p)) -> log-odds of success, were p/(1-p) = odds
 # model: g(p_i) = log(p_i/(1-p_i)) = X_i^T*beta ; p_i = 1/(1 + exp(-X_i*beta))
