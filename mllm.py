@@ -7,25 +7,25 @@
 # - observations being grouped/nested means datapoints ARE NOT INDEPENDENT!!
 # - in classical models, there's only one global slope and global intercepts for all observations
 # - that means those parameters are *fixed*
-# - this also implies that the relation between Y and X is the same across all observations, which with nested/grouped data is likely not true
+# - this also implies that the relation between Y and X is the same across all observations, which, with nested/grouped data, is likely not true
 # - another way to say this is that each value of Y is drawn from a single trend + random noise, i.e., we ignore groups
 # - in a classical model, we could account for groups by using dummy variables and model their effect as fixed effects
 # - however, this doesn't scale when we have many groups
 # - in mllms we allow each group to have its own parameters (intercept and/or slope) and assume these params come from a common distribution
 # - that is to say, in mllms, PARAMETERS HAVE DISTRIBUTIONS, AND ARE THEREFORE NOT FIXED NUMBERS
 # - this way we acknowledge in the modelling that the data-generating process has structure across groups.
-# - the distribution of the groups' parameters obviously have their own parameters -> hyperparameters.
-# - for instance, group intercepts alpha_j ~ N(miu_alpha, sigma_alpha^2), here,  miu_alpha and sigma_alpha^2 are the mean and variance 
-#   of the distribution from which we draw the group intercepts
+# - the distribution of the groups' parameters has its own parameters -> hyperparameters.
+# - for instance, group intercepts alpha_j ~ N(miu_alpha, sigma_alpha^2), here,  miu_alpha and sigma_alpha^2 are the mean and variance of the distribution
+#   from which we draw the group intercepts
 # - there are 2 extremes when handling naturally nested data:
 #   - pooled model - single model for all data -> biased estimates, ignores/wastes structure given by between-group differences
 #   - unpooled model - one separate model per group -> needs lots of datapoints per group, small groups have noisy estimates
 # - mllms are a middle ground: partial pooling -> each group has its own params BUT they all come from a single distribution
-# - in partial pooling, groups with lots of data behave as having own separate regression, and groups with little data 'shrink' towards the global params
+# - in partial pooling, groups with lots of data behave as if they had their own separate regression, and groups with little data 'shrink' towards the global params
 # - 'shrinkage':
 #   - there's a global effect (global intercept, global slope) and each group's params are deviations (upwards or downwards) from the global params
 #   - groups with little data see their effects 'shrink' towards zero, so these groups's effects are closer to the global trend
-# - 
+
 
 # model
 # -----------------------------------
@@ -41,7 +41,7 @@
 # u_0j, u_1j = group-level deviation from global intercept and slope
 # tau_0^2, tau_1^2 = variance of random effects - hyperparameters
 
-# manual example
+# manual example with moment of methods
 # -----------------------------------
 # y_ij = beta_0 + u_0j + epsilon_ij, epsilon_ij ~ N(0, sigma^2), u_0j ~ N(0, tau_0^2)
 # we must estimate beta_0, u_0j, sigma^2 and tau_0^2
@@ -204,31 +204,25 @@ class Model:
 
     def mllm_plot_diagnostics(self):
 
-        # Conditional fitted values and residuals
         fitted = self.results.fittedvalues
-        resid = self.results.resid  # conditional residuals (includes random effects)
+        resid = self.results.resid
 
-        # -------------------------
-        # 1️⃣ Residuals vs Fitted
-        # -------------------------
+        # residuals vs Fitted
         plt.figure(figsize=(6,4))
         plt.scatter(fitted, resid, alpha=0.6)
         plt.axhline(0, color='red', linestyle='--')
         plt.title("Residuals vs Fitted Values")
         plt.xlabel("Fitted values")
         plt.ylabel("Residuals")
-        plt.show()
+        plt.savefig('output/mllm_diagnostics_sleepstudy_fitted_vs_e_i.png')
 
-        # -------------------------
-        # 2️⃣ QQ-plot of residuals
-        # -------------------------
+        # qq-plot of residuals
         plt.figure(figsize=(5,5))
         stats.probplot(resid, dist="norm", plot=plt)
         plt.title("QQ-Plot of Conditional Residuals")
-        plt.show()
+        plt.savefig('output/mllm_diagnostics_sleepstudy_qq_e_i.png')
 
-        # -------------------------
-        # 3️⃣ QQ-plots of random effects
+        # qq-plots of random effects
         # -------------------------
         random_effects = pd.DataFrame(self.results.random_effects).T  # subjects x effects
 
@@ -236,10 +230,9 @@ class Model:
             plt.figure(figsize=(5,5))
             stats.probplot(random_effects[col], dist="norm", plot=plt)
             plt.title(f"QQ-Plot of Random Effect: {col}")
-            plt.show()
+            plt.savefig(f'output/mllm_diagnostics_sleepstudy_qq_{col}.png')
 
-        # -------------------------
-        # 4️⃣ Check variance by group (optional)
+        # variance by group (optional)
         # -------------------------
         group_sd = (
             pd.DataFrame({'Subject': self.results.model.groups, 'Resid': resid})
@@ -250,7 +243,7 @@ class Model:
         plt.title("Residual SD per Subject")
         plt.xlabel("Subject")
         plt.ylabel("Within-group residual SD")
-        plt.show()
+        plt.savefig('output/mllm_diagnostics_sleepstudy_std_by_group.png')
 
     def mllm_run(self):
         # random intercept-random slope model: 
