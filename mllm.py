@@ -30,7 +30,7 @@
 # model
 # -----------------------------------
 # two-level example, only one regressor x:
-# y_ij = beta_0j + beta_1j*x_ij + epsilon_ij, epsilon_ij ~ N(0, sigma^2)
+# y_ij = beta_0j + beta_1j*x_ij + epsilon_ij; epsilon_ij ~ N(0, sigma^2)
 # beta_0j = gamma_00 + u_0j, u_0j ~ N(0, tau_0^2)
 # beta_1j = gamma_10 + u_1j, u_1j ~ N(0, tau_1^2)
 # y_ij = outcome i of group j
@@ -246,6 +246,7 @@ class Model:
         plt.savefig('output/mllm_diagnostics_sleepstudy_std_by_group.png')
 
     def mllm_run(self):
+
         # random intercept-random slope model: 
         # y_ij = (u_00 + u_0j) + (u_10 + u_1j)*Days + epsilon_ij, epsilon_ij ~ N(0, sigma^2)
 
