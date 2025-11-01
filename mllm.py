@@ -81,6 +81,7 @@ import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 import scipy
+import scipy.stats as stats
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from statsmodels.stats.stattools import omni_normtest, jarque_bera
 from statsmodels.stats.outliers_influence import OLSInfluence, variance_inflation_factor
@@ -180,6 +181,76 @@ class Model:
         self.ols_compute_diagnostics()
         self.ols_plot_diagnostics('output/mllm_ols_diagnostics_sleepstudy.png')
 
+    def mllm_plot_results(self):
+        random_effects = self.results.random_effects
+        plt.figure(figsize=(10,6))
+        for subj in self.df_raw['Subject'].unique():
+            subj_data = self.df_raw[self.df_raw['Subject'] == subj]
+
+            u0 = random_effects[subj]['Subject']
+            u1 = random_effects[subj]['Days']
+            
+            y_pred = (self.results.fe_params['Intercept'] + u0) + (self.results.fe_params['Days'] + u1) * subj_data['Days']
+            
+            plt.plot(subj_data['Days'], y_pred, label=f'Subject {subj}')
+            plt.scatter(subj_data['Days'], subj_data['Reaction'], color='black', s=10)
+
+        plt.xlabel('Days of Sleep Deprivation')
+        plt.ylabel('Reaction Time')
+        plt.title('Subject-Specific Lines (Random Intercept + Slope)')
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)
+        plt.tight_layout()
+        plt.savefig('output/mllm_results_sleepstudy.png')
+
+    def mllm_plot_diagnostics(self):
+
+        # Conditional fitted values and residuals
+        fitted = self.results.fittedvalues
+        resid = self.results.resid  # conditional residuals (includes random effects)
+
+        # -------------------------
+        # 1️⃣ Residuals vs Fitted
+        # -------------------------
+        plt.figure(figsize=(6,4))
+        plt.scatter(fitted, resid, alpha=0.6)
+        plt.axhline(0, color='red', linestyle='--')
+        plt.title("Residuals vs Fitted Values")
+        plt.xlabel("Fitted values")
+        plt.ylabel("Residuals")
+        plt.show()
+
+        # -------------------------
+        # 2️⃣ QQ-plot of residuals
+        # -------------------------
+        plt.figure(figsize=(5,5))
+        stats.probplot(resid, dist="norm", plot=plt)
+        plt.title("QQ-Plot of Conditional Residuals")
+        plt.show()
+
+        # -------------------------
+        # 3️⃣ QQ-plots of random effects
+        # -------------------------
+        random_effects = pd.DataFrame(self.results.random_effects).T  # subjects x effects
+
+        for col in random_effects.columns:
+            plt.figure(figsize=(5,5))
+            stats.probplot(random_effects[col], dist="norm", plot=plt)
+            plt.title(f"QQ-Plot of Random Effect: {col}")
+            plt.show()
+
+        # -------------------------
+        # 4️⃣ Check variance by group (optional)
+        # -------------------------
+        group_sd = (
+            pd.DataFrame({'Subject': self.results.model.groups, 'Resid': resid})
+            .groupby('Subject')['Resid'].std()
+        )
+        plt.figure(figsize=(6,4))
+        plt.bar(group_sd.index, group_sd.values)
+        plt.title("Residual SD per Subject")
+        plt.xlabel("Subject")
+        plt.ylabel("Within-group residual SD")
+        plt.show()
 
     def mllm_run(self):
         # random intercept-random slope model: 
@@ -191,16 +262,19 @@ class Model:
             groups='Subject',   
             re_formula='1 + Days' # random effects 1=intercept, Days=slope for this regressor
         )
-        results = model.fit(reml=True)
-        print(results.summary())
+        self.results = model.fit(reml=True)
+        print(self.results.summary())
 
         print(f"sd(y) = {self.df_raw['Reaction'].std():.2f}")
-        print(f'sd(e_i) = {np.sqrt(results.scale):.2f}')
-        print(f'sd(u_0j) = {np.sqrt(612.096):.2f}')
-        print(f'sd(u_1j) = {np.sqrt(35.072):.2f}')
+        print(f'sd(e_i) = {np.sqrt(self.results.scale):.2f}')
+        print(f'sd(u_0j) = {np.sqrt(self.results.cov_re.loc['Subject', 'Subject']):.2f}')
+        print(f'sd(u_1j) = {np.sqrt(self.results.cov_re.loc['Days', 'Days']):.2f}')
 
-        random_effects = pd.DataFrame(results.random_effects)
+        random_effects = pd.DataFrame(self.results.random_effects)
         print(random_effects.T)
+
+        self.mllm_plot_results()
+        self.mllm_plot_diagnostics()
 
 
 if __name__ == '__main__':
